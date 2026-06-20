@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MadeUp MonkeyShit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--black: #0A0A0A;
+--near-black: #111111;
+--card-bg: #161616;
+--border: #2A2A2A;
+--silver: #C8C8C8;
+--silver-dim: #888888;
+--gold: #D4AF37;
+--gold-dim: #9A7D1A;
+--white: #F2F2F2;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--black);
+color: var(--silver);
+font-family: 'Inter', sans-serif;
+font-size: 16px;
+line-height: 1.7;
+overflow-x: hidden;
+}
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+background: rgba(10,10,10,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 0 2rem;
+height: 60px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.nav-logo {
+font-family: 'DM Serif Display', serif;
+font-size: 1.1rem;
+color: var(--gold);
+letter-spacing: 0.02em;
+text-decoration: none;
+}
+.nav-links {
+display: flex;
+align-items: center;
+gap: 2rem;
+list-style: none;
+}
+.nav-links a {
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.8rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+.hero {
+min-height: 100vh;
+display: grid;
+grid-template-columns: 1fr 1fr;
+align-items: center;
+padding: 80px 4rem 4rem;
+gap: 4rem;
+position: relative;
+overflow: hidden;
+isolation: isolate;
+}
+.hero::before {
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: radial-gradient(ellipse at 60% 40%, rgba(212,175,55,0.06) 0%, transparent 60%);
+pointer-events: none;
+}
+.hero::after {
+content: '';
+position: absolute;
+inset: 0;
+z-index: -1;
+background-image:
+  linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%),
+  url('profile_photo.jpg');
+background-size: cover;
+background-position: center 65%;
+filter: blur(20px) saturate(0.6) brightness(0.9);
+transform: scale(1.15);
+}
+.hero-text { position: relative; z-index: 2; }
+.hero-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1.5rem;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-name {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(2.8rem, 5vw, 4.5rem);
+line-height: 1.05;
+color: var(--white);
+margin-bottom: 1.5rem;
+letter-spacing: -0.01em;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-bio {
+font-size: 1rem;
+color: var(--silver-dim);
+max-width: 420px;
+margin-bottom: 0.75rem;
+font-style: italic;
+font-family: 'DM Serif Display', serif;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-tagline {
+font-size: 0.85rem;
+color: var(--silver-dim);
+max-width: 420px;
+margin-bottom: 2.5rem;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-cta {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+.btn-primary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+background: var(--gold);
+color: var(--black);
+padding: 0.75rem 1.75rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.8rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover {
+background: #E8C547;
+transform: translateY(-1px);
+}
+.btn-secondary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+border: 1px solid var(--border);
+color: var(--silver);
+padding: 0.75rem 1.75rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.8rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover {
+border-color: var(--gold);
+color: var(--gold);
+}
+.hero-photo-wrap {
+position: relative;
+z-index: 2;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.hero-photo-frame {
+position: relative;
+width: 420px;
+max-width: 100%;
+}
+.hero-photo-frame::before {
+content: '';
+position: absolute;
+top: -12px; left: -12px;
+right: 12px; bottom: 12px;
+border: 1px solid var(--gold-dim);
+border-radius: 2px;
+z-index: 0;
+}
+.hero-photo-frame img {
+width: 100%;
+border-radius: 2px;
+display: block;
+position: relative;
+z-index: 1;
+filter: contrast(1.05) saturate(0.9);
+}
+
+.marquee-section {
+border-top: 1px solid var(--border);
+border-bottom: 1px solid var(--border);
+padding: 1.2rem 0;
+overflow: hidden;
+background: var(--near-black);
+}
+.marquee-track {
+display: flex;
+gap: 0;
+animation: marquee 60s linear infinite;
+white-space: nowrap;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee {
+0% { transform: translateX(0); }
+100% { transform: translateX(-50%); }
+}
+.marquee-item {
+display: inline-flex;
+align-items: center;
+gap: 1.5rem;
+padding: 0 2rem;
+font-family: 'DM Serif Display', serif;
+font-size: 0.95rem;
+color: var(--silver-dim);
+font-style: italic;
+}
+.marquee-dot {
+width: 4px;
+height: 4px;
+border-radius: 50%;
+background: var(--gold);
+flex-shrink: 0;
+}
+
+section {
+padding: 5rem 4rem;
+max-width: 1200px;
+margin: 0 auto;
+}
+.section-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 0.75rem;
+}
+.section-title {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(1.8rem, 3vw, 2.5rem);
+color: var(--white);
+margin-bottom: 1rem;
+line-height: 1.2;
+}
+.section-subtitle {
+color: var(--silver-dim);
+font-size: 0.95rem;
+max-width: 560px;
+margin-bottom: 3rem;
+}
+
+.tracks-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1rem;
+margin-bottom: 2rem;
+}
+.track-embed {
+border-radius: 2px;
+overflow: hidden;
+border: 1px solid var(--border);
+}
+.track-embed iframe {
+display: block;
+width: 100%;
+}
+
+.mood-section {
+margin-bottom: 3.5rem;
+border-left: 2px solid transparent;
+padding-left: 1.25rem;
+margin-left: -1.25rem;
+transition: border-color 0.2s;
+}
+.mood-header {
+display: flex;
+align-items: baseline;
+gap: 1rem;
+margin-bottom: 1.25rem;
+padding-bottom: 0.75rem;
+border-bottom: 1px solid var(--border);
+}
+.mood-label {
+font-family: 'DM Serif Display', serif;
+font-size: 1.2rem;
+color: var(--white);
+font-style: italic;
+}
+.mood-count {
+font-size: 0.75rem;
+color: var(--gold);
+letter-spacing: 0.1em;
+}
+
+.mood-tranquil { border-left-color: rgba(93,202,165,0.5); }
+.mood-tranquil .mood-label { color: #9FE1CB; }
+.mood-tranquil .mood-count { color: #5DCAA5; }
+
+.mood-busy { border-left-color: rgba(212,175,55,0.5); }
+.mood-busy .mood-label { color: var(--gold); }
+.mood-busy .mood-count { color: var(--gold); }
+
+.mood-energy { border-left-color: rgba(212,83,126,0.5); }
+.mood-energy .mood-label { color: #ED93B1; }
+.mood-energy .mood-count { color: #D4537E; }
+
+.mood-eclectic { border-left-color: rgba(127,119,221,0.5); }
+.mood-eclectic .mood-label { color: #AFA9EC; }
+.mood-eclectic .mood-count { color: #7F77DD; }
+
+.mood-night { border-left-color: rgba(140,130,170,0.5); }
+.mood-night .mood-label { color: #C0C0C0; }
+.mood-night .mood-count { color: #9090B0; }
+
+.song-list {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+gap: 0.4rem;
+}
+.song-item {
+display: flex;
+align-items: center;
+gap: 0.75rem;
+padding: 0.5rem 0.75rem;
+border-radius: 2px;
+color: var(--silver-dim);
+font-size: 0.82rem;
+text-decoration: none;
+transition: background 0.15s, color 0.15s;
+border: 1px solid transparent;
+}
+.song-item:hover {
+background: var(--card-bg);
+border-color: var(--border);
+color: var(--silver);
+}
+.song-dot {
+width: 3px;
+height: 3px;
+border-radius: 50%;
+background: var(--gold-dim);
+flex-shrink: 0;
+}
+
+.albums-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+gap: 1.5rem;
+}
+.album-card {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+text-decoration: none;
+transition: transform 0.2s;
+}
+.album-card:hover { transform: translateY(-3px); }
+.album-cover {
+aspect-ratio: 1;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+overflow: hidden;
+}
+.album-cover-accent {
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 3px;
+background: var(--gold);
+}
+.album-title {
+font-family: 'DM Serif Display', serif;
+font-size: 0.95rem;
+color: var(--white);
+font-style: italic;
+}
+.album-meta {
+font-size: 0.75rem;
+color: var(--silver-dim);
+letter-spacing: 0.05em;
+}
+
+.platforms-row {
+display: flex;
+flex-wrap: wrap;
+gap: 1rem;
+align-items: center;
+}
+.platform-link {
+display: inline-flex;
+align-items: center;
+gap: 0.6rem;
+padding: 0.65rem 1.25rem;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--silver);
+text-decoration: none;
+font-size: 0.82rem;
+letter-spacing: 0.06em;
+transition: border-color 0.2s, color 0.2s;
+}
+.platform-link:hover {
+border-color: var(--gold);
+color: var(--gold);
+}
+.platform-link svg {
+width: 16px;
+height: 16px;
+fill: currentColor;
+flex-shrink: 0;
+}
+
+#subscribe {
+position: relative;
+isolation: isolate;
+}
+#subscribe::after {
+content: '';
+position: absolute;
+inset: 0;
+z-index: -1;
+background-image:
+  linear-gradient(180deg, rgba(10,10,10,0.45) 0%, rgba(10,10,10,0.65) 30%, rgba(10,10,10,0.75) 100%),
+  url('Half Way There.jpg');
+background-size: cover;
+background-position: center 40%;
+filter: blur(20px) saturate(0.65);
+transform: scale(1.1);
+}
+.subscribe-wrap {
+background: rgba(17,17,17,0.55);
+border: 1px solid var(--border);
+border-radius: 2px;
+padding: 3rem;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 3rem;
+align-items: center;
+backdrop-filter: blur(2px);
+}
+.subscribe-title {
+font-family: 'DM Serif Display', serif;
+font-size: 1.8rem;
+color: var(--white);
+margin-bottom: 0.75rem;
+line-height: 1.2;
+text-shadow: 0 2px 20px rgba(10,10,10,0.85);
+}
+.subscribe-sub {
+font-size: 0.85rem;
+color: var(--silver-dim);
+text-shadow: 0 2px 20px rgba(10,10,10,0.85);
+}
+.subscribe-form {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+.subscribe-input {
+background: var(--black);
+border: 1px solid var(--border);
+border-radius: 2px;
+padding: 0.75rem 1rem;
+color: var(--silver);
+font-size: 0.9rem;
+font-family: 'Inter', sans-serif;
+outline: none;
+transition: border-color 0.2s;
+width: 100%;
+}
+.subscribe-input:focus { border-color: var(--gold); }
+.subscribe-input::placeholder { color: var(--silver-dim); opacity: 0.5; }
+.subscribe-note {
+font-size: 0.72rem;
+color: var(--silver-dim);
+opacity: 0.6;
+}
+
+footer {
+border-top: 1px solid var(--border);
+padding: 2rem 4rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 1rem;
+background: var(--near-black);
+}
+.footer-name {
+font-family: 'DM Serif Display', serif;
+font-size: 1rem;
+color: var(--gold);
+font-style: italic;
+}
+.footer-note {
+font-size: 0.75rem;
+color: var(--silver-dim);
+opacity: 0.5;
+}
+
+.gold-divider {
+width: 40px;
+height: 1px;
+background: var(--gold);
+margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+.hero {
+grid-template-columns: 1fr;
+padding: 80px 1.5rem 3rem;
+text-align: center;
+}
+.hero-photo-wrap { order: -1; }
+.hero-photo-frame { width: 280px; }
+.hero-cta { justify-content: center; }
+.hero-tagline { margin: 0 auto 2.5rem; }
+section { padding: 3rem 1.5rem; }
+.subscribe-wrap {
+grid-template-columns: 1fr;
+padding: 2rem 1.5rem;
+gap: 2rem;
+}
+footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+nav { padding: 0 1.5rem; }
+.nav-links { display: none; }
+.mood-section { margin-left: 0; padding-left: 1rem; }
+}
+</style>
+</head>
+<body>
+<nav>
+<a href="#" class="nav-logo">MadeUp MonkeyShit</a>
+<ul class="nav-links">
+<li><a href="#listen">Listen</a></li>
+<li><a href="#catalog">Catalog</a></li>
+<li><a href="#albums">Albums</a></li>
+<li><a href="#subscribe">Stay in the Loop</a></li>
+</ul>
+</nav>
+
+<div class="hero">
+<div class="hero-text">
+<p class="hero-eyebrow">Music by MadeUp MonkeyShit</p>
+<h1 class="hero-name">87 songs.<br>Mostly about nothing.<br>All of it real.</h1>
+<p class="hero-bio">"Proud to make just awful music."</p>
+<p class="hero-tagline">Six albums of dry, observational music about the mundane, the absurd, and whatever was happening that week. Rap. Rock. R&amp;B. Caribbean. Classical. Sometimes all in the same album.</p>
+<div class="hero-cta">
+<a href="https://open.spotify.com/artist/65VCtBwSACcN98YvM0Z1E3" target="_blank" class="btn-primary">
+<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
+Listen on Spotify
+</a>
+<a href="https://www.tiktok.com/@madeup_monkeyshit" target="_blank" class="btn-secondary">
+<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.26 8.26 0 004.84 1.55V6.79a4.85 4.85 0 01-1.07-.1z"/></svg>
+TikTok
+</a>
+</div>
+</div>
+<div class="hero-photo-wrap">
+<div class="hero-photo-frame">
+<p style="position:absolute; top:-2rem; left:0; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); z-index:2;">New Release</p>
+<img src="Melted Ice Cream.jpg" alt="Melted Ice Cream - newest album" onerror="this.style.display='none'">
+<p style="position:absolute; bottom:-1.75rem; left:0; font-family:'DM Serif Display',serif; font-style:italic; font-size:1rem; color:var(--white); z-index:2;">Melted Ice Cream</p>
+</div>
+</div>
+</div>
+
+<div class="marquee-section" aria-hidden="true">
+<div class="marquee-track" id="marquee"></div>
+</div>
+
+<section id="listen" style="max-width:1200px; margin:0 auto; padding: 5rem 4rem;">
+<p class="section-eyebrow">Featured</p>
+<h2 class="section-title">Start Here</h2>
+<p class="section-subtitle">A few favorites, plus one you should hear before everyone else does.</p>
+<div class="tracks-grid">
+<div class="track-embed">
+<iframe src="https://open.spotify.com/embed/track/4bwdyTTz2aOG0fblkW4vdl?utm_source=generator&amp;theme=0" height="152" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+<div class="track-embed">
+<iframe src="https://open.spotify.com/embed/track/7sL0uLi3jR6hKyNASNFahi?utm_source=generator&amp;theme=0" height="152" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+<div class="track-embed">
+<iframe src="https://open.spotify.com/embed/track/5kLd36b20uQ2MenAPfkHkc?utm_source=generator&amp;theme=0" height="152" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+</div>
+</section>
+
+<section id="catalog" style="max-width:1200px; margin:0 auto; padding: 0 4rem 5rem; border-top: 1px solid #1A1A1A;">
+<p class="section-eyebrow" style="padding-top:5rem;">The Full Catalog</p>
+<h2 class="section-title">87 songs. Organized loosely.</h2>
+<p class="section-subtitle">No genres. Just vibes. Click any title to open on Spotify.</p>
+<div class="gold-divider"></div>
+
+<div class="mood-section mood-tranquil">
+<div class="mood-header">
+<span class="mood-label">Good for your morning commute</span>
+<span class="mood-count">8 songs</span>
+</div>
+<div class="song-list">
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Spring+is+Slowly+Arriving" target="_blank" class="song-item"><span class="song-dot"></span>Spring is Slowly Arriving</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Coffee" target="_blank" class="song-item"><span class="song-dot"></span>This Might be a Decent Day Because Someone Made Me the Perfect Cup of Coffee</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+too+Peaceful" target="_blank" class="song-item"><span class="song-dot"></span>Today has been too Peaceful, and now I'm uncomfortable</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Peaceful+Around+Here" target="_blank" class="song-item"><span class="song-dot"></span>It's Nice and Peaceful Around Here</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+relocated+new+dorm+peaceful" target="_blank" class="song-item"><span class="song-dot"></span>My roommates and I have been relocated to a new dorm, and it's kind of peaceful over here.</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Not+Sad" target="_blank" class="song-item"><span class="song-dot"></span>Not Sad, but there isn't much to be excited about</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Brisket+Nights" target="_blank" class="song-item"><span class="song-dot"></span>Brisket Nights</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+This+New+Room" target="_blank" class="song-item"><span class="song-dot"></span>This New Room isn't So Bad</a>
+</div>
+</div>
+
+<div class="mood-section mood-busy">
+<div class="mood-header">
+<span class="mood-label">Put this on when your boss won't stop talking</span>
+<span class="mood-count">12 songs</span>
+</div>
+<div class="song-list">
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Today+is+Monday" target="_blank" class="song-item"><span class="song-dot"></span>Today is Monday, and My Boss just Said that the Weekend is Almost Here. I Like the Way She Thinks.</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+I+am+so+Checked+Out" target="_blank" class="song-item"><span class="song-dot"></span>I am so Checked Out</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Officially+on+Profile" target="_blank" class="song-item"><span class="song-dot"></span>Officially on Profile</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Skipping+Breakfast" target="_blank" class="song-item"><span class="song-dot"></span>Skipping Breakfast is a Bad Idea</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+I+Have+to+Take+a+Shit+Customer" target="_blank" class="song-item"><span class="song-dot"></span>I Have to Take a Sh!t, but This Customer Keeps on Yammering About Nonsense</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Losing+Interest" target="_blank" class="song-item"><span class="song-dot"></span>Losing Interest</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Considering+Resigning" target="_blank" class="song-item"><span class="song-dot"></span>Considering Resigning</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+I+Want+to+Exercise" target="_blank" class="song-item"><span class="song-dot"></span>I Want to Exercise</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Hurry+Duty+Station" target="_blank" class="song-item"><span class="song-dot"></span>I'm in a Hurry to just Get to My Duty Station</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Retail+Therapy" target="_blank" class="song-item"><span class="song-dot"></span>Retail Therapy Really Is a Thing and I Believe Everyone Should Enjoy it Sometime</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Spending+Problem" target="_blank" class="song-item"><span class="song-dot"></span>Spending Problem</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Hopeful+Week" target="_blank" class="song-item"><span class="song-dot"></span>Hopefully, this Week will be Better than this Weekend has been</a>
+</div>
+</div>
+
+<div class="mood-section mood-energy">
+<div class="mood-header">
+<span class="mood-label">High energy, no explanation needed</span>
+<span class="mood-count">10 songs</span>
+</div>
+<div class="song-list">
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Tornado+Warning" target="_blank" class="song-item"><span class="song-dot"></span>We have a Tornado Warning today, and This has just become My new Favorite Song</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+It+Felt+Good+to+Run" target="_blank" class="song-item"><span class="song-dot"></span>For the First Time in my Life, it Felt Good to Run</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Football+League" target="_blank" class="song-item"><span class="song-dot"></span>They are Starting a Football League</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Most+Senior+Class" target="_blank" class="song-item"><span class="song-dot"></span>We are the Most Senior Class</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Lose+Another+Hour" target="_blank" class="song-item"><span class="song-dot"></span>I get to Lose Another Hour of Sleep</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+66+Days+Remaining" target="_blank" class="song-item"><span class="song-dot"></span>As of Today, We have 66 Days Remaining in Training</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Burrito+Day" target="_blank" class="song-item"><span class="song-dot"></span>Today is Burrito Day</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Very+Productive+Day" target="_blank" class="song-item"><span class="song-dot"></span>Very Productive Day</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Morale+is+Improving" target="_blank" class="song-item"><span class="song-dot"></span>Morale is Improving</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+After+Tonight+AFT" target="_blank" class="song-item"><span class="song-dot"></span>After the night we had, tomorrow's AFT scores are gonna be ridiculous</a>
+</div>
+</div>
+
+<div class="mood-section mood-eclectic">
+<div class="mood-header">
+<span class="mood-label">Songs that are hard to categorize</span>
+<span class="mood-count">10 songs</span>
+</div>
+<div class="song-list">
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+One+of+My+Socks" target="_blank" class="song-item"><span class="song-dot"></span>One of my Socks has an Enormous Hole in It</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Dude+Stop+Arguing" target="_blank" class="song-item"><span class="song-dot"></span>Dude, Stop Arguing while You're Naked</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Who+Dropped+Bubble" target="_blank" class="song-item"><span class="song-dot"></span>Who Dropped Their Bubble Again</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Video+Game+Start+Menu" target="_blank" class="song-item"><span class="song-dot"></span>Video Game Start Menu</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Nope+Cannot+Explain" target="_blank" class="song-item"><span class="song-dot"></span>Nope. I cannot explain this one at all</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+We+Got+High+Camping" target="_blank" class="song-item"><span class="song-dot"></span>We Got High on this Camping Trip and Someone Brought Along a Violin for Some Reason</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+2+Hours+Forex" target="_blank" class="song-item"><span class="song-dot"></span>2 Hours Until the Forex Market Opens</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Battle+Buddies+Discord" target="_blank" class="song-item"><span class="song-dot"></span>My Battle Buddies have Lost Their Minds in the Discord and It's Blowing Up my Phone</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Basically+Naked+Gym" target="_blank" class="song-item"><span class="song-dot"></span>At the Gym, Basically Naked, but Blasting Music</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+I+Have+No+Idea" target="_blank" class="song-item"><span class="song-dot"></span>I Have No Idea What This Song is Supposed to be About, Except that This Weekend is Going to be Great</a>
+</div>
+</div>
+
+<div class="mood-section mood-night">
+<div class="mood-header">
+<span class="mood-label">Late night, lights down</span>
+<span class="mood-count">9 songs</span>
+</div>
+<div class="song-list">
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Lights+Supposed+to+be+Out" target="_blank" class="song-item"><span class="song-dot"></span>Lights are supposed to be out, but I'm finding this creating music all night to be therapeutic</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+After+Tonight" target="_blank" class="song-item"><span class="song-dot"></span>After Tonight</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Caffeine+This+Late" target="_blank" class="song-item"><span class="song-dot"></span>Caffeine This Late</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Yea+Visualizing" target="_blank" class="song-item"><span class="song-dot"></span>Yea, I'm visualizing the same thing when I listen to this, and it makes me smirk</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Admittedly+too+much+Mixing" target="_blank" class="song-item"><span class="song-dot"></span>Admittedly, way too much Mixing here</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+Source+of+Inspiration" target="_blank" class="song-item"><span class="song-dot"></span>I finally found my Source of Inspiration</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+This+Tune+Sounds+Familiar" target="_blank" class="song-item"><span class="song-dot"></span>This Tune Sounds a Bit Familiar</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+I+Wish" target="_blank" class="song-item"><span class="song-dot"></span>I Wish</a>
+<a href="https://open.spotify.com/search/MadeUp+MonkeyShit+When+I+Dont+Feel+Like+Being+Bothered" target="_blank" class="song-item"><span class="song-dot"></span>When I Don't Feel Like Being Bothered and Everyone Thinks I'm High, and That's Weird</a>
+</div>
+</div>
+
+<div style="text-align:center; padding-top: 1rem;">
+<a href="https://open.spotify.com/artist/65VCtBwSACcN98YvM0Z1E3" target="_blank" class="btn-secondary">
+See all 87 songs on Spotify →
+</a>
+</div>
+</section>
+
+<section id="albums" style="max-width:1200px; margin:0 auto; padding: 5rem 4rem; background: var(--near-black); border-top: 1px solid #1A1A1A; max-width:100%;">
+<div style="max-width:1200px; margin: 0 auto;">
+<p class="section-eyebrow">Discography</p>
+<h2 class="section-title">Six Albums</h2>
+<p class="section-subtitle" style="margin-bottom:2.5rem;">Every album available now on all major platforms.</p>
+<div class="albums-grid">
+<a href="https://open.spotify.com/album/08JfB2oxrD4HQlSJgyCrqq" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Melted Ice Cream.jpg" alt="Melted Ice Cream cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Melted Ice Cream</p><p class="album-meta">2026 · 15 tracks</p></div>
+</a>
+<a href="https://open.spotify.com/album/3yDa56Cb8h2vmJijta6wsM" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Still Cooking.jpg" alt="Still Cooking cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Still Cooking</p><p class="album-meta">2026 · 11 tracks</p></div>
+</a>
+<a href="https://open.spotify.com/album/1gzXofsv7uCPq3ClpVfVL7" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Pick a Struggle.jpg" alt="Pick a Struggle cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Pick a Struggle</p><p class="album-meta">2026 · 15 tracks</p></div>
+</a>
+<a href="https://open.spotify.com/album/2f8GuwgtDMPoCg5sRvqSKT" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Half Way There.jpg" alt="Half Way There cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Half Way There</p><p class="album-meta">2026 · 17 tracks</p></div>
+</a>
+<a href="https://open.spotify.com/album/7DDTVHiPantN7Z1RcWwrpb" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Week 6.jpg" alt="Week 6 cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Week 6</p><p class="album-meta">2026 · 15 tracks</p></div>
+</a>
+<a href="https://open.spotify.com/album/4zWY48adwbsKqrYlTaRi9f" target="_blank" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="AIT.jpg" alt="AIT cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">AIT</p><p class="album-meta">2026 · 14 tracks</p></div>
+</a>
+</div>
+</div>
+</section>
+
+<section style="max-width:1200px; margin:0 auto; padding: 4rem 4rem;">
+<p class="section-eyebrow">Available On</p>
+<h2 class="section-title" style="margin-bottom:1.5rem;">Listen Anywhere</h2>
+<div class="platforms-row">
+<a href="https://open.spotify.com/artist/65VCtBwSACcN98YvM0Z1E3" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
+Spotify
+</a>
+<a href="https://music.apple.com/search?term=MadeUp+MonkeyShit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+Apple Music
+</a>
+<a href="https://tidal.com/search?q=MadeUp+MonkeyShit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M12.012 3.992L8.008 7.996 4.004 3.992 0 7.996l4.004 4.004L8.008 7.996l4.004 4.004 4.004-4.004zM8.008 16.004l-4.004-4.004L0 16.004 4.004 20.008l4.004-4.004zM16.016 3.992l-4.004 4.004 4.004 4.004L20.02 7.996zM16.016 12l-4.004 4.004 4.004 4.004L20.02 16.004z"/></svg>
+Tidal
+</a>
+<a href="https://music.amazon.com/search/MadeUp+MonkeyShit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
+Amazon Music
+</a>
+<a href="https://www.youtube.com/results?search_query=MadeUp+MonkeyShit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+YouTube Music
+</a>
+<a href="https://www.tiktok.com/@madeup_monkeyshit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.26 8.26 0 004.84 1.55V6.79a4.85 4.85 0 01-1.07-.1z"/></svg>
+TikTok
+</a>
+<a href="https://www.facebook.com/madeupm0nkeyshit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+Facebook
+</a>
+<a href="https://www.instagram.com/madeup_monkeyshit" target="_blank" class="platform-link">
+<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+Instagram
+</a>
+</div>
+</section>
+
+<section id="subscribe" style="max-width:1200px; margin:0 auto; padding: 0 4rem 5rem;">
+<div class="subscribe-wrap">
+<div>
+<p class="section-eyebrow">Stay in the Loop</p>
+<h2 class="subscribe-title">New music drops.<br>You'll know first.</h2>
+<p class="subscribe-sub">No newsletters. No weekly emails. Just a message when something new comes out. That's it.</p>
+</div>
+<div class="subscribe-form">
+<input type="email" class="subscribe-input" placeholder="your@email.com">
+<button class="btn-primary" style="align-self:flex-start; cursor:pointer; border:none;" onclick="handleSubscribe(this)">
+Notify Me
+</button>
+<p class="subscribe-note">No spam. Unsubscribe anytime. Emails only.</p>
+</div>
+</div>
+</section>
+
+<footer>
+<span class="footer-name">MadeUp MonkeyShit</span>
+<span class="footer-note">Proud to make just awful music.</span>
+</footer>
+
+<script>
+const titles = [
+"Today is Monday, and My Boss just Said that the Weekend is Almost Here. I Like the Way She Thinks.",
+"One of my Socks has an Enormous Hole in It",
+"We have a Tornado Warning today, and This has just become My new Favorite Song",
+"I Have to Take a Sh!t, but This Customer Keeps on Yammering About Nonsense",
+"After the night we had, tomorrow's AFT scores are gonna be ridiculous",
+"Today is my Birthday, but I am Hiding it from my Boss",
+"Lights are supposed to be out, but I'm finding this creating music all night to be therapeutic",
+"Who Dropped Their Bubble Again",
+"Dude, Stop Arguing while You're Naked",
+"For the First Time in my Life, it Felt Good to Run",
+"2 Hours Until the Forex Market Opens",
+"My Battle Buddies have Lost Their Minds in the Discord and It's Blowing Up my Phone",
+"Today has been too Peaceful, and now I'm uncomfortable",
+"We are the Most Senior Class",
+"I am so Checked Out",
+"Nope. I cannot explain this one at all",
+"At the Gym, Basically Naked, but Blasting Music",
+"Video Game Start Menu",
+"Skipping Breakfast is a Bad Idea",
+"They are Starting a Football League",
+];
+const track = document.getElementById('marquee');
+const doubled = [...titles, ...titles];
+doubled.forEach(title => {
+const item = document.createElement('span');
+item.className = 'marquee-item';
+item.innerHTML = `<span class="marquee-dot"></span>${title}`;
+track.appendChild(item);
+});
+function handleSubscribe(btn) {
+const input = btn.previousElementSibling.previousElementSibling;
+if (input.value && input.value.includes('@')) {
+btn.textContent = 'You\'re on the list.';
+btn.style.background = '#2A6A3A';
+btn.style.color = '#A0E0B0';
+input.disabled = true;
+btn.disabled = true;
+} else {
+input.style.borderColor = '#8B2020';
+input.focus();
+setTimeout(() => { input.style.borderColor = ''; }, 2000);
+}
+}
+</script>
+</body>
+</html>
