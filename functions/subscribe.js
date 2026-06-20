@@ -64,7 +64,7 @@ export async function onRequestPost(context) {
     return jsonResponse(
       true,
       emailSent
-        ? "You're on the list. Check your inbox for a confirmation."
+        ? "You're on the list. Check your inbox (and spam folder, just in case — we're a brand-new sender)."
         : "You're on the list — though our confirmation email may be delayed."
     );
 
