@@ -792,11 +792,15 @@ Instagram
 <p class="subscribe-sub">No newsletters. No weekly emails. Just a message when something new comes out. That's it.</p>
 </div>
 <div class="subscribe-form">
-<input type="email" class="subscribe-input" placeholder="your@email.com">
-<button class="btn-primary" style="align-self:flex-start; cursor:pointer; border:none;" onclick="handleSubscribe(this)">
+<input type="email" id="subscribeEmail" class="subscribe-input" placeholder="your@email.com">
+<label style="display:flex; align-items:flex-start; gap:0.6rem; font-size:0.78rem; color:var(--silver-dim); cursor:pointer; line-height:1.5;">
+<input type="checkbox" id="subscribeConsent" style="margin-top:2px; flex-shrink:0; cursor:pointer;" onchange="toggleSubscribeButton()">
+I agree to receive email updates about new releases. By subscribing, you also agree to our <a href="/privacy.html" target="_blank" style="color:var(--gold); text-decoration:underline;">Privacy Policy</a>.
+</label>
+<button id="subscribeBtn" class="btn-primary" style="align-self:flex-start; cursor:not-allowed; border:none; opacity:0.4;" disabled onclick="handleSubscribe()">
 Notify Me
 </button>
-<p class="subscribe-note">No spam. Unsubscribe anytime. Emails only.</p>
+<p id="subscribeNote" class="subscribe-note">No spam. Unsubscribe anytime. Emails only.</p>
 </div>
 </div>
 </section>
@@ -837,18 +841,71 @@ item.className = 'marquee-item';
 item.innerHTML = `<span class="marquee-dot"></span>${title}`;
 track.appendChild(item);
 });
-function handleSubscribe(btn) {
-const input = btn.previousElementSibling.previousElementSibling;
-if (input.value && input.value.includes('@')) {
+function toggleSubscribeButton() {
+const consent = document.getElementById('subscribeConsent');
+const btn = document.getElementById('subscribeBtn');
+if (consent.checked) {
+btn.disabled = false;
+btn.style.opacity = '1';
+btn.style.cursor = 'pointer';
+} else {
+btn.disabled = true;
+btn.style.opacity = '0.4';
+btn.style.cursor = 'not-allowed';
+}
+}
+ 
+async function handleSubscribe() {
+const emailInput = document.getElementById('subscribeEmail');
+const consentInput = document.getElementById('subscribeConsent');
+const btn = document.getElementById('subscribeBtn');
+const note = document.getElementById('subscribeNote');
+const email = emailInput.value.trim();
+ 
+if (!email || !email.includes('@')) {
+emailInput.style.borderColor = '#8B2020';
+emailInput.focus();
+setTimeout(() => { emailInput.style.borderColor = ''; }, 2000);
+return;
+}
+ 
+btn.disabled = true;
+btn.textContent = 'Sending...';
+btn.style.cursor = 'wait';
+ 
+try {
+const response = await fetch('/subscribe', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+email: email,
+consentGiven: consentInput.checked
+})
+});
+ 
+const result = await response.json();
+ 
+if (result.success) {
 btn.textContent = 'You\'re on the list.';
 btn.style.background = '#2A6A3A';
 btn.style.color = '#A0E0B0';
-input.disabled = true;
-btn.disabled = true;
+btn.style.cursor = 'default';
+emailInput.disabled = true;
+consentInput.disabled = true;
+note.textContent = 'Thanks — keep an eye on your inbox.';
 } else {
-input.style.borderColor = '#8B2020';
-input.focus();
-setTimeout(() => { input.style.borderColor = ''; }, 2000);
+btn.disabled = false;
+btn.textContent = 'Notify Me';
+btn.style.cursor = consentInput.checked ? 'pointer' : 'not-allowed';
+note.textContent = result.message || 'Something went wrong. Please try again.';
+note.style.color = '#D08080';
+}
+} catch (err) {
+btn.disabled = false;
+btn.textContent = 'Notify Me';
+btn.style.cursor = consentInput.checked ? 'pointer' : 'not-allowed';
+note.textContent = 'Network error. Your request was not saved. Please try again.';
+note.style.color = '#D08080';
 }
 }
 </script>
