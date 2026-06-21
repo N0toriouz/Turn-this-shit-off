@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIT — MadeUp MonkeyShit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--black: #0A0A0A;
+--near-black: #111111;
+--card-bg: #161616;
+--border: #2A2A2A;
+--silver: #C8C8C8;
+--silver-dim: #888888;
+--gold: #D4AF37;
+--gold-dim: #9A7D1A;
+--white: #F2F2F2;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--black);
+color: var(--silver);
+font-family: 'Inter', sans-serif;
+font-size: 16px;
+line-height: 1.7;
+}
+nav {
+position: sticky;
+top: 0;
+z-index: 100;
+background: rgba(10,10,10,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 0 2rem;
+height: 60px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.nav-logo {
+font-family: 'DM Serif Display', serif;
+font-size: 1.1rem;
+color: var(--gold);
+text-decoration: none;
+}
+.nav-back {
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.78rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+.nav-back:hover { color: var(--gold); }
+
+/* ── Album hero ── */
+.album-hero {
+max-width: 1000px;
+margin: 0 auto;
+padding: 4rem 2rem 3rem;
+display: grid;
+grid-template-columns: 280px 1fr;
+gap: 3rem;
+align-items: end;
+}
+.album-cover-frame {
+position: relative;
+width: 100%;
+}
+.album-cover-frame::before {
+content: '';
+position: absolute;
+top: -10px; left: -10px;
+right: 10px; bottom: 10px;
+border: 1px solid var(--gold-dim);
+border-radius: 2px;
+z-index: 0;
+}
+.album-cover-frame img {
+width: 100%;
+display: block;
+border-radius: 2px;
+position: relative;
+z-index: 1;
+}
+.album-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1rem;
+}
+.album-title {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(2.2rem, 4vw, 3.2rem);
+color: var(--white);
+margin-bottom: 0.75rem;
+line-height: 1.05;
+}
+.album-meta {
+color: var(--silver-dim);
+font-size: 0.9rem;
+margin-bottom: 1.75rem;
+}
+.album-cta {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+.btn-primary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+background: var(--gold);
+color: var(--black);
+padding: 0.7rem 1.6rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.78rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover { background: #E8C547; transform: translateY(-1px); }
+.btn-secondary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+border: 1px solid var(--border);
+color: var(--silver);
+padding: 0.7rem 1.6rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.78rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ── Track list ── */
+main {
+max-width: 1000px;
+margin: 0 auto;
+padding: 1rem 2rem 5rem;
+}
+.section-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1.5rem;
+padding-top: 2rem;
+border-top: 1px solid var(--border);
+}
+.tracks-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1rem;
+}
+.track-card {
+border: 1px solid var(--border);
+border-radius: 2px;
+overflow: hidden;
+background: var(--card-bg);
+}
+.track-card-label {
+padding: 0.6rem 0.85rem;
+font-size: 0.78rem;
+color: var(--silver-dim);
+border-bottom: 1px solid var(--border);
+display: flex;
+gap: 0.6rem;
+}
+.track-number { color: var(--gold-dim); flex-shrink: 0; }
+.track-name { color: var(--silver); }
+.track-card iframe { display: block; width: 100%; }
+
+/* ── Footer ── */
+footer {
+border-top: 1px solid var(--border);
+padding: 2rem 4rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 1rem;
+background: var(--near-black);
+}
+.footer-name {
+font-family: 'DM Serif Display', serif;
+font-size: 1rem;
+color: var(--gold);
+font-style: italic;
+}
+.footer-note {
+font-size: 0.75rem;
+color: var(--silver-dim);
+opacity: 0.5;
+}
+
+@media (max-width: 700px) {
+.album-hero {
+grid-template-columns: 1fr;
+padding: 2.5rem 1.5rem 2rem;
+}
+.album-cover-frame { max-width: 240px; margin: 0 auto; }
+main { padding: 1rem 1.5rem 4rem; }
+nav { padding: 0 1.5rem; }
+footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+<a href="/" class="nav-logo">MadeUp MonkeyShit</a>
+<a href="/#albums" class="nav-back">← All Albums</a>
+</nav>
+
+<div class="album-hero">
+<div class="album-cover-frame">
+<img src="../AIT.jpg" alt="AIT album cover">
+</div>
+<div>
+<p class="album-eyebrow">Album · 2026</p>
+<h1 class="album-title">AIT</h1>
+<p class="album-meta">14 tracks · The first album. Named for the place I was when I made it.</p>
+<div class="album-cta">
+<a href="https://open.spotify.com/album/4zWY48adwbsKqrYlTaRi9f" target="_blank" class="btn-primary">
+<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
+Play Full Album on Spotify
+</a>
+<a href="/" class="btn-secondary">Back to Site</a>
+</div>
+</div>
+</div>
+
+<main>
+<p class="section-eyebrow">All 14 Tracks</p>
+<div class="tracks-grid">
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">01</span><span class="track-name">I've No Idea What This Song is Supposed to be About, Except that This Weekend is Going to be Great</span></div>
+<iframe src="https://open.spotify.com/embed/track/3neu1qSKsmHIlbncBkxYgG?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">02</span><span class="track-name">I Have to Sh!t, but This Customer Keeps on Yammering About Nonsense that No One Cares About</span></div>
+<iframe src="https://open.spotify.com/embed/track/71MOnYhq1uEtwOmkOZSxA2?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">03</span><span class="track-name">I Could Have Probably Made a Few Other Songs a Lot Better. So, I Guess I am Learning Something Here</span></div>
+<iframe src="https://open.spotify.com/embed/track/4ySBMir4IyIceQFTpZM25W?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">04</span><span class="track-name">I'm Already Losing Interest In Doing This</span></div>
+<iframe src="https://open.spotify.com/embed/track/7ryrQzNGvrB5z6XdSoPK7h?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">05</span><span class="track-name">I Promise that I wasn't High</span></div>
+<iframe src="https://open.spotify.com/embed/track/1ySkJgvuWqggoPr86upffB?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">06</span><span class="track-name">I Could Have Probably Made a Few Other Songs a Lot Better (Remix)</span></div>
+<iframe src="https://open.spotify.com/embed/track/3ADngq2P4oo83N7pciJJWy?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">07</span><span class="track-name">This Might be a Decent Day Because Someone Made Me the Perfect Cup of Coffee</span></div>
+<iframe src="https://open.spotify.com/embed/track/4uZpvVvwv5V9z9JKB0iQwt?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">08</span><span class="track-name">I Skipped Breakfast and Not Feeling So Magnanimous Right Now</span></div>
+<iframe src="https://open.spotify.com/embed/track/6v5JuzLVanHa0NEFbXQpTY?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">09</span><span class="track-name">My Battle Buddies Have Lost Their Minds in the Discord and It's Blowing Up My Phone</span></div>
+<iframe src="https://open.spotify.com/embed/track/1BbrCeEcshNbiUxU7uRUfn?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">10</span><span class="track-name">I Want to Go to the Cafeteria, but I Can't Find a Battle Buddy. So, I'm Just Doing Sh!t</span></div>
+<iframe src="https://open.spotify.com/embed/track/3OaejeV0yMSozvxeTvLmg9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">11</span><span class="track-name">I Promise that I wasn't High (Remix)</span></div>
+<iframe src="https://open.spotify.com/embed/track/518ewHlRdn95JrdDudxUpe?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">12</span><span class="track-name">We Got High on this Camping Trip and Someone Brought Along a Violin for Some Reason</span></div>
+<iframe src="https://open.spotify.com/embed/track/5k2ZCBVutGpb3rReVyfnlw?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">13</span><span class="track-name">Retail Therapy Really Is a Thing, and I Believe Everyone Should Enjoy It at Some Time</span></div>
+<iframe src="https://open.spotify.com/embed/track/6HybXfGCoTVYv0DLH1pWO4?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">14</span><span class="track-name">I Want to Go to the Cafeteria, but I Can't Find a Battle Buddy (Instrumental)</span></div>
+<iframe src="https://open.spotify.com/embed/track/1G1FKwQBBUtp7tPtbvcrE9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+</div>
+</main>
+
+<footer>
+<span class="footer-name">MadeUp MonkeyShit</span>
+<span class="footer-note">Proud to make just awful music.</span>
+</footer>
+
+</body>
+</html>
