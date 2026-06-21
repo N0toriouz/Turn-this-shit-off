@@ -139,7 +139,24 @@ text-transform: uppercase;
 transition: border-color 0.2s, color 0.2s;
 }
 .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-
+.platform-link-sm {
+display: inline-flex;
+align-items: center;
+gap: 0.4rem;
+padding: 0.4rem 0.8rem;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.7rem;
+letter-spacing: 0.04em;
+transition: border-color 0.2s, color 0.2s;
+}
+.platform-link-sm:hover {
+border-color: var(--gold);
+color: var(--gold);
+} 
 /* ── Track list ── */
 main {
 max-width: 1000px;
@@ -234,24 +251,6 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 Play Full Album on Spotify
 </a>
 <a href="/" class="btn-secondary">Back to Site</a>
-.platform-link-sm {
-display: inline-flex;
-align-items: center;
-gap: 0.4rem;
-padding: 0.4rem 0.8rem;
-background: var(--card-bg);
-border: 1px solid var(--border);
-border-radius: 2px;
-color: var(--silver-dim);
-text-decoration: none;
-font-size: 0.7rem;
-letter-spacing: 0.04em;
-transition: border-color 0.2s, color 0.2s;
-}
-.platform-link-sm:hover {
-border-color: var(--gold);
-color: var(--gold);
-} 
 </div> 
 </div>
 <div class="album-platforms" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
