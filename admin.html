@@ -541,6 +541,121 @@ document.getElementById('notifySendBtn').addEventListener('click', async () => {
     statusMsg.classList.add('show', 'error');
   }
 });
+function readFileAsDataUrl(fileInput) {
+  return new Promise((resolve, reject) => {
+    const file = fileInput.files[0];
+    if (!file) {
+      resolve(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+ 
+// ── Pre-Release send ──
+document.getElementById('preSendBtn').addEventListener('click', async () => {
+  const albumName = document.getElementById('preAlbumName').value.trim();
+  const releaseDate = document.getElementById('preReleaseDate').value;
+  const trackCount = document.getElementById('preTrackCount').value;
+  const previewUrl = document.getElementById('prePreviewUrl').value.trim();
+  const albumArtInput = document.getElementById('preAlbumArt');
+  const btn = document.getElementById('preSendBtn');
+  const statusMsg = document.getElementById('preStatusMsg');
+ 
+  statusMsg.classList.remove('show', 'success', 'error');
+ 
+  if (!albumName || !releaseDate || !previewUrl) {
+    statusMsg.textContent = 'Album name, release date, and preview link are required.';
+    statusMsg.classList.add('show', 'error');
+    return;
+  }
+ 
+  const confirmed = confirm(`Send pre-release notice for "${albumName}" to all active subscribers?`);
+  if (!confirmed) return;
+ 
+  // Gather track names from the dynamically generated fields
+  const trackNames = [];
+  const count = parseInt(trackCount, 10) || 0;
+  for (let i = 1; i <= count; i++) {
+    const field = document.getElementById(`preTrack${i}`);
+    if (field && field.value.trim()) trackNames.push(field.value.trim());
+  }
+ 
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+ 
+  try {
+    const albumArtBase64 = await readFileAsDataUrl(albumArtInput);
+ 
+    const response = await fetch('/admin-send-prerelease', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ albumName, releaseDate, trackCount, trackNames, previewUrl, albumArtBase64 })
+    });
+    const result = await response.json();
+ 
+    btn.disabled = false;
+    btn.textContent = 'Save & Send Pre-Release Email';
+    statusMsg.textContent = result.message;
+    statusMsg.classList.add('show', result.success ? 'success' : 'error');
+ 
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Save & Send Pre-Release Email';
+    statusMsg.textContent = 'Network error. No emails were sent.';
+    statusMsg.classList.add('show', 'error');
+  }
+});
+ 
+// ── Live Release send ──
+document.getElementById('liveSendBtn').addEventListener('click', async () => {
+  const albumName = document.getElementById('liveAlbumName').value.trim();
+  const trackCount = document.getElementById('liveTrackCount').value;
+  const ctaUrl1 = document.getElementById('liveCtaUrl1').value.trim();
+  const ctaUrl2 = document.getElementById('liveCtaUrl2').value.trim();
+  const albumArtInput = document.getElementById('liveAlbumArt');
+  const btn = document.getElementById('liveSendBtn');
+  const statusMsg = document.getElementById('liveStatusMsg');
+ 
+  statusMsg.classList.remove('show', 'success', 'error');
+ 
+  if (!albumName || !ctaUrl1) {
+    statusMsg.textContent = 'Album name and at least one listening link are required.';
+    statusMsg.classList.add('show', 'error');
+    return;
+  }
+ 
+  const confirmed = confirm(`Send "now live" notice for "${albumName}" to all active subscribers?`);
+  if (!confirmed) return;
+ 
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+ 
+  try {
+    const albumArtBase64 = await readFileAsDataUrl(albumArtInput);
+ 
+    const response = await fetch('/admin-send-liverelease', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ albumName, trackCount, ctaUrl1, ctaUrl2, albumArtBase64 })
+    });
+    const result = await response.json();
+ 
+    btn.disabled = false;
+    btn.textContent = 'Save & Send Live Release Email';
+    statusMsg.textContent = result.message;
+    statusMsg.classList.add('show', result.success ? 'success' : 'error');
+ 
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Save & Send Live Release Email';
+    statusMsg.textContent = 'Network error. No emails were sent.';
+    statusMsg.classList.add('show', 'error');
+  }
+});
 </script>
 
 </body>
