@@ -403,6 +403,96 @@ document.getElementById('preUpdateTracksBtn').addEventListener('click', () => {
 // request header — actual wiring to display it happens server-side
 // via a Pages Function, covered in a later build step.)
 document.getElementById('adminWhoami').textContent = '';
+document.getElementById('unsubSearchBtn').addEventListener('click', async () => {
+  const query = document.getElementById('unsubSearch').value.trim();
+  const statusMsg = document.getElementById('unsubStatusMsg');
+  const table = document.getElementById('unsubResultsTable');
+  const tbody = document.getElementById('unsubResultsBody');
+ 
+  statusMsg.classList.remove('show', 'success', 'error');
+  tbody.innerHTML = '';
+  table.style.display = 'none';
+ 
+  if (!query) {
+    statusMsg.textContent = 'Enter at least part of an email address.';
+    statusMsg.classList.add('show', 'error');
+    return;
+  }
+ 
+  try {
+    const response = await fetch(`/admin-search-subscribers?q=${encodeURIComponent(query)}`);
+    const result = await response.json();
+ 
+    if (!result.success) {
+      statusMsg.textContent = result.message || 'Search failed.';
+      statusMsg.classList.add('show', 'error');
+      return;
+    }
+ 
+    if (result.results.length === 0) {
+      statusMsg.textContent = 'No matching subscribers found.';
+      statusMsg.classList.add('show', 'error');
+      return;
+    }
+ 
+    result.results.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(row.email)}</td>
+        <td><span class="badge ${row.status}">${row.status}</span></td>
+        <td>${formatDate(row.consent_timestamp)}</td>
+        <td>${row.unsubscribed_timestamp ? formatDate(row.unsubscribed_timestamp) : '—'}</td>
+        <td>${row.status === 'active'
+          ? `<button class="btn btn-red" style="font-size:0.72rem; padding:0.35rem 0.8rem;" onclick="adminUnsubscribe(${row.id}, this)">Unsubscribe</button>`
+          : ''}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+ 
+    table.style.display = 'table';
+ 
+  } catch (err) {
+    statusMsg.textContent = 'Network error. Please try again.';
+    statusMsg.classList.add('show', 'error');
+  }
+});
+ 
+async function adminUnsubscribe(id, btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+ 
+  try {
+    const response = await fetch('/admin-unsubscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    const result = await response.json();
+ 
+    if (result.success) {
+      document.getElementById('unsubSearchBtn').click();
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Unsubscribe';
+      alert(result.message || 'Failed to unsubscribe.');
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Unsubscribe';
+    alert('Network error.');
+  }
+}
+ 
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+ 
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}  
 </script>
 
 </body>
