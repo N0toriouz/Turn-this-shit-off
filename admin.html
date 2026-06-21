@@ -225,8 +225,8 @@ text-transform: uppercase;
 </div>
 
 <div class="field-group">
-<label for="preAlbumArt">Album Art (JPG/JPEG)</label>
-<input type="file" id="preAlbumArt" accept="image/jpeg">
+<label for="preAlbumArtUrl">Album Art URL</label>
+<input type="url" id="preAlbumArtUrl" placeholder="https://turnthisshitoff.com/Melted%20Ice%20Cream.jpg">
 </div>
 
 <div class="field-group">
@@ -266,8 +266,8 @@ text-transform: uppercase;
 </div>
 
 <div class="field-group">
-<label for="liveAlbumArt">Album Art (JPG/JPEG)</label>
-<input type="file" id="liveAlbumArt" accept="image/jpeg">
+<label for="liveAlbumArtUrl">Album Art URL</label>
+<input type="url" id="liveAlbumArtUrl" placeholder="https://turnthisshitoff.com/Melted%20Ice%20Cream.jpg">
 </div>
 
 <div class="row">
@@ -561,7 +561,7 @@ document.getElementById('preSendBtn').addEventListener('click', async () => {
   const releaseDate = document.getElementById('preReleaseDate').value;
   const trackCount = document.getElementById('preTrackCount').value;
   const previewUrl = document.getElementById('prePreviewUrl').value.trim();
-  const albumArtInput = document.getElementById('preAlbumArt');
+  const albumArtUrl = document.getElementById('preAlbumArtUrl').value.trim();
   const btn = document.getElementById('preSendBtn');
   const statusMsg = document.getElementById('preStatusMsg');
  
@@ -588,12 +588,10 @@ document.getElementById('preSendBtn').addEventListener('click', async () => {
   btn.textContent = 'Sending...';
  
   try {
-    const albumArtBase64 = await readFileAsDataUrl(albumArtInput);
- 
-    const response = await fetch('/admin-send-prerelease', {
+const response = await fetch('/admin-send-prerelease', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ albumName, releaseDate, trackCount, trackNames, previewUrl, albumArtBase64 })
+      body: JSON.stringify({ albumName, releaseDate, trackCount, trackNames, previewUrl, albumArtUrl })
     });
     const result = await response.json();
  
@@ -616,7 +614,7 @@ document.getElementById('liveSendBtn').addEventListener('click', async () => {
   const trackCount = document.getElementById('liveTrackCount').value;
   const ctaUrl1 = document.getElementById('liveCtaUrl1').value.trim();
   const ctaUrl2 = document.getElementById('liveCtaUrl2').value.trim();
-  const albumArtInput = document.getElementById('liveAlbumArt');
+  const albumArtUrl = document.getElementById('liveAlbumArtUrl').value.trim();
   const btn = document.getElementById('liveSendBtn');
   const statusMsg = document.getElementById('liveStatusMsg');
  
@@ -635,12 +633,10 @@ document.getElementById('liveSendBtn').addEventListener('click', async () => {
   btn.textContent = 'Sending...';
  
   try {
-    const albumArtBase64 = await readFileAsDataUrl(albumArtInput);
- 
-    const response = await fetch('/admin-send-liverelease', {
+const response = await fetch('/admin-send-liverelease', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ albumName, trackCount, ctaUrl1, ctaUrl2, albumArtBase64 })
+      body: JSON.stringify({ albumName, trackCount, ctaUrl1, ctaUrl2, albumArtUrl })
     });
     const result = await response.json();
  
