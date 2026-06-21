@@ -235,6 +235,24 @@ Play Full Album on Spotify
 </a>
 <a href="/" class="btn-secondary">Back to Site</a>
 </div>
+.platform-link-sm {
+display: inline-flex;
+align-items: center;
+gap: 0.4rem;
+padding: 0.4rem 0.8rem;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.7rem;
+letter-spacing: 0.04em;
+transition: border-color 0.2s, color 0.2s;
+}
+.platform-link-sm:hover {
+border-color: var(--gold);
+color: var(--gold);
+}  
 </div>
 <div class="album-platforms" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
 <a href="https://music.apple.com/us/album/ait/1880326519" target="_blank" class="platform-link-sm">
