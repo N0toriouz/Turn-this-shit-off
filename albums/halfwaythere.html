@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Half Way There — MadeUp MonkeyShit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--black: #0A0A0A;
+--near-black: #111111;
+--card-bg: #161616;
+--border: #2A2A2A;
+--silver: #C8C8C8;
+--silver-dim: #888888;
+--gold: #D4AF37;
+--gold-dim: #9A7D1A;
+--white: #F2F2F2;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--black);
+color: var(--silver);
+font-family: 'Inter', sans-serif;
+font-size: 16px;
+line-height: 1.7;
+}
+nav {
+position: sticky;
+top: 0;
+z-index: 100;
+background: rgba(10,10,10,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 0 2rem;
+height: 60px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.nav-logo {
+font-family: 'DM Serif Display', serif;
+font-size: 1.1rem;
+color: var(--gold);
+text-decoration: none;
+}
+.nav-back {
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.78rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+}
+.nav-back:hover { color: var(--gold); }
+
+.album-hero {
+max-width: 1000px;
+margin: 0 auto;
+padding: 4rem 2rem 3rem;
+display: grid;
+grid-template-columns: 280px 1fr;
+gap: 3rem;
+align-items: end;
+}
+.album-cover-frame {
+position: relative;
+width: 100%;
+}
+.album-cover-frame::before {
+content: '';
+position: absolute;
+top: -10px; left: -10px;
+right: 10px; bottom: 10px;
+border: 1px solid var(--gold-dim);
+border-radius: 2px;
+z-index: 0;
+}
+.album-cover-frame img {
+width: 100%;
+display: block;
+border-radius: 2px;
+position: relative;
+z-index: 1;
+}
+.album-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1rem;
+}
+.album-title {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(2.2rem, 4vw, 3.2rem);
+color: var(--white);
+margin-bottom: 0.75rem;
+line-height: 1.05;
+}
+.album-meta {
+color: var(--silver-dim);
+font-size: 0.9rem;
+margin-bottom: 1.75rem;
+}
+.album-cta {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+.btn-primary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+background: var(--gold);
+color: var(--black);
+padding: 0.7rem 1.6rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.78rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover { background: #E8C547; transform: translateY(-1px); }
+.btn-secondary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+border: 1px solid var(--border);
+color: var(--silver);
+padding: 0.7rem 1.6rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.78rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+.platform-link-sm {
+display: inline-flex;
+align-items: center;
+gap: 0.4rem;
+padding: 0.4rem 0.8rem;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.7rem;
+letter-spacing: 0.04em;
+transition: border-color 0.2s, color 0.2s;
+}
+.platform-link-sm:hover {
+border-color: var(--gold);
+color: var(--gold);
+}
+
+main {
+max-width: 1000px;
+margin: 0 auto;
+padding: 1rem 2rem 5rem;
+}
+.section-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1.5rem;
+padding-top: 2rem;
+border-top: 1px solid var(--border);
+}
+.tracks-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1rem;
+}
+.track-card {
+border: 1px solid var(--border);
+border-radius: 2px;
+overflow: hidden;
+background: var(--card-bg);
+}
+.track-card-label {
+padding: 0.6rem 0.85rem;
+font-size: 0.78rem;
+color: var(--silver-dim);
+border-bottom: 1px solid var(--border);
+display: flex;
+gap: 0.6rem;
+}
+.track-number { color: var(--gold-dim); flex-shrink: 0; }
+.track-name { color: var(--silver); }
+.track-card iframe { display: block; width: 100%; }
+
+footer {
+border-top: 1px solid var(--border);
+padding: 2rem 4rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 1rem;
+background: var(--near-black);
+}
+.footer-name {
+font-family: 'DM Serif Display', serif;
+font-size: 1rem;
+color: var(--gold);
+font-style: italic;
+}
+.footer-note {
+font-size: 0.75rem;
+color: var(--silver-dim);
+opacity: 0.5;
+}
+
+@media (max-width: 700px) {
+.album-hero {
+grid-template-columns: 1fr;
+padding: 2.5rem 1.5rem 2rem;
+}
+.album-cover-frame { max-width: 240px; margin: 0 auto; }
+main { padding: 1rem 1.5rem 4rem; }
+nav { padding: 0 1.5rem; }
+footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+<a href="/" class="nav-logo">MadeUp MonkeyShit</a>
+<a href="/#albums" class="nav-back">← All Albums</a>
+</nav>
+
+<div class="album-hero">
+<div class="album-cover-frame">
+<img src="../Half Way There.jpg" alt="Half Way There album cover">
+</div>
+<div>
+<p class="album-eyebrow">April 2026</p>
+<h1 class="album-title">Half Way There</h1>
+<p class="album-meta">17 tracks</p>
+<div class="album-cta">
+<a href="https://open.spotify.com/album/2f8GuwgtDMPoCg5sRvqSKT" target="_blank" class="btn-primary">
+<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
+Play Full Album on Spotify
+</a>
+<a href="/" class="btn-secondary">Back to Site</a>
+</div>
+<div class="album-platforms" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
+<a href="https://music.apple.com/us/album/half-way-there/1884249939" target="_blank" class="platform-link-sm">
+<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+Apple Music
+</a>
+<a href="https://music.amazon.ca/albums/B0GS4TJQQ4" target="_blank" class="platform-link-sm">
+<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
+Amazon Music
+</a>
+<a href="https://tidal.com/album/506074841" target="_blank" class="platform-link-sm">
+<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M12.012 3.992L8.008 7.996 4.004 3.992 0 7.996l4.004 4.004L8.008 7.996l4.004 4.004 4.004-4.004zM8.008 16.004l-4.004-4.004L0 16.004 4.004 20.008l4.004-4.004zM16.016 3.992l-4.004 4.004 4.004 4.004L20.02 7.996zM16.016 12l-4.004 4.004 4.004 4.004L20.02 16.004z"/></svg>
+Tidal
+</a>
+</div>
+</div>
+</div>
+
+<main>
+<p class="section-eyebrow">All 17 Tracks</p>
+<div class="tracks-grid">
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">01</span><span class="track-name">Today has been too Peaceful, and now I'm Uncomfortable</span></div>
+<iframe src="https://open.spotify.com/embed/track/7sL0uLi3jR6hKyNASNFahi?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">02</span><span class="track-name">Lights are Supposed to be Out, but I'm Finding This Creating Music All Night to be Therapeutic</span></div>
+<iframe src="https://open.spotify.com/embed/track/3LQWPLKtIBXXWKlsRfNVvF?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">03</span><span class="track-name">The Graduating Class is Painfully Annoying Right Now</span></div>
+<iframe src="https://open.spotify.com/embed/track/4NNsivx3gyq9WwaiQ0QxEo?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">04</span><span class="track-name">I Get to Lose Another Hour of Sleep on the Day of an Exam</span></div>
+<iframe src="https://open.spotify.com/embed/track/4VPhHUO61fm1MCJL6eBlrq?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">05</span><span class="track-name">I Finally Found My Source of Inspiration</span></div>
+<iframe src="https://open.spotify.com/embed/track/4Qjogg5CKRd9ti32odkdAX?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">06</span><span class="track-name">Nope. I Cannot Explain This One at All</span></div>
+<iframe src="https://open.spotify.com/embed/track/7MwTzdvYJCI2Mm3O4mEjZ9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">07</span><span class="track-name">You Learn a Lot About People When You Discover Gossip Chains</span></div>
+<iframe src="https://open.spotify.com/embed/track/6Wp8cqIw9mFFQae6hnS6va?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">08</span><span class="track-name">Today is My Birthday, but I am Hiding it from My Boss</span></div>
+<iframe src="https://open.spotify.com/embed/track/4bwdyTTz2aOG0fblkW4vdl?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">09</span><span class="track-name">Yea, I'm Visualizing the Same Thing When I Listen to This, and It Makes Me Smirk</span></div>
+<iframe src="https://open.spotify.com/embed/track/4zRfkr8BKSJUm1YC8s1cNm?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">10</span><span class="track-name">My Profile Ends in 3 More Days</span></div>
+<iframe src="https://open.spotify.com/embed/track/1RLkA2YQgQxqmeA5ZYuDeS?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">11</span><span class="track-name">This Tune Sounds a Bit Familiar</span></div>
+<iframe src="https://open.spotify.com/embed/track/5uQ3ViKHBh59q0i8GxtJBt?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">12</span><span class="track-name">Not Sad, but There Isn't Much to be Excited About These Days</span></div>
+<iframe src="https://open.spotify.com/embed/track/6nnYUKFvuS1YDM6FssKJUc?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">13</span><span class="track-name">I Need to Refill My Blending Bottle with More Protein Shake</span></div>
+<iframe src="https://open.spotify.com/embed/track/6gAsXTyBhdA8zfOqrFyuOC?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">14</span><span class="track-name">Streaming Platforms are Making Things Difficult</span></div>
+<iframe src="https://open.spotify.com/embed/track/09pGdcUMfX1Ql492gkjT1k?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">15</span><span class="track-name">Admittedly, Way Too Much Mixing Here</span></div>
+<iframe src="https://open.spotify.com/embed/track/3XwUQDAUahwXKq7AMUO52R?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">16</span><span class="track-name">I Don't Understand Why People Get Offended When They're Ostracized</span></div>
+<iframe src="https://open.spotify.com/embed/track/6gzZAA1Zm7yc1kgimauywe?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+<div class="track-card">
+<div class="track-card-label"><span class="track-number">17</span><span class="track-name">On the Ride Home from that BCT Graduation Ceremony, You Just Stared Out the Window</span></div>
+<iframe src="https://open.spotify.com/embed/track/3fmSuZiTEVqqq6zUVPeGb1?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+</div>
+
+</div>
+</main>
+
+<footer>
+<span class="footer-name">MadeUp MonkeyShit</span>
+<span class="footer-note">Proud to make just awful music.</span>
+</footer>
+
+</body>
+</html>
