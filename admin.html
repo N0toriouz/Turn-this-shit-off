@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — MadeUp MonkeyShit</title>
+<style>
+:root {
+--black: #0A0A0A;
+--near-black: #141414;
+--card-bg: #1A1A1A;
+--border: #2E2E2E;
+--silver: #C8C8C8;
+--silver-dim: #888888;
+--gold: #D4AF37;
+--white: #F2F2F2;
+--red: #B23A3A;
+--green: #3A8B5A;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: var(--black);
+color: var(--silver);
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+font-size: 14px;
+line-height: 1.5;
+padding: 2rem;
+}
+header {
+max-width: 900px;
+margin: 0 auto 2rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding-bottom: 1rem;
+border-bottom: 1px solid var(--border);
+}
+h1 {
+font-size: 1.1rem;
+color: var(--gold);
+font-weight: 600;
+}
+.subtle {
+font-size: 0.78rem;
+color: var(--silver-dim);
+}
+main {
+max-width: 900px;
+margin: 0 auto;
+display: flex;
+flex-direction: column;
+gap: 1rem;
+}
+
+/* ── Collapsible section ── */
+.section {
+border: 1px solid var(--border);
+border-radius: 4px;
+background: var(--near-black);
+overflow: hidden;
+}
+.section-toggle {
+width: 100%;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 1rem 1.25rem;
+background: var(--card-bg);
+border: none;
+color: var(--white);
+font-size: 0.92rem;
+font-weight: 600;
+cursor: pointer;
+text-align: left;
+}
+.section-toggle:hover { background: #202020; }
+.section-toggle .arrow {
+transition: transform 0.15s;
+color: var(--gold);
+}
+.section-toggle.open .arrow { transform: rotate(90deg); }
+.section-body {
+display: none;
+padding: 1.25rem;
+border-top: 1px solid var(--border);
+}
+.section-body.open { display: block; }
+
+/* ── Form elements ── */
+.field-group { margin-bottom: 1rem; }
+label {
+display: block;
+font-size: 0.78rem;
+color: var(--silver-dim);
+margin-bottom: 0.35rem;
+text-transform: uppercase;
+letter-spacing: 0.04em;
+}
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="number"],
+input[type="url"],
+textarea,
+select {
+width: 100%;
+background: var(--black);
+border: 1px solid var(--border);
+border-radius: 3px;
+padding: 0.6rem 0.75rem;
+color: var(--silver);
+font-size: 0.88rem;
+font-family: inherit;
+outline: none;
+}
+input:focus, textarea:focus { border-color: var(--gold); }
+textarea { resize: vertical; min-height: 90px; }
+input[type="file"] {
+width: 100%;
+font-size: 0.82rem;
+color: var(--silver-dim);
+}
+
+.btn {
+display: inline-block;
+padding: 0.6rem 1.4rem;
+border-radius: 3px;
+border: none;
+font-size: 0.82rem;
+font-weight: 600;
+letter-spacing: 0.04em;
+cursor: pointer;
+text-transform: uppercase;
+}
+.btn-gold { background: var(--gold); color: var(--black); }
+.btn-gold:hover { background: #E0C04A; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--silver); }
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+.btn-red { background: var(--red); color: var(--white); }
+.btn-red:hover { background: #C84A4A; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.row > * { flex: 1; min-width: 200px; }
+
+.tracklist { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; }
+.tracklist input { font-size: 0.85rem; }
+
+.status-msg {
+font-size: 0.82rem;
+margin-top: 0.75rem;
+padding: 0.6rem 0.8rem;
+border-radius: 3px;
+display: none;
+}
+.status-msg.show { display: block; }
+.status-msg.success { background: rgba(58,139,90,0.15); color: #7FC99B; border: 1px solid rgba(58,139,90,0.3); }
+.status-msg.error { background: rgba(178,58,58,0.15); color: #E08A8A; border: 1px solid rgba(178,58,58,0.3); }
+
+/* ── Results table (unsubscribe search) ── */
+.results-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.82rem; }
+.results-table th {
+text-align: left;
+padding: 0.5rem 0.6rem;
+color: var(--silver-dim);
+border-bottom: 1px solid var(--border);
+text-transform: uppercase;
+font-size: 0.7rem;
+letter-spacing: 0.04em;
+}
+.results-table td {
+padding: 0.6rem;
+border-bottom: 1px solid var(--border);
+}
+.badge {
+display: inline-block;
+padding: 0.15rem 0.5rem;
+border-radius: 10px;
+font-size: 0.7rem;
+text-transform: uppercase;
+}
+.badge.active { background: rgba(58,139,90,0.2); color: #7FC99B; }
+.badge.unsubscribed { background: rgba(136,136,136,0.2); color: #999; }
+</style>
+</head>
+<body>
+
+<header>
+<div>
+<h1>MadeUp MonkeyShit — Admin</h1>
+<p class="subtle">Internal tools. Not linked from the public site.</p>
+</div>
+<p class="subtle" id="adminWhoami">Loading...</p>
+</header>
+
+<main>
+
+<!-- ============================================================ -->
+<!-- SECTION 1 — PRE-RELEASE NOTICE -->
+<!-- ============================================================ -->
+<div class="section">
+<button class="section-toggle" data-target="preReleaseBody" data-group="release">
+<span>Pre-Release Notice</span>
+<span class="arrow">▶</span>
+</button>
+<div class="section-body" id="preReleaseBody">
+
+<div class="field-group">
+<label for="preAlbumName">Album Name</label>
+<input type="text" id="preAlbumName" placeholder="e.g. Melted Ice Cream">
+</div>
+
+<div class="row">
+<div class="field-group">
+<label for="preReleaseDate">Release Date</label>
+<input type="date" id="preReleaseDate">
+</div>
+<div class="field-group">
+<label for="preTrackCount">Track Count</label>
+<input type="number" id="preTrackCount" min="1" max="30" placeholder="e.g. 15">
+</div>
+</div>
+
+<div class="field-group">
+<label for="preAlbumArt">Album Art (JPG/JPEG)</label>
+<input type="file" id="preAlbumArt" accept="image/jpeg">
+</div>
+
+<div class="field-group">
+<label for="prePreviewUrl">Preview Link (where both preview buttons in the email will point)</label>
+<input type="url" id="prePreviewUrl" placeholder="https://turnthisshitoff.com/albums/...">
+</div>
+
+<button class="btn btn-outline" id="preUpdateTracksBtn" type="button">Update Track Fields</button>
+<div class="tracklist" id="preTracklist"></div>
+
+<div style="margin-top:1.25rem;">
+<button class="btn btn-gold" id="preSendBtn" type="button">Save &amp; Send Pre-Release Email</button>
+</div>
+<div class="status-msg" id="preStatusMsg"></div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 — LIVE RELEASE NOTICE -->
+<!-- ============================================================ -->
+<div class="section">
+<button class="section-toggle" data-target="liveReleaseBody" data-group="release">
+<span>Live Release Notice</span>
+<span class="arrow">▶</span>
+</button>
+<div class="section-body" id="liveReleaseBody">
+
+<div class="field-group">
+<label for="liveAlbumName">Album Name</label>
+<input type="text" id="liveAlbumName" placeholder="e.g. Melted Ice Cream">
+</div>
+
+<div class="field-group">
+<label for="liveTrackCount">Track Count</label>
+<input type="number" id="liveTrackCount" min="1" max="30" placeholder="e.g. 15">
+</div>
+
+<div class="field-group">
+<label for="liveAlbumArt">Album Art (JPG/JPEG)</label>
+<input type="file" id="liveAlbumArt" accept="image/jpeg">
+</div>
+
+<div class="row">
+<div class="field-group">
+<label for="liveCtaUrl1">Call-to-Action Link 1</label>
+<input type="url" id="liveCtaUrl1" placeholder="https://turnthisshitoff.com/albums/...">
+</div>
+<div class="field-group">
+<label for="liveCtaUrl2">Call-to-Action Link 2</label>
+<input type="url" id="liveCtaUrl2" placeholder="https://turnthisshitoff.com/albums/...">
+</div>
+</div>
+
+<div style="margin-top:1.25rem;">
+<button class="btn btn-gold" id="liveSendBtn" type="button">Save &amp; Send Live Release Email</button>
+</div>
+<div class="status-msg" id="liveStatusMsg"></div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 — MANUAL UNSUBSCRIBE -->
+<!-- ============================================================ -->
+<div class="section">
+<button class="section-toggle" data-target="unsubBody">
+<span>Manual Unsubscribe</span>
+<span class="arrow">▶</span>
+</button>
+<div class="section-body" id="unsubBody">
+
+<div class="row" style="align-items:flex-end;">
+<div class="field-group" style="margin-bottom:0;">
+<label for="unsubSearch">Search by Email</label>
+<input type="text" id="unsubSearch" placeholder="Type any part of an email address">
+</div>
+<button class="btn btn-outline" id="unsubSearchBtn" type="button" style="flex:0 0 auto; height:38px;">Search</button>
+</div>
+
+<table class="results-table" id="unsubResultsTable" style="display:none;">
+<thead>
+<tr>
+<th>Email</th>
+<th>Status</th>
+<th>Subscribed</th>
+<th>Unsubscribed</th>
+<th></th>
+</tr>
+</thead>
+<tbody id="unsubResultsBody"></tbody>
+</table>
+
+<div class="status-msg" id="unsubStatusMsg"></div>
+
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 4 — SYSTEM NOTIFICATION -->
+<!-- ============================================================ -->
+<div class="section">
+<button class="section-toggle" data-target="notifyBody">
+<span>System Notification (Broadcast)</span>
+<span class="arrow">▶</span>
+</button>
+<div class="section-body" id="notifyBody">
+
+<div class="field-group">
+<label for="notifySubject">Subject</label>
+<input type="text" id="notifySubject" placeholder="Headline for this notification">
+</div>
+
+<div class="field-group">
+<label for="notifyAttn">Attention To (audience)</label>
+<input type="text" id="notifyAttn" placeholder="e.g. All subscribers, or a specific note">
+</div>
+
+<div class="field-group">
+<label for="notifyBody2">Message Body</label>
+<textarea id="notifyBody2" placeholder="Write the notification here..."></textarea>
+</div>
+
+<div style="margin-top:1rem;">
+<button class="btn btn-gold" id="notifySendBtn" type="button">Save &amp; Send Notification</button>
+</div>
+<div class="status-msg" id="notifyStatusMsg"></div>
+
+</div>
+</div>
+
+</main>
+
+<script>
+// ── Collapsible sections, with "release" group exclusivity ──
+document.querySelectorAll('.section-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target');
+    const target = document.getElementById(targetId);
+    const group = btn.getAttribute('data-group');
+    const isOpen = target.classList.contains('open');
+
+    if (group) {
+      document.querySelectorAll(`.section-toggle[data-group="${group}"]`).forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.classList.remove('open');
+          document.getElementById(otherBtn.getAttribute('data-target')).classList.remove('open');
+        }
+      });
+    }
+
+    btn.classList.toggle('open', !isOpen);
+    target.classList.toggle('open', !isOpen);
+  });
+});
+
+// ── Pre-release track field generator ──
+document.getElementById('preUpdateTracksBtn').addEventListener('click', () => {
+  const count = parseInt(document.getElementById('preTrackCount').value, 10);
+  const container = document.getElementById('preTracklist');
+  container.innerHTML = '';
+  if (!count || count < 1) return;
+  for (let i = 1; i <= count; i++) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = `Track ${i} name`;
+    input.id = `preTrack${i}`;
+    container.appendChild(input);
+  }
+});
+
+// ── Placeholder admin identity display ──
+// (Cloudflare Access injects the authenticated user's email into a
+// request header — actual wiring to display it happens server-side
+// via a Pages Function, covered in a later build step.)
+document.getElementById('adminWhoami').textContent = '';
+</script>
+
+</body>
+</html>
