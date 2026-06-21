@@ -97,7 +97,7 @@ async function sendLiveReleaseEmail(toEmail, albumName, trackCount, ctaUrl1, cta
     body: JSON.stringify({
       from: 'MadeUp MonkeyShit <no-reply@turnthisshitoff.com>',
       to: [toEmail],
-      subject: `New Album: ${albumName}`,
+      subject: `${albumName} is Live Now!`,
       html: html
     })
   });
