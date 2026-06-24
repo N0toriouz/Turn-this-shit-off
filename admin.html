@@ -358,6 +358,39 @@ text-transform: uppercase;
 </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- SECTION 5 — COLD OUTREACH -->
+<!-- ============================================================ -->
+<div class="section">
+<button class="section-toggle" data-target="coldOutreachBody">
+<span>Cold Outreach</span>
+<span class="arrow">▶</span>
+</button>
+<div class="section-body" id="coldOutreachBody">
+
+<div class="field-group">
+<label for="coldTo">To</label>
+<input type="email" id="coldTo" placeholder="recipient@example.com">
+</div>
+
+<div class="field-group">
+<label for="coldSubject">Subject</label>
+<input type="text" id="coldSubject" placeholder="Subject line">
+</div>
+
+<div class="field-group">
+<label for="coldBody">Message</label>
+<textarea id="coldBody" placeholder="Write your message here..."></textarea>
+</div>
+
+<div style="margin-top:1rem;">
+<button class="btn btn-gold" id="coldSendBtn" type="button">Send Cold Outreach</button>
+</div>
+<div class="status-msg" id="coldStatusMsg"></div>
+
+</div>
+</div>
+
 </main>
 
 <script>
@@ -399,42 +432,41 @@ document.getElementById('preUpdateTracksBtn').addEventListener('click', () => {
 });
 
 // ── Placeholder admin identity display ──
-// (Cloudflare Access injects the authenticated user's email into a
-// request header — actual wiring to display it happens server-side
-// via a Pages Function, covered in a later build step.)
 document.getElementById('adminWhoami').textContent = '';
+
+// ── Manual Unsubscribe search ──
 document.getElementById('unsubSearchBtn').addEventListener('click', async () => {
   const query = document.getElementById('unsubSearch').value.trim();
   const statusMsg = document.getElementById('unsubStatusMsg');
   const table = document.getElementById('unsubResultsTable');
   const tbody = document.getElementById('unsubResultsBody');
- 
+
   statusMsg.classList.remove('show', 'success', 'error');
   tbody.innerHTML = '';
   table.style.display = 'none';
- 
+
   if (!query) {
     statusMsg.textContent = 'Enter at least part of an email address.';
     statusMsg.classList.add('show', 'error');
     return;
   }
- 
+
   try {
     const response = await fetch(`/admin-search-subscribers?q=${encodeURIComponent(query)}`);
     const result = await response.json();
- 
+
     if (!result.success) {
       statusMsg.textContent = result.message || 'Search failed.';
       statusMsg.classList.add('show', 'error');
       return;
     }
- 
+
     if (result.results.length === 0) {
       statusMsg.textContent = 'No matching subscribers found.';
       statusMsg.classList.add('show', 'error');
       return;
     }
- 
+
     result.results.forEach(row => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -448,19 +480,19 @@ document.getElementById('unsubSearchBtn').addEventListener('click', async () => 
       `;
       tbody.appendChild(tr);
     });
- 
+
     table.style.display = 'table';
- 
+
   } catch (err) {
     statusMsg.textContent = 'Network error. Please try again.';
     statusMsg.classList.add('show', 'error');
   }
 });
- 
+
 async function adminUnsubscribe(id, btn) {
   btn.disabled = true;
   btn.textContent = '...';
- 
+
   try {
     const response = await fetch('/admin-unsubscribe', {
       method: 'POST',
@@ -468,7 +500,7 @@ async function adminUnsubscribe(id, btn) {
       body: JSON.stringify({ id })
     });
     const result = await response.json();
- 
+
     if (result.success) {
       document.getElementById('unsubSearchBtn').click();
     } else {
@@ -482,38 +514,29 @@ async function adminUnsubscribe(id, btn) {
     alert('Network error.');
   }
 }
- 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
- 
-function formatDate(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}  
+
+// ── System Notification (Broadcast) send ──
 document.getElementById('notifySendBtn').addEventListener('click', async () => {
   const subject = document.getElementById('notifySubject').value.trim();
   const attentionTo = document.getElementById('notifyAttn').value.trim();
   const messageBody = document.getElementById('notifyBody2').value.trim();
   const btn = document.getElementById('notifySendBtn');
   const statusMsg = document.getElementById('notifyStatusMsg');
- 
+
   statusMsg.classList.remove('show', 'success', 'error');
- 
+
   if (!subject || !messageBody) {
     statusMsg.textContent = 'Subject and message body are required.';
     statusMsg.classList.add('show', 'error');
     return;
   }
- 
+
   const confirmed = confirm(`Send this notification to all active subscribers?\n\nSubject: ${subject}`);
   if (!confirmed) return;
- 
+
   btn.disabled = true;
   btn.textContent = 'Sending...';
- 
+
   try {
     const response = await fetch('/admin-send-notification', {
       method: 'POST',
@@ -521,19 +544,19 @@ document.getElementById('notifySendBtn').addEventListener('click', async () => {
       body: JSON.stringify({ subject, attentionTo, messageBody })
     });
     const result = await response.json();
- 
+
     btn.disabled = false;
     btn.textContent = 'Save & Send Notification';
- 
+
     statusMsg.textContent = result.message;
     statusMsg.classList.add('show', result.success ? 'success' : 'error');
- 
+
     if (result.success) {
       document.getElementById('notifySubject').value = '';
       document.getElementById('notifyAttn').value = '';
       document.getElementById('notifyBody2').value = '';
     }
- 
+
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Save & Send Notification';
@@ -541,20 +564,68 @@ document.getElementById('notifySendBtn').addEventListener('click', async () => {
     statusMsg.classList.add('show', 'error');
   }
 });
+
+// ── Cold Outreach send ──
+document.getElementById('coldSendBtn').addEventListener('click', async () => {
+  const to = document.getElementById('coldTo').value.trim();
+  const subject = document.getElementById('coldSubject').value.trim();
+  const messageBody = document.getElementById('coldBody').value.trim();
+  const btn = document.getElementById('coldSendBtn');
+  const statusMsg = document.getElementById('coldStatusMsg');
+
+  statusMsg.classList.remove('show', 'success', 'error');
+
+  if (!to || !subject || !messageBody) {
+    statusMsg.textContent = 'To, Subject, and Message are all required.';
+    statusMsg.classList.add('show', 'error');
+    return;
+  }
+
+  const confirmed = confirm(`Send cold outreach to ${to}?\n\nSubject: ${subject}`);
+  if (!confirmed) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const response = await fetch('/admin-cold-outreach', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, messageBody })
+    });
+    const result = await response.json();
+
+    btn.disabled = false;
+    btn.textContent = 'Send Cold Outreach';
+
+    statusMsg.textContent = result.message;
+    statusMsg.classList.add('show', result.success ? 'success' : 'error');
+
+    if (result.success) {
+      document.getElementById('coldTo').value = '';
+      document.getElementById('coldSubject').value = '';
+      document.getElementById('coldBody').value = '';
+    }
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Send Cold Outreach';
+    statusMsg.textContent = 'Network error. No email was sent.';
+    statusMsg.classList.add('show', 'error');
+  }
+});
+
 function readFileAsDataUrl(fileInput) {
   return new Promise((resolve, reject) => {
     const file = fileInput.files[0];
-    if (!file) {
-      resolve(null);
-      return;
-    }
+    if (!file) { resolve(null); return; }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
- 
+
 // ── Pre-Release send ──
 document.getElementById('preSendBtn').addEventListener('click', async () => {
   const albumName = document.getElementById('preAlbumName').value.trim();
@@ -564,42 +635,41 @@ document.getElementById('preSendBtn').addEventListener('click', async () => {
   const albumArtUrl = document.getElementById('preAlbumArtUrl').value.trim();
   const btn = document.getElementById('preSendBtn');
   const statusMsg = document.getElementById('preStatusMsg');
- 
+
   statusMsg.classList.remove('show', 'success', 'error');
- 
+
   if (!albumName || !releaseDate || !previewUrl) {
     statusMsg.textContent = 'Album name, release date, and preview link are required.';
     statusMsg.classList.add('show', 'error');
     return;
   }
- 
+
   const confirmed = confirm(`Send pre-release notice for "${albumName}" to all active subscribers?`);
   if (!confirmed) return;
- 
-  // Gather track names from the dynamically generated fields
+
   const trackNames = [];
   const count = parseInt(trackCount, 10) || 0;
   for (let i = 1; i <= count; i++) {
     const field = document.getElementById(`preTrack${i}`);
     if (field && field.value.trim()) trackNames.push(field.value.trim());
   }
- 
+
   btn.disabled = true;
   btn.textContent = 'Sending...';
- 
+
   try {
-const response = await fetch('/admin-send-prerelease', {
+    const response = await fetch('/admin-send-prerelease', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ albumName, releaseDate, trackCount, trackNames, previewUrl, albumArtUrl })
     });
     const result = await response.json();
- 
+
     btn.disabled = false;
     btn.textContent = 'Save & Send Pre-Release Email';
     statusMsg.textContent = result.message;
     statusMsg.classList.add('show', result.success ? 'success' : 'error');
- 
+
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Save & Send Pre-Release Email';
@@ -607,7 +677,7 @@ const response = await fetch('/admin-send-prerelease', {
     statusMsg.classList.add('show', 'error');
   }
 });
- 
+
 // ── Live Release send ──
 document.getElementById('liveSendBtn').addEventListener('click', async () => {
   const albumName = document.getElementById('liveAlbumName').value.trim();
@@ -617,34 +687,34 @@ document.getElementById('liveSendBtn').addEventListener('click', async () => {
   const albumArtUrl = document.getElementById('liveAlbumArtUrl').value.trim();
   const btn = document.getElementById('liveSendBtn');
   const statusMsg = document.getElementById('liveStatusMsg');
- 
+
   statusMsg.classList.remove('show', 'success', 'error');
- 
+
   if (!albumName || !ctaUrl1) {
     statusMsg.textContent = 'Album name and at least one listening link are required.';
     statusMsg.classList.add('show', 'error');
     return;
   }
- 
+
   const confirmed = confirm(`Send "now live" notice for "${albumName}" to all active subscribers?`);
   if (!confirmed) return;
- 
+
   btn.disabled = true;
   btn.textContent = 'Sending...';
- 
+
   try {
-const response = await fetch('/admin-send-liverelease', {
+    const response = await fetch('/admin-send-liverelease', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ albumName, trackCount, ctaUrl1, ctaUrl2, albumArtUrl })
     });
     const result = await response.json();
- 
+
     btn.disabled = false;
     btn.textContent = 'Save & Send Live Release Email';
     statusMsg.textContent = result.message;
     statusMsg.classList.add('show', result.success ? 'success' : 'error');
- 
+
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Save & Send Live Release Email';
@@ -652,6 +722,17 @@ const response = await fetch('/admin-send-liverelease', {
     statusMsg.classList.add('show', 'error');
   }
 });
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 </script>
 
 </body>
