@@ -28,7 +28,50 @@ export async function onRequestPost(context) {
     const now = new Date().toISOString();
     const consentTextVersion = "v1.0-2026-06-20";
 
-    // ── Insert into D1 — UNIQUE constraint on email handles duplicates ──
+    // ── Pre-write check: look up email before attempting any write ──
+    const existing = await env.DB.prepare(
+      `SELECT id, status, unsubscribed_timestamp, cold_outreach FROM subscribers WHERE email = ?`
+    ).bind(normalizedEmail).first();
+
+    if (existing) {
+      // Hard stop: unsubscribed email — manual reactivation only
+      if (existing.unsubscribed_timestamp) {
+        return jsonResponse(false, "This email was previously unsubscribed. Please contact support at help@turnthisshitoff.com to reactivate.");
+      }
+
+      // Cold outreach row exists and is active — UPSERT: convert to full subscriber
+      if (existing.cold_outreach === 1) {
+        await env.DB.prepare(
+          `UPDATE subscribers
+           SET consent_given = 1,
+               consent_text_version = ?,
+               consent_timestamp = ?,
+               submission_timestamp = ?,
+               ip_address = ?,
+               status = 'active'
+           WHERE id = ? AND unsubscribed_timestamp IS NULL`
+        ).bind(consentTextVersion, now, now, ipAddress, existing.id).run();
+
+        let emailSent = true;
+        try {
+          await sendConfirmationEmail(normalizedEmail, env.RESEND_API_KEY);
+        } catch (e) {
+          emailSent = false;
+        }
+
+        return jsonResponse(
+          true,
+          emailSent
+            ? "You're on the list. Check your inbox for a confirmation."
+            : "You're on the list — though our confirmation email may be delayed."
+        );
+      }
+
+      // Active non-cold-outreach subscriber — already subscribed
+      return jsonResponse(false, "This email is already subscribed.");
+    }
+
+    // ── No existing row — insert as normal ──
     try {
       await env.DB.prepare(
         `INSERT INTO subscribers
@@ -44,9 +87,6 @@ export async function onRequestPost(context) {
       ).run();
 
     } catch (dbError) {
-      if (dbError.message && dbError.message.includes('UNIQUE')) {
-        return jsonResponse(false, "This email is already subscribed.");
-      }
       return jsonResponse(false, "We couldn't save your subscription. Please try again.");
     }
 
