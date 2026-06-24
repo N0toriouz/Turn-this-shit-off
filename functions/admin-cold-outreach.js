@@ -42,7 +42,7 @@ export async function onRequestPost(context) {
       `INSERT INTO subscribers
         (email, consent_given, consent_text_version, consent_timestamp,
          submission_timestamp, ip_address, status, cold_outreach, cold_date)
-       VALUES (?, 0, '', '', '', '', NULL, 1, ?)`
+       VALUES (?, 0, '', '', '', '', '', 1, ?)`
     ).bind(normalizedEmail, now).run();
 
     // ── Attempt send ──
