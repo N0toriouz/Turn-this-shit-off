@@ -50,6 +50,13 @@ DATABASE: Cloudflare D1 (SQLite at the edge)
 - Schema changes require explicit human approval before execution
 - Data deletion of any kind requires explicit human confirmation
 - Database contains real user data — handle accordingly
+- IMPORTANT: Several columns in the subscribers table have NOT NULL 
+  constraints with no default value. These are: consent_text_version, 
+  consent_timestamp, submission_timestamp, and ip_address. Any INSERT 
+  that does not have real values for these columns must use empty string 
+  ('') not NULL — D1 will reject NULL on a NOT NULL column and throw a 
+  runtime error. This applies to any function that creates partial rows 
+  such as cold outreach entries.
 
 FUNCTIONS: Cloudflare Pages Functions
 - Located in the /functions directory
@@ -155,6 +162,12 @@ Claude Code must never:
 
 Read-only queries for diagnostic purposes are permitted but
 the query must be shown before execution.
+
+Note on partial row inserts: when inserting rows that intentionally 
+leave some fields unpopulated (such as cold outreach rows), use empty 
+string ('') for NOT NULL columns and NULL only for columns that 
+explicitly allow NULL. Check the schema before writing any new INSERT 
+statement to avoid NOT NULL constraint violations.
 
 ---
 
