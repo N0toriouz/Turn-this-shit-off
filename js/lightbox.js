@@ -1,6 +1,7 @@
 (function () {
   const REPO_ART = 'https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/';
-  const SEP = '\u00A0\u00A0\u00A0\u00B7\u00A0\u00A0\u00A0';
+  const SEP       = '\u00A0\u00A0\u00A0\u00B7\u00A0\u00A0\u00A0';
+  const SEP_WIDE  = '\u00A0'.repeat(16) + '\u2014' + '\u00A0'.repeat(16);
 
   const overlay = document.createElement('div');
   overlay.id = 'lb-overlay';
@@ -9,8 +10,8 @@
       <button id="lb-close" aria-label="Close">&times;</button>
       <div id="lb-art-wrap"><img id="lb-img" src="" alt=""></div>
       <div id="lb-carousels">
-        <div class="lb-track"><span id="lb-car-name" class="lb-car lb-car-slow"></span></div>
-        <div class="lb-track"><span id="lb-car-date" class="lb-car lb-car-med"></span></div>
+        <div class="lb-track"><span id="lb-car-name"    class="lb-car lb-car-slow"></span></div>
+        <div class="lb-track"><span id="lb-car-date"    class="lb-car lb-car-med"></span></div>
         <div class="lb-track"><span id="lb-car-streams" class="lb-car lb-car-fast"></span></div>
       </div>
     </div>
@@ -48,8 +49,8 @@
     .lb-car { display: inline-block; will-change: transform; }
     .lb-car-slow {
       font-family: 'DM Serif Display', serif; font-size: 0.95rem; color: #F2F2F2;
-      animation: lb-scroll 22s linear infinite;
-      animation-delay: -6s;
+      animation: lb-scroll 55s linear infinite;
+      animation-delay: -14s;
     }
     .lb-car-med {
       font-size: 0.72rem; color: #888; letter-spacing: 0.1em; text-transform: uppercase;
@@ -58,8 +59,8 @@
     }
     .lb-car-fast {
       font-size: 0.72rem; color: #D4AF37; letter-spacing: 0.1em; font-variant-numeric: tabular-nums;
-      animation: lb-scroll 7s linear infinite;
-      animation-delay: -1s;
+      animation: lb-scroll 30s linear infinite;
+      animation-delay: -8s;
     }
     @keyframes lb-scroll {
       from { transform: translateX(0); }
@@ -68,14 +69,14 @@
   `;
 
   function formatStreamsLb(n) {
-    if (n < 1000) return '\u25B6 ' + String(n);
-    if (n === 1000) return '\u25B6 1K';
-    return '\u25B6 ' + (n / 1000).toFixed(1) + 'K';
+    if (n < 1000) return '\u25B6 ' + String(n) + ' streams';
+    if (n === 1000) return '\u25B6 1K streams';
+    return '\u25B6 ' + (n / 1000).toFixed(1) + 'K streams';
   }
 
-  function setCarousel(el, text) {
-    const unit = Array(8).fill(text).join(SEP);
-    el.textContent = unit + SEP + unit;
+  function setCarousel(el, text, reps, sep) {
+    const unit = Array(reps).fill(text).join(sep);
+    el.textContent = unit + sep + unit;
     el.style.animation = 'none';
     void el.offsetWidth;
     el.style.animation = '';
@@ -85,10 +86,11 @@
     const { artNumber, songName, releaseDate, streamCount } = el.dataset;
     document.getElementById('lb-img').src = REPO_ART + artNumber + '.jpg';
     document.getElementById('lb-img').alt = songName || '';
-    setCarousel(document.getElementById('lb-car-name'), songName || '');
-    setCarousel(document.getElementById('lb-car-date'), releaseDate || '');
+    setCarousel(document.getElementById('lb-car-name'),    songName || '',    8, SEP);
+    setCarousel(document.getElementById('lb-car-date'),    releaseDate || '', 6, SEP);
     setCarousel(document.getElementById('lb-car-streams'),
-      streamCount ? formatStreamsLb(Number(streamCount)) : '\u25B6 \u2014');
+      streamCount ? formatStreamsLb(Number(streamCount)) : '\u25B6 \u2014 streams',
+      3, SEP_WIDE);
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
