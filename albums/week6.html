@@ -224,9 +224,9 @@ Amazon Music
 
 <script>
 function formatStreams(n) {
-if (n < 1000) return String(n);
-if (n === 1000) return '1K';
-return (n / 1000).toFixed(1) + 'K';
+  if (n < 1000) return '▶ ' + String(n);
+  if (n === 1000) return '▶ 1K';
+  return '▶ ' + (n / 1000).toFixed(1) + 'K';
 }
 // openLightbox defined in /js/lightbox.js
 async function loadAlbumSongs() {
