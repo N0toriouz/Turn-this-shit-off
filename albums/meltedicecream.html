@@ -63,6 +63,13 @@ color: var(--silver-dim); text-decoration: none;
 font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s;
 }
 .platform-link-sm:hover { border-color: var(--gold); color: var(--gold); }
+.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 3rem; }
+.song-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
+.song-row iframe { display: block; width: 100%; }
+.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
+.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
 .section-eyebrow {
 font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -77,13 +84,6 @@ border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
 .track-number { color: var(--gold-dim); flex-shrink: 0; }
 .track-name { color: var(--silver); }
 .track-card iframe { display: block; width: 100%; }
-.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 5rem; }
-.song-table { display: flex; flex-direction: column; gap: 0.75rem; }
-.song-title { font-family: 'DM Serif Display', serif; font-size: 0.88rem; color: var(--white); font-style: italic; }
-.song-row { display: flex; flex-direction: column; gap: 0.4rem; }
-.song-row iframe { display: block; width: 100%; }
-.song-streams { font-size: 0.88rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
-.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer {
 border-top: 1px solid var(--border); padding: 2rem 4rem;
 display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
@@ -94,10 +94,10 @@ background: var(--near-black);
 @media (max-width: 700px) {
 .album-hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem 2rem; }
 .album-cover-frame { max-width: 240px; margin: 0 auto; }
+.song-table-section { padding: 0 1.5rem 2rem; }
 main { padding: 1rem 1.5rem 4rem; }
 nav { padding: 0 1.5rem; }
 footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
-.song-table-section { padding: 0 1.5rem 4rem; }
 }
 </style>
 </head>
@@ -144,78 +144,33 @@ YouTube Music
 </div>
 </div>
 
-<main>
-<p class="section-eyebrow">All 15 Tracks</p>
-<div class="tracks-grid">
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">01</span><span class="track-name">They Finally Posted Our Expected Graduation Date</span></div>
-<iframe src="https://open.spotify.com/embed/track/3gzS2dCKP2sdUIg4d5LLeQ?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">02</span><span class="track-name">This Might be a Decent Day Because Someone Made Me the Perfect Cup of Coffee (Radio Edit)</span></div>
-<iframe src="https://open.spotify.com/embed/track/4fzkwqHANmVoO7Vgi02Jkx?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">03</span><span class="track-name">Video Game Start Menu</span></div>
-<iframe src="https://open.spotify.com/embed/track/7CSPoPHCZPzW01asZndRBG?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">04</span><span class="track-name">My Roommates and I Have Been Relocated to a New Dorm, and It's Kind of Peaceful Over Here</span></div>
-<iframe src="https://open.spotify.com/embed/track/7mcRFwbG59eW7I1v1EU8hk?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">05</span><span class="track-name">Today is Monday, and My Boss just Said that the Weekend is Almost Here. I Like the Way She Thinks.</span></div>
-<iframe src="https://open.spotify.com/embed/track/32lQvhcQaa3dxDikqFqRqE?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">06</span><span class="track-name">Hopefully, this Week will be Better than this Weekend has been</span></div>
-<iframe src="https://open.spotify.com/embed/track/0lliFkoBtoaFtBUwxL9sg5?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">07</span><span class="track-name">They're Planning to Change the Policy Letter Again</span></div>
-<iframe src="https://open.spotify.com/embed/track/6XuyQRizxJApXrh3oFr7id?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">08</span><span class="track-name">I'm in a Hurry to just Get to My Duty Station</span></div>
-<iframe src="https://open.spotify.com/embed/track/2LllAnyKgsjPISjOBWqwYv?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">09</span><span class="track-name">For the First Time in My Life, It Felt Good to Run</span></div>
-<iframe src="https://open.spotify.com/embed/track/2mgW6QCz2mULC58425d429?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">10</span><span class="track-name">Dude, Stop Arguing While You're Naked</span></div>
-<iframe src="https://open.spotify.com/embed/track/2yoic4wwhCXxMhrILTZT5E?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">11</span><span class="track-name">As of Today, We have 66 Days Remaining in Training</span></div>
-<iframe src="https://open.spotify.com/embed/track/6qAagcWZwGLJko8Pbhno16?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">12</span><span class="track-name">Skipping Breakfast is a Bad Idea</span></div>
-<iframe src="https://open.spotify.com/embed/track/5A9BgH9UAw1Ils28ygmS3g?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">13</span><span class="track-name">We have a Tornado Warning today, and This has just become My New Favorite Song</span></div>
-<iframe src="https://open.spotify.com/embed/track/6XmL8bEb8WvQ6a2k0JCIKF?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">14</span><span class="track-name">I Have to Take a Sh!t, but This Customer Keeps on Yammering About Nonsense that No One Cares</span></div>
-<iframe src="https://open.spotify.com/embed/track/6QyXvLElQT7e9CxpI9ddaH?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">15</span><span class="track-name">One of My Socks has an Enormous Hole in It</span></div>
-<iframe src="https://open.spotify.com/embed/track/6Xfd3uDFLApLzu9HeROvr1?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-</div>
-</main>
-
 <div class="song-table-section">
 <p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
 <div id="songTable" class="song-table">
 <p class="songs-loading">Loading...</p>
 </div>
 </div>
+
+<main>
+<p class="section-eyebrow">All 15 Tracks</p>
+<div class="tracks-grid">
+<div class="track-card"><div class="track-card-label"><span class="track-number">01</span><span class="track-name">They Finally Posted Our Expected Graduation Date</span></div><iframe src="https://open.spotify.com/embed/track/3gzS2dCKP2sdUIg4d5LLeQ?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">02</span><span class="track-name">This Might be a Decent Day Because Someone Made Me the Perfect Cup of Coffee (Radio Edit)</span></div><iframe src="https://open.spotify.com/embed/track/4fzkwqHANmVoO7Vgi02Jkx?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">03</span><span class="track-name">Video Game Start Menu</span></div><iframe src="https://open.spotify.com/embed/track/7CSPoPHCZPzW01asZndRBG?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">04</span><span class="track-name">My Roommates and I Have Been Relocated to a New Dorm, and It's Kind of Peaceful Over Here</span></div><iframe src="https://open.spotify.com/embed/track/7mcRFwbG59eW7I1v1EU8hk?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">05</span><span class="track-name">Today is Monday, and My Boss just Said that the Weekend is Almost Here. I Like the Way She Thinks.</span></div><iframe src="https://open.spotify.com/embed/track/32lQvhcQaa3dxDikqFqRqE?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">06</span><span class="track-name">Hopefully, this Week will be Better than this Weekend has been</span></div><iframe src="https://open.spotify.com/embed/track/0lliFkoBtoaFtBUwxL9sg5?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">07</span><span class="track-name">They're Planning to Change the Policy Letter Again</span></div><iframe src="https://open.spotify.com/embed/track/6XuyQRizxJApXrh3oFr7id?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">08</span><span class="track-name">I'm in a Hurry to just Get to My Duty Station</span></div><iframe src="https://open.spotify.com/embed/track/2LllAnyKgsjPISjOBWqwYv?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">09</span><span class="track-name">For the First Time in My Life, It Felt Good to Run</span></div><iframe src="https://open.spotify.com/embed/track/2mgW6QCz2mULC58425d429?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">10</span><span class="track-name">Dude, Stop Arguing While You're Naked</span></div><iframe src="https://open.spotify.com/embed/track/2yoic4wwhCXxMhrILTZT5E?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">11</span><span class="track-name">As of Today, We have 66 Days Remaining in Training</span></div><iframe src="https://open.spotify.com/embed/track/6qAagcWZwGLJko8Pbhno16?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">12</span><span class="track-name">Skipping Breakfast is a Bad Idea</span></div><iframe src="https://open.spotify.com/embed/track/5A9BgH9UAw1Ils28ygmS3g?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">13</span><span class="track-name">We have a Tornado Warning today, and This has just become My New Favorite Song</span></div><iframe src="https://open.spotify.com/embed/track/6XmL8bEb8WvQ6a2k0JCIKF?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">14</span><span class="track-name">I Have to Take a Sh!t, but This Customer Keeps on Yammering About Nonsense that No One Cares</span></div><iframe src="https://open.spotify.com/embed/track/6QyXvLElQT7e9CxpI9ddaH?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">15</span><span class="track-name">One of My Socks has an Enormous Hole in It</span></div><iframe src="https://open.spotify.com/embed/track/6Xfd3uDFLApLzu9HeROvr1?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+</div>
+</main>
 
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
@@ -243,7 +198,7 @@ const row = document.createElement('div');
 row.className = 'song-row';
 row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+<iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
