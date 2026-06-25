@@ -483,12 +483,13 @@ function confirmRemove(id, name) {
   document.getElementById('confirmSongName').textContent = name;
   document.getElementById('confirmOverlay').classList.add('open');
   document.getElementById('btnConfirmDelete').onclick = async () => {
+    const idToRemove = pendingRemoveId;
     closeConfirm();
     try {
       const res = await fetch('/admin-content-manager', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
-        body: JSON.stringify({ action: 'remove', id: pendingRemoveId })
+        body: JSON.stringify({ action: 'remove', id: idToRemove })
       });
       if (res.status === 401) { showTokenGate('Token invalid — re-enter to continue.'); return; }
       const data = await res.json();
