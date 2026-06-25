@@ -1,6 +1,12 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
-
+  const token = request.headers.get('X-Admin-Token');
+  if (!token || token !== env.ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    });
+  }
   let body;
   try {
     body = await request.json();
