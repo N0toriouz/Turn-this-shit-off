@@ -19,7 +19,16 @@ header {
   padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
 }
 header h1 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--gold); font-style: italic; }
-header span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.header-right { display: flex; align-items: center; gap: 1rem; }
+.header-right span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.btn-clear-token {
+  background: none; border: 1px solid var(--border); color: var(--silver-dim);
+  padding: 0.3rem 0.75rem; border-radius: 2px; cursor: pointer;
+  font-size: 0.7rem; font-family: 'Inter', sans-serif;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-clear-token:hover { border-color: var(--gold); color: var(--gold); }
 .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 57px); }
 .sidebar {
   background: var(--near-black); border-right: 1px solid var(--border);
@@ -136,6 +145,28 @@ header span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1e
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
   font-family: 'Inter', sans-serif;
 }
+/* Token gate */
+#token-gate {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: var(--black); align-items: center; justify-content: center;
+}
+#token-gate.open { display: flex; }
+.token-gate-box {
+  background: var(--near-black); border: 1px solid var(--border); border-radius: 2px;
+  padding: 2rem; width: 100%; max-width: 360px; text-align: center;
+}
+.token-gate-title {
+  font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--gold);
+  margin-bottom: 1.5rem;
+}
+.token-gate-input {
+  width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2px;
+  color: var(--silver); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+  padding: 0.6rem 0.75rem; outline: none; margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+.token-gate-input:focus { border-color: var(--gold); }
+.token-gate-error { font-size: 0.75rem; color: var(--red); margin-top: 0.6rem; min-height: 1rem; }
 @media (max-width: 700px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
@@ -148,7 +179,10 @@ header span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1e
 
 <header>
   <h1>Song Table Manager</h1>
-  <span>MadeUp MonkeyShit — Admin</span>
+  <div class="header-right">
+    <span>MadeUp MonkeyShit — Admin</span>
+    <button class="btn-clear-token" onclick="clearToken()">Reset Token</button>
+  </div>
 </header>
 
 <div class="layout">
@@ -225,6 +259,17 @@ header span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1e
   </div>
 </div>
 
+<!-- Token Gate -->
+<div id="token-gate">
+  <div class="token-gate-box">
+    <p class="token-gate-title">Admin Token Required</p>
+    <input type="password" id="tokenInput" class="token-gate-input" placeholder="Paste admin token"
+           onkeydown="if(event.key==='Enter') submitToken()">
+    <button class="btn-save" onclick="submitToken()" style="width:100%;">Enter</button>
+    <p class="token-gate-error" id="tokenError"></p>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -237,6 +282,28 @@ const TABLES = [
 ];
 
 let currentTable = null;
+
+// --- Token ---
+function getToken() { return localStorage.getItem('adminToken') || ''; }
+
+function showTokenGate(msg) {
+  document.getElementById('token-gate').classList.add('open');
+  document.getElementById('tokenError').textContent = msg || '';
+  document.getElementById('tokenInput').value = '';
+  setTimeout(() => document.getElementById('tokenInput').focus(), 50);
+}
+
+function submitToken() {
+  const val = document.getElementById('tokenInput').value.trim();
+  if (!val) return;
+  localStorage.setItem('adminToken', val);
+  document.getElementById('token-gate').classList.remove('open');
+}
+
+function clearToken() {
+  localStorage.removeItem('adminToken');
+  showTokenGate();
+}
 
 // --- Init ---
 function init() {
@@ -251,6 +318,7 @@ function init() {
   });
 
   const sel = document.getElementById('fTableName');
+  sel.innerHTML = '';
   TABLES.forEach(t => {
     const opt = document.createElement('option');
     opt.value = t; opt.textContent = t;
@@ -272,7 +340,10 @@ async function loadSongs() {
   const container = document.getElementById('songList');
   container.innerHTML = '<p class="loading-state">Loading...</p>';
   try {
-    const res = await fetch(`/admin-content-query?action=list&table=${encodeURIComponent(currentTable)}`);
+    const res = await fetch(`/admin-content-query?action=list&table=${encodeURIComponent(currentTable)}`, {
+      headers: { 'X-Admin-Token': getToken() }
+    });
+    if (res.status === 401) { showTokenGate('Token invalid — re-enter to continue.'); return; }
     const data = await res.json();
     if (!data.success) { container.innerHTML = `<p class="empty-state">Error: ${data.message}</p>`; return; }
     if (!data.results.length) { container.innerHTML = '<p class="empty-state">No songs in this table yet.</p>'; return; }
@@ -380,9 +451,15 @@ async function saveForm() {
   try {
     const res = await fetch('/admin-content-manager', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
       body: JSON.stringify(payload)
     });
+    if (res.status === 401) {
+      showTokenGate('Token invalid — re-enter to continue.');
+      btn.disabled = false;
+      btn.textContent = 'Save';
+      return;
+    }
     const data = await res.json();
     if (data.success) {
       closeModal();
@@ -410,9 +487,10 @@ function confirmRemove(id, name) {
     try {
       const res = await fetch('/admin-content-manager', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() },
         body: JSON.stringify({ action: 'remove', id: pendingRemoveId })
       });
+      if (res.status === 401) { showTokenGate('Token invalid — re-enter to continue.'); return; }
       const data = await res.json();
       showToast(data.success ? 'Song removed.' : (data.message || 'Remove failed.'),
                 data.success ? 'success' : 'error');
@@ -449,6 +527,7 @@ document.getElementById('confirmOverlay').addEventListener('click', e => {
 });
 
 init();
+if (!getToken()) showTokenGate();
 </script>
 </body>
 </html>
