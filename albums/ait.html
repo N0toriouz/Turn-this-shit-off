@@ -19,214 +19,96 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body {
-background: var(--black);
-color: var(--silver);
-font-family: 'Inter', sans-serif;
-font-size: 16px;
-line-height: 1.7;
-}
+body { background: var(--black); color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
 nav {
-position: sticky;
-top: 0;
-z-index: 100;
-background: rgba(10,10,10,0.92);
-backdrop-filter: blur(12px);
+position: sticky; top: 0; z-index: 100;
+background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
 border-bottom: 1px solid var(--border);
-padding: 0 2rem;
-height: 60px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+padding: 0 2rem; height: 60px;
+display: flex; align-items: center; justify-content: space-between;
 }
-.nav-logo {
-font-family: 'DM Serif Display', serif;
-font-size: 1.1rem;
-color: var(--gold);
-text-decoration: none;
-}
-.nav-back {
-color: var(--silver-dim);
-text-decoration: none;
-font-size: 0.78rem;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-}
+.nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--gold); text-decoration: none; }
+.nav-back { color: var(--silver-dim); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
 .nav-back:hover { color: var(--gold); }
-
-/* ── Album hero ── */
 .album-hero {
-max-width: 1000px;
-margin: 0 auto;
-padding: 4rem 2rem 3rem;
-display: grid;
-grid-template-columns: 280px 1fr;
-gap: 3rem;
-align-items: end;
+max-width: 1000px; margin: 0 auto; padding: 4rem 2rem 3rem;
+display: grid; grid-template-columns: 280px 1fr; gap: 3rem; align-items: end;
 }
-.album-cover-frame {
-position: relative;
-width: 100%;
-}
+.album-cover-frame { position: relative; width: 100%; }
 .album-cover-frame::before {
-content: '';
-position: absolute;
-top: -10px; left: -10px;
-right: 10px; bottom: 10px;
-border: 1px solid var(--gold-dim);
-border-radius: 2px;
-z-index: 0;
+content: ''; position: absolute;
+top: -10px; left: -10px; right: 10px; bottom: 10px;
+border: 1px solid var(--gold-dim); border-radius: 2px; z-index: 0;
 }
-.album-cover-frame img {
-width: 100%;
-display: block;
-border-radius: 2px;
-position: relative;
-z-index: 1;
-}
-.album-eyebrow {
-font-size: 0.72rem;
-letter-spacing: 0.2em;
-text-transform: uppercase;
-color: var(--gold);
-margin-bottom: 1rem;
-}
-.album-title {
-font-family: 'DM Serif Display', serif;
-font-size: clamp(2.2rem, 4vw, 3.2rem);
-color: var(--white);
-margin-bottom: 0.75rem;
-line-height: 1.05;
-}
-.album-meta {
-color: var(--silver-dim);
-font-size: 0.9rem;
-margin-bottom: 1.75rem;
-}
-.album-cta {
-display: flex;
-gap: 1rem;
-flex-wrap: wrap;
-}
+.album-cover-frame img { width: 100%; display: block; border-radius: 2px; position: relative; z-index: 1; }
+.album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+.album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 4vw, 3.2rem); color: var(--white); margin-bottom: 0.75rem; line-height: 1.05; }
+.album-meta { color: var(--silver-dim); font-size: 0.9rem; margin-bottom: 1.75rem; }
+.album-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
 .btn-primary {
-display: inline-flex;
-align-items: center;
-gap: 0.5rem;
-background: var(--gold);
-color: var(--black);
-padding: 0.7rem 1.6rem;
-border-radius: 2px;
-text-decoration: none;
-font-size: 0.78rem;
-font-weight: 600;
-letter-spacing: 0.1em;
-text-transform: uppercase;
+display: inline-flex; align-items: center; gap: 0.5rem;
+background: var(--gold); color: var(--black);
+padding: 0.7rem 1.6rem; border-radius: 2px; text-decoration: none;
+font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
 transition: background 0.2s, transform 0.1s;
 }
 .btn-primary:hover { background: #E8C547; transform: translateY(-1px); }
 .btn-secondary {
-display: inline-flex;
-align-items: center;
-gap: 0.5rem;
-border: 1px solid var(--border);
-color: var(--silver);
-padding: 0.7rem 1.6rem;
-border-radius: 2px;
-text-decoration: none;
-font-size: 0.78rem;
-letter-spacing: 0.1em;
-text-transform: uppercase;
+display: inline-flex; align-items: center; gap: 0.5rem;
+border: 1px solid var(--border); color: var(--silver);
+padding: 0.7rem 1.6rem; border-radius: 2px; text-decoration: none;
+font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
 transition: border-color 0.2s, color 0.2s;
 }
 .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
 .platform-link-sm {
-display: inline-flex;
-align-items: center;
-gap: 0.4rem;
-padding: 0.4rem 0.8rem;
-background: var(--card-bg);
-border: 1px solid var(--border);
-border-radius: 2px;
-color: var(--silver-dim);
-text-decoration: none;
-font-size: 0.7rem;
-letter-spacing: 0.04em;
-transition: border-color 0.2s, color 0.2s;
+display: inline-flex; align-items: center; gap: 0.4rem;
+padding: 0.4rem 0.8rem; background: var(--card-bg);
+border: 1px solid var(--border); border-radius: 2px;
+color: var(--silver-dim); text-decoration: none;
+font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s;
 }
-.platform-link-sm:hover {
-border-color: var(--gold);
-color: var(--gold);
-} 
-/* ── Track list ── */
-main {
-max-width: 1000px;
-margin: 0 auto;
-padding: 1rem 2rem 5rem;
-}
+.platform-link-sm:hover { border-color: var(--gold); color: var(--gold); }
+main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
 .section-eyebrow {
-font-size: 0.72rem;
-letter-spacing: 0.2em;
-text-transform: uppercase;
-color: var(--gold);
-margin-bottom: 1.5rem;
-padding-top: 2rem;
-border-top: 1px solid var(--border);
+font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+color: var(--gold); margin-bottom: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
 }
-.tracks-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 1rem;
-}
-.track-card {
-border: 1px solid var(--border);
-border-radius: 2px;
-overflow: hidden;
-background: var(--card-bg);
-}
+.tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.track-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
 .track-card-label {
-padding: 0.6rem 0.85rem;
-font-size: 0.78rem;
-color: var(--silver-dim);
-border-bottom: 1px solid var(--border);
-display: flex;
-gap: 0.6rem;
+padding: 0.6rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim);
+border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
 }
 .track-number { color: var(--gold-dim); flex-shrink: 0; }
 .track-name { color: var(--silver); }
 .track-card iframe { display: block; width: 100%; }
-
-/* ── Footer ── */
+/* ── Song table ── */
+.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 5rem; }
+.song-table { display: flex; flex-direction: column; gap: 0.75rem; }
+.song-row { display: grid; grid-template-columns: 1fr 80px 80px; gap: 0.75rem; align-items: center; }
+.song-row iframe { display: block; width: 100%; }
+.song-streams { text-align: center; font-size: 0.8rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; line-height: 1.3; }
+.song-art { width: 80px; height: 80px; border-radius: 2px; overflow: hidden; cursor: pointer; border: 1px solid var(--border); transition: border-color 0.2s; flex-shrink: 0; }
+.song-art:hover { border-color: var(--gold); }
+.song-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer {
-border-top: 1px solid var(--border);
-padding: 2rem 4rem;
-display: flex;
-align-items: center;
-justify-content: space-between;
-flex-wrap: wrap;
-gap: 1rem;
+border-top: 1px solid var(--border); padding: 2rem 4rem;
+display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
 background: var(--near-black);
 }
-.footer-name {
-font-family: 'DM Serif Display', serif;
-font-size: 1rem;
-color: var(--gold);
-font-style: italic;
-}
-.footer-note {
-font-size: 0.75rem;
-color: var(--silver-dim);
-opacity: 0.5;
-}
-
+.footer-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--gold); font-style: italic; }
+.footer-note { font-size: 0.75rem; color: var(--silver-dim); opacity: 0.5; }
 @media (max-width: 700px) {
-.album-hero {
-grid-template-columns: 1fr;
-padding: 2.5rem 1.5rem 2rem;
-}
+.album-hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem 2rem; }
 .album-cover-frame { max-width: 240px; margin: 0 auto; }
 main { padding: 1rem 1.5rem 4rem; }
 nav { padding: 0 1.5rem; }
 footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+.song-table-section { padding: 0 1.5rem 4rem; }
+.song-row { grid-template-columns: 1fr 60px 60px; gap: 0.5rem; }
+.song-art { width: 60px; height: 60px; }
 }
 </style>
 </head>
@@ -251,7 +133,6 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 Play Full Album on Spotify
 </a>
 <a href="/" class="btn-secondary">Back to Site</a>
-</div> 
 </div>
 <div class="album-platforms" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
 <a href="https://music.apple.com/us/album/ait/1880326519" target="_blank" class="platform-link-sm">
@@ -270,90 +151,125 @@ Amazon Music
 <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
 YouTube Music
 </a>
-</div>  
+</div>
+</div>
 </div>
 
 <main>
 <p class="section-eyebrow">All 14 Tracks</p>
 <div class="tracks-grid">
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">01</span><span class="track-name">I've No Idea What This Song is Supposed to be About, Except that This Weekend is Going to be Great</span></div>
 <iframe src="https://open.spotify.com/embed/track/3neu1qSKsmHIlbncBkxYgG?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">02</span><span class="track-name">I Have to Sh!t, but This Customer Keeps on Yammering About Nonsense that No One Cares About</span></div>
 <iframe src="https://open.spotify.com/embed/track/71MOnYhq1uEtwOmkOZSxA2?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">03</span><span class="track-name">I Could Have Probably Made a Few Other Songs a Lot Better. So, I Guess I am Learning Something Here</span></div>
 <iframe src="https://open.spotify.com/embed/track/4ySBMir4IyIceQFTpZM25W?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">04</span><span class="track-name">I'm Already Losing Interest In Doing This</span></div>
 <iframe src="https://open.spotify.com/embed/track/7ryrQzNGvrB5z6XdSoPK7h?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">05</span><span class="track-name">I Promise that I wasn't High</span></div>
 <iframe src="https://open.spotify.com/embed/track/1ySkJgvuWqggoPr86upffB?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">06</span><span class="track-name">I Could Have Probably Made a Few Other Songs a Lot Better (Remix)</span></div>
 <iframe src="https://open.spotify.com/embed/track/3ADngq2P4oo83N7pciJJWy?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">07</span><span class="track-name">This Might be a Decent Day Because Someone Made Me the Perfect Cup of Coffee</span></div>
 <iframe src="https://open.spotify.com/embed/track/4uZpvVvwv5V9z9JKB0iQwt?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">08</span><span class="track-name">I Skipped Breakfast and Not Feeling So Magnanimous Right Now</span></div>
 <iframe src="https://open.spotify.com/embed/track/6v5JuzLVanHa0NEFbXQpTY?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">09</span><span class="track-name">My Battle Buddies Have Lost Their Minds in the Discord and It's Blowing Up My Phone</span></div>
 <iframe src="https://open.spotify.com/embed/track/1BbrCeEcshNbiUxU7uRUfn?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">10</span><span class="track-name">I Want to Go to the Cafeteria, but I Can't Find a Battle Buddy. So, I'm Just Doing Sh!t</span></div>
 <iframe src="https://open.spotify.com/embed/track/3OaejeV0yMSozvxeTvLmg9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">11</span><span class="track-name">I Promise that I wasn't High (Remix)</span></div>
 <iframe src="https://open.spotify.com/embed/track/518ewHlRdn95JrdDudxUpe?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">12</span><span class="track-name">We Got High on this Camping Trip and Someone Brought Along a Violin for Some Reason</span></div>
 <iframe src="https://open.spotify.com/embed/track/5k2ZCBVutGpb3rReVyfnlw?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">13</span><span class="track-name">Retail Therapy Really Is a Thing, and I Believe Everyone Should Enjoy It at Some Time</span></div>
 <iframe src="https://open.spotify.com/embed/track/6HybXfGCoTVYv0DLH1pWO4?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 <div class="track-card">
 <div class="track-card-label"><span class="track-number">14</span><span class="track-name">I Want to Go to the Cafeteria, but I Can't Find a Battle Buddy (Instrumental)</span></div>
 <iframe src="https://open.spotify.com/embed/track/1G1FKwQBBUtp7tPtbvcrE9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>
-
 </div>
 </main>
+
+<div class="song-table-section">
+<p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
+<div id="songTable" class="song-table">
+<p class="songs-loading">Loading...</p>
+</div>
+</div>
 
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
 <span class="footer-note">Proud to make just awful music.</span>
 </footer>
 
+<script>
+function formatStreams(n) {
+if (n < 1000) return String(n);
+if (n === 1000) return '1K';
+return (n / 1000).toFixed(1) + 'K';
+}
+function openLightbox(el) { console.log('lightbox:', el.dataset); }
+async function loadAlbumSongs() {
+const container = document.getElementById('songTable');
+try {
+const res = await fetch('/songs?table=album-ait');
+const data = await res.json();
+if (!data.success || !data.results || data.results.length === 0) {
+container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>';
+return;
+}
+container.innerHTML = '';
+data.results.forEach(song => {
+const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${song.art_number}.jpg`;
+const row = document.createElement('div');
+row.className = 'song-row';
+row.innerHTML = `
+<iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<div class="song-streams">${formatStreams(song.stream_count)}</div>
+<div class="song-art"
+     onclick="openLightbox(this)"
+     data-art-number="${song.art_number}"
+     data-song-name="${song.song_name.replace(/"/g, '&quot;')}"
+     data-release-date="${song.release_date}"
+     data-stream-count="${song.stream_count}">
+  <img src="${artUrl}" alt="${song.song_name.replace(/"/g, '&quot;')}" loading="lazy">
+</div>
+`;
+container.appendChild(row);
+});
+} catch (err) {
+container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
+}
+}
+document.addEventListener('DOMContentLoaded', loadAlbumSongs);
+</script>
 </body>
 </html>
