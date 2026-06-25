@@ -63,6 +63,13 @@ color: var(--silver-dim); text-decoration: none;
 font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s;
 }
 .platform-link-sm:hover { border-color: var(--gold); color: var(--gold); }
+.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 3rem; }
+.song-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
+.song-row iframe { display: block; width: 100%; }
+.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
+.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
 .section-eyebrow {
 font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -77,13 +84,6 @@ border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
 .track-number { color: var(--gold-dim); flex-shrink: 0; }
 .track-name { color: var(--silver); }
 .track-card iframe { display: block; width: 100%; }
-.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 5rem; }
-.song-table { display: flex; flex-direction: column; gap: 0.75rem; }
-.song-title { font-family: 'DM Serif Display', serif; font-size: 0.88rem; color: var(--white); font-style: italic; }
-.song-row { display: flex; flex-direction: column; gap: 0.4rem; }
-.song-row iframe { display: block; width: 100%; }
-.song-streams { font-size: 0.88rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
-.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer {
 border-top: 1px solid var(--border); padding: 2rem 4rem;
 display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
@@ -94,10 +94,10 @@ background: var(--near-black);
 @media (max-width: 700px) {
 .album-hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem 2rem; }
 .album-cover-frame { max-width: 240px; margin: 0 auto; }
+.song-table-section { padding: 0 1.5rem 2rem; }
 main { padding: 1rem 1.5rem 4rem; }
 nav { padding: 0 1.5rem; }
 footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
-.song-table-section { padding: 0 1.5rem 4rem; }
 }
 </style>
 </head>
@@ -137,6 +137,13 @@ Tidal
 Amazon Music
 </a>
 </div>
+</div>
+</div>
+
+<div class="song-table-section">
+<p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
+<div id="songTable" class="song-table">
+<p class="songs-loading">Loading...</p>
 </div>
 </div>
 
@@ -206,13 +213,6 @@ Amazon Music
 </div>
 </main>
 
-<div class="song-table-section">
-<p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
-<div id="songTable" class="song-table">
-<p class="songs-loading">Loading...</p>
-</div>
-</div>
-
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
 <span class="footer-note">Proud to make just awful music.</span>
@@ -239,7 +239,7 @@ const row = document.createElement('div');
 row.className = 'song-row';
 row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+<iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
