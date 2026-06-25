@@ -815,9 +815,7 @@ return (n / 1000).toFixed(1) + 'K';
 }
 
 // ── Lightbox placeholder (wired in Phase 7) ──
-function openLightbox(el) {
-console.log('lightbox:', el.dataset);
-}
+// openLightbox defined in /js/lightbox.js
 
 // ── Fetch and render featured songs ──
 async function fetchFeatured() {
@@ -858,5 +856,6 @@ container.innerHTML = '<p class="featured-empty">Could not load tracks.</p>';
 
 document.addEventListener('DOMContentLoaded', fetchFeatured);
 </script>
+<script src="/js/lightbox.js"></script>
 </body>
 </html>
