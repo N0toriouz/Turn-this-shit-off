@@ -280,16 +280,31 @@ async function loadSongs() {
     data.results.forEach(song => {
       const item = document.createElement('div');
       item.className = 'song-item';
-      item.innerHTML = `
-        <div class="song-item-info">
-          <div class="song-item-name">${esc(song.song_name)}</div>
-          <div class="song-item-meta">ID ${song.id} · ${song.stream_count.toLocaleString()} streams · art #${song.art_number || '—'} · ${song.release_date || '—'}</div>
-        </div>
-        <div class="song-item-actions">
-          <button class="btn-edit" onclick='openEditModal(${JSON.stringify(song)})'>Edit</button>
-          <button class="btn-remove" onclick='confirmRemove(${song.id}, ${JSON.stringify(song.song_name)})'>Remove</button>
-        </div>
+
+      const info = document.createElement('div');
+      info.className = 'song-item-info';
+      info.innerHTML = `
+        <div class="song-item-name">${esc(song.song_name)}</div>
+        <div class="song-item-meta">ID ${song.id} · ${song.stream_count.toLocaleString()} streams · art #${song.art_number || '—'} · ${song.release_date || '—'}</div>
       `;
+
+      const actions = document.createElement('div');
+      actions.className = 'song-item-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-edit';
+      editBtn.textContent = 'Edit';
+      editBtn.addEventListener('click', () => openEditModal(song));
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'btn-remove';
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => confirmRemove(song.id, song.song_name));
+
+      actions.appendChild(editBtn);
+      actions.appendChild(removeBtn);
+      item.appendChild(info);
+      item.appendChild(actions);
       container.appendChild(item);
     });
   } catch (err) {
