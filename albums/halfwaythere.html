@@ -179,7 +179,7 @@ Tidal
 
 <script>
 function formatStreams(n) { if (n < 1000) return String(n); if (n === 1000) return '1K'; return (n / 1000).toFixed(1) + 'K'; }
-function openLightbox(el) { console.log('lightbox:', el.dataset); }
+// openLightbox defined in /js/lightbox.js
 async function loadAlbumSongs() {
 const container = document.getElementById('songTable');
 try {
@@ -198,5 +198,6 @@ container.appendChild(row);
 }
 document.addEventListener('DOMContentLoaded', loadAlbumSongs);
 </script>
+<script src="/js/lightbox.js"></script>
 </body>
 </html>
