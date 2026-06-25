@@ -1,5 +1,12 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
+    const token = request.headers.get('X-Admin-Token');
+  if (!token || token !== env.ADMIN_TOKEN) {
+    return new Response(JSON.stringify({ success: false, message: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    });
+  }
   const url = new URL(request.url);
   const action = url.searchParams.get('action');
 
