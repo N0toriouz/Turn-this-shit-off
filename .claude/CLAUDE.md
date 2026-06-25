@@ -58,6 +58,19 @@ DATABASE: Cloudflare D1 (SQLite at the edge)
   runtime error. This applies to any function that creates partial rows 
   such as cold outreach entries.
 
+Current songs table schema (madeup-monkeyshit-content):
+- id INTEGER PRIMARY KEY AUTOINCREMENT
+- spotify_url TEXT NOT NULL
+- spotify_embed_url TEXT NOT NULL
+- stream_count INTEGER NOT NULL
+- release_date TEXT NOT NULL
+- table_name TEXT NOT NULL
+- art_number INTEGER NOT NULL
+- song_name TEXT NOT NULL DEFAULT ''
+NOT NULL columns that do not have real values in partial row inserts must
+use empty string (''), not NULL. This applies to all functions that write
+partial rows to the songs table.
+
 FUNCTIONS: Cloudflare Pages Functions
 - Located in the /functions directory
 - Handle subscriber pipeline, form processing, and admin authentication
