@@ -444,14 +444,14 @@ flex-shrink: 0;
 
 /* ── Featured dynamic table ── */
 .featured-table {
-display: flex;
-flex-direction: column;
-gap: 0.75rem;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1rem;
 }
-.featured-title { font-family: 'DM Serif Display', serif; font-size: 0.88rem; color: var(--white); font-style: italic; }
-.featured-row { display: flex; flex-direction: column; gap: 0.4rem; }
+.featured-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.featured-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .featured-row iframe { display: block; width: 100%; }
-.featured-streams { font-size: 0.88rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.featured-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
 .featured-loading, .featured-empty {
 color: var(--silver-dim);
 font-size: 0.85rem;
@@ -652,18 +652,15 @@ const consentInput = document.getElementById('subscribeConsent');
 const btn = document.getElementById('subscribeBtn');
 const note = document.getElementById('subscribeNote');
 const email = emailInput.value.trim();
-
 if (!email || !email.includes('@')) {
 emailInput.style.borderColor = '#8B2020';
 emailInput.focus();
 setTimeout(() => { emailInput.style.borderColor = ''; }, 2000);
 return;
 }
-
 btn.disabled = true;
 btn.textContent = 'Sending...';
 btn.style.cursor = 'wait';
-
 try {
 const response = await fetch('/subscribe', {
 method: 'POST',
@@ -716,7 +713,7 @@ const row = document.createElement('div');
 row.className = 'featured-row';
 row.innerHTML = `
   <div class="featured-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-  <iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+  <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
     allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   <div class="featured-streams">${formatStreams(song.stream_count)}</div>
 `;
