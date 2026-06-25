@@ -28,11 +28,11 @@ display: flex; align-items: center; justify-content: space-between;
 .page-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3rem); color: var(--white); margin-bottom: 0.75rem; line-height: 1.15; }
 .page-subtitle { color: var(--silver-dim); font-size: 0.95rem; max-width: 520px; }
 .songs-section { padding: 3rem 4rem 5rem; max-width: 1200px; margin: 0 auto; }
-.song-table { display: flex; flex-direction: column; gap: 0.75rem; }
-.song-title { font-family: 'DM Serif Display', serif; font-size: 0.88rem; color: var(--white); font-style: italic; }
-.song-row { display: flex; flex-direction: column; gap: 0.4rem; }
+.song-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .song-row iframe { display: block; width: 100%; }
-.song-streams { font-size: 0.88rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
 .songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--near-black); }
 .footer-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--gold); font-style: italic; }
@@ -88,7 +88,7 @@ const row = document.createElement('div');
 row.className = 'song-row';
 row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+<iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
