@@ -63,6 +63,13 @@ color: var(--silver-dim); text-decoration: none;
 font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s;
 }
 .platform-link-sm:hover { border-color: var(--gold); color: var(--gold); }
+.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 3rem; }
+.song-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
+.song-row iframe { display: block; width: 100%; }
+.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
+.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
 .section-eyebrow {
 font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -77,13 +84,6 @@ border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
 .track-number { color: var(--gold-dim); flex-shrink: 0; }
 .track-name { color: var(--silver); }
 .track-card iframe { display: block; width: 100%; }
-.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 5rem; }
-.song-table { display: flex; flex-direction: column; gap: 0.75rem; }
-.song-title { font-family: 'DM Serif Display', serif; font-size: 0.88rem; color: var(--white); font-style: italic; }
-.song-row { display: flex; flex-direction: column; gap: 0.4rem; }
-.song-row iframe { display: block; width: 100%; }
-.song-streams { font-size: 0.88rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
-.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer {
 border-top: 1px solid var(--border); padding: 2rem 4rem;
 display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
@@ -94,10 +94,10 @@ background: var(--near-black);
 @media (max-width: 700px) {
 .album-hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem 2rem; }
 .album-cover-frame { max-width: 240px; margin: 0 auto; }
+.song-table-section { padding: 0 1.5rem 2rem; }
 main { padding: 1rem 1.5rem 4rem; }
 nav { padding: 0 1.5rem; }
 footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
-.song-table-section { padding: 0 1.5rem 4rem; }
 }
 </style>
 </head>
@@ -144,62 +144,29 @@ YouTube Music
 </div>
 </div>
 
-<main>
-<p class="section-eyebrow">All 11 Tracks</p>
-<div class="tracks-grid">
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">01</span><span class="track-name">They Couldn't Wait to Go Off-Post</span></div>
-<iframe src="https://open.spotify.com/embed/track/7wpP4LIHEHmKmHQUsS1jgL?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">02</span><span class="track-name">We are Now the Most Senior Class</span></div>
-<iframe src="https://open.spotify.com/embed/track/5Jsk0esjUu3cgdSuMYAOm4?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">03</span><span class="track-name">We Had to Exchange to a New Dorm Again, and This Time, We Lost a Roommate</span></div>
-<iframe src="https://open.spotify.com/embed/track/6ADb1IDlrWipEsGJdEn3BN?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">04</span><span class="track-name">All the Washers on the First Floor are Broken</span></div>
-<iframe src="https://open.spotify.com/embed/track/7lYCwwXWNwixu5n360mY4x?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">05</span><span class="track-name">One Week of Classes Remaining</span></div>
-<iframe src="https://open.spotify.com/embed/track/3qYvwW9RHBvVBRkN4G4rbc?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">06</span><span class="track-name">I Want to Exercise, but I am Not Allowed</span></div>
-<iframe src="https://open.spotify.com/embed/track/36zCtxw3QGSccW6rinOn64?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">07</span><span class="track-name">Today is Burrito Day</span></div>
-<iframe src="https://open.spotify.com/embed/track/1Sg4BzSb11yA7PwWSG70KS?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">08</span><span class="track-name">This New Room Isn't So Bad</span></div>
-<iframe src="https://open.spotify.com/embed/track/60LkzpLrmOE0hoaICJNWhv?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">09</span><span class="track-name">They are Starting a Football League and It Will be Awesome to Watch Them Play</span></div>
-<iframe src="https://open.spotify.com/embed/track/7w6cNLhEsK5k3faiFlYxu9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">10</span><span class="track-name">It is Nice and Peaceful Around Here</span></div>
-<iframe src="https://open.spotify.com/embed/track/32QcvdlDZ4C2NO5eGaUElU?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">11</span><span class="track-name">I am a Pretty Weird Guy, I Guess</span></div>
-<iframe src="https://open.spotify.com/embed/track/2uErjCZP3yf6QRaxsGwllW?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-</div>
-</main>
-
 <div class="song-table-section">
 <p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
 <div id="songTable" class="song-table">
 <p class="songs-loading">Loading...</p>
 </div>
 </div>
+
+<main>
+<p class="section-eyebrow">All 11 Tracks</p>
+<div class="tracks-grid">
+<div class="track-card"><div class="track-card-label"><span class="track-number">01</span><span class="track-name">They Couldn't Wait to Go Off-Post</span></div><iframe src="https://open.spotify.com/embed/track/7wpP4LIHEHmKmHQUsS1jgL?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">02</span><span class="track-name">We are Now the Most Senior Class</span></div><iframe src="https://open.spotify.com/embed/track/5Jsk0esjUu3cgdSuMYAOm4?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">03</span><span class="track-name">We Had to Exchange to a New Dorm Again, and This Time, We Lost a Roommate</span></div><iframe src="https://open.spotify.com/embed/track/6ADb1IDlrWipEsGJdEn3BN?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">04</span><span class="track-name">All the Washers on the First Floor are Broken</span></div><iframe src="https://open.spotify.com/embed/track/7lYCwwXWNwixu5n360mY4x?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">05</span><span class="track-name">One Week of Classes Remaining</span></div><iframe src="https://open.spotify.com/embed/track/3qYvwW9RHBvVBRkN4G4rbc?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">06</span><span class="track-name">I Want to Exercise, but I am Not Allowed</span></div><iframe src="https://open.spotify.com/embed/track/36zCtxw3QGSccW6rinOn64?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">07</span><span class="track-name">Today is Burrito Day</span></div><iframe src="https://open.spotify.com/embed/track/1Sg4BzSb11yA7PwWSG70KS?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">08</span><span class="track-name">This New Room Isn't So Bad</span></div><iframe src="https://open.spotify.com/embed/track/60LkzpLrmOE0hoaICJNWhv?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">09</span><span class="track-name">They are Starting a Football League and It Will be Awesome to Watch Them Play</span></div><iframe src="https://open.spotify.com/embed/track/7w6cNLhEsK5k3faiFlYxu9?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">10</span><span class="track-name">It is Nice and Peaceful Around Here</span></div><iframe src="https://open.spotify.com/embed/track/32QcvdlDZ4C2NO5eGaUElU?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+<div class="track-card"><div class="track-card-label"><span class="track-number">11</span><span class="track-name">I am a Pretty Weird Guy, I Guess</span></div><iframe src="https://open.spotify.com/embed/track/2uErjCZP3yf6QRaxsGwllW?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+</div>
+</main>
 
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
@@ -227,7 +194,7 @@ const row = document.createElement('div');
 row.className = 'song-row';
 row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-<iframe src="${song.spotify_embed_url}" height="152" frameborder="0" allowtransparency="true"
+<iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
