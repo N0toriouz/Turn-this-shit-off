@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Song Table Manager — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0A0A0A; --near-black: #111111; --card-bg: #161616;
+  --border: #2A2A2A; --silver: #C8C8C8; --silver-dim: #888888;
+  --gold: #D4AF37; --gold-dim: #9A7D1A; --white: #F2F2F2;
+  --red: #C0392B; --green: #27AE60;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--black); color: var(--silver); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+header {
+  background: var(--near-black); border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+}
+header h1 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--gold); font-style: italic; }
+header span { font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+.layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 57px); }
+.sidebar {
+  background: var(--near-black); border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+}
+.sidebar h2 { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--silver-dim); margin-bottom: 0.75rem; padding: 0 0.5rem; }
+.table-list { display: flex; flex-direction: column; gap: 2px; }
+.table-btn {
+  background: none; border: none; cursor: pointer; text-align: left;
+  padding: 0.5rem 0.75rem; border-radius: 2px;
+  color: var(--silver-dim); font-size: 0.82rem; font-family: 'Inter', sans-serif;
+  transition: background 0.15s, color 0.15s;
+}
+.table-btn:hover { background: var(--card-bg); color: var(--silver); }
+.table-btn.active { background: var(--card-bg); color: var(--gold); border-left: 2px solid var(--gold); }
+.main { padding: 2rem; }
+.main-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.main-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: var(--white); }
+.btn-add {
+  background: var(--gold); color: var(--black); border: none; cursor: pointer;
+  padding: 0.55rem 1.2rem; border-radius: 2px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: 'Inter', sans-serif; transition: background 0.2s;
+}
+.btn-add:hover { background: #E8C547; }
+.song-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.song-item {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 2px;
+  padding: 0.85rem 1rem; display: grid;
+  grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
+}
+.song-item-info { min-width: 0; }
+.song-item-name { color: var(--white); font-size: 0.88rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-item-meta { font-size: 0.75rem; color: var(--silver-dim); margin-top: 0.2rem; }
+.song-item-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.btn-edit, .btn-remove {
+  border: 1px solid var(--border); background: none; cursor: pointer; border-radius: 2px;
+  padding: 0.35rem 0.7rem; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+  font-family: 'Inter', sans-serif; transition: border-color 0.2s, color 0.2s;
+}
+.btn-edit { color: var(--silver-dim); }
+.btn-edit:hover { border-color: var(--gold); color: var(--gold); }
+.btn-remove { color: var(--silver-dim); }
+.btn-remove:hover { border-color: var(--red); color: var(--red); }
+.empty-state { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
+.loading-state { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--near-black); border: 1px solid var(--border); border-radius: 2px;
+  padding: 2rem; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+}
+.modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--white); margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1.1rem; }
+.form-group label { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--silver-dim); margin-bottom: 0.4rem; }
+.form-group label span.req { color: var(--gold); margin-left: 2px; }
+.form-group input, .form-group select {
+  width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 2px;
+  color: var(--silver); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+  padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+.form-group select option { background: var(--card-bg); }
+.form-hint { font-size: 0.7rem; color: var(--silver-dim); margin-top: 0.3rem; }
+.modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.75rem; }
+.btn-cancel {
+  background: none; border: 1px solid var(--border); color: var(--silver-dim);
+  padding: 0.55rem 1.2rem; border-radius: 2px; cursor: pointer;
+  font-size: 0.78rem; font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.btn-cancel:hover { border-color: var(--silver); }
+.btn-save {
+  background: var(--gold); color: var(--black); border: none; cursor: pointer;
+  padding: 0.55rem 1.4rem; border-radius: 2px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: 'Inter', sans-serif; transition: background 0.2s;
+}
+.btn-save:hover { background: #E8C547; }
+.btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+/* Toast */
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 300;
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 2px;
+  padding: 0.75rem 1.25rem; font-size: 0.82rem; color: var(--silver);
+  transform: translateY(8px); opacity: 0; transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--red); color: var(--red); }
+/* Confirm overlay */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8); z-index: 300;
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: var(--near-black); border: 1px solid var(--border); border-radius: 2px;
+  padding: 1.75rem; width: 100%; max-width: 360px; text-align: center;
+}
+.confirm-box p { color: var(--silver); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5; }
+.confirm-box strong { color: var(--white); }
+.confirm-actions { display: flex; gap: 0.75rem; justify-content: center; }
+.btn-confirm-delete {
+  background: var(--red); color: var(--white); border: none; cursor: pointer;
+  padding: 0.55rem 1.2rem; border-radius: 2px;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: 'Inter', sans-serif;
+}
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem; }
+  .table-list { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .main { padding: 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Song Table Manager</h1>
+  <span>MadeUp MonkeyShit — Admin</span>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Tables</h2>
+    <div class="table-list" id="tableList">
+      <span style="color:var(--silver-dim);font-size:0.8rem;">Loading...</span>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="main-header">
+      <h2 id="mainTitle">Select a table</h2>
+      <button class="btn-add" id="btnAdd" style="display:none" onclick="openAddModal()">+ Add Song</button>
+    </div>
+    <div id="songList" class="song-list">
+      <p class="empty-state">Choose a table from the left to get started.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Add Song</h3>
+    <input type="hidden" id="editId">
+
+    <div class="form-group">
+      <label>Song Name <span class="req">*</span></label>
+      <input type="text" id="fSongName" placeholder="Today has been too Peaceful...">
+    </div>
+    <div class="form-group">
+      <label>Table <span class="req">*</span></label>
+      <select id="fTableName"></select>
+    </div>
+    <div class="form-group">
+      <label>Spotify Track URL <span class="req">*</span></label>
+      <input type="text" id="fSpotifyUrl" placeholder="https://open.spotify.com/track/..." oninput="autoEmbed()">
+      <p class="form-hint">Paste the track URL — embed URL will be generated automatically.</p>
+    </div>
+    <div class="form-group">
+      <label>Spotify Embed URL <span class="req">*</span></label>
+      <input type="text" id="fEmbedUrl" placeholder="https://open.spotify.com/embed/track/...">
+    </div>
+    <div class="form-group">
+      <label>Stream Count</label>
+      <input type="number" id="fStreamCount" placeholder="0" min="0">
+    </div>
+    <div class="form-group">
+      <label>Release Date</label>
+      <input type="text" id="fReleaseDate" placeholder="2025-04-11">
+    </div>
+    <div class="form-group">
+      <label>Art Number</label>
+      <input type="text" id="fArtNumber" placeholder="1">
+      <p class="form-hint">Numeric ID used to fetch art from the GitHub repo.</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" id="btnSave" onclick="saveForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <p>Remove <strong id="confirmSongName"></strong> from the table?<br>This cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-confirm-delete" id="btnConfirmDelete">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const TABLES = [
+  'featured',
+  'mood-1','mood-2','mood-3','mood-4','mood-5',
+  'album-ait','album-week-6','album-melted-ice-cream',
+  'album-still-cooking','album-pick-a-struggle','album-half-way-there'
+];
+
+let currentTable = null;
+
+// --- Init ---
+function init() {
+  const list = document.getElementById('tableList');
+  list.innerHTML = '';
+  TABLES.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'table-btn';
+    btn.textContent = t;
+    btn.onclick = () => selectTable(t);
+    list.appendChild(btn);
+  });
+
+  const sel = document.getElementById('fTableName');
+  TABLES.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    sel.appendChild(opt);
+  });
+}
+
+async function selectTable(name) {
+  currentTable = name;
+  document.querySelectorAll('.table-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === name);
+  });
+  document.getElementById('mainTitle').textContent = name;
+  document.getElementById('btnAdd').style.display = '';
+  await loadSongs();
+}
+
+async function loadSongs() {
+  const container = document.getElementById('songList');
+  container.innerHTML = '<p class="loading-state">Loading...</p>';
+  try {
+    const res = await fetch(`/admin-content-query?action=list&table=${encodeURIComponent(currentTable)}`);
+    const data = await res.json();
+    if (!data.success) { container.innerHTML = `<p class="empty-state">Error: ${data.message}</p>`; return; }
+    if (!data.results.length) { container.innerHTML = '<p class="empty-state">No songs in this table yet.</p>'; return; }
+    container.innerHTML = '';
+    data.results.forEach(song => {
+      const item = document.createElement('div');
+      item.className = 'song-item';
+      item.innerHTML = `
+        <div class="song-item-info">
+          <div class="song-item-name">${esc(song.song_name)}</div>
+          <div class="song-item-meta">ID ${song.id} · ${song.stream_count.toLocaleString()} streams · art #${song.art_number || '—'} · ${song.release_date || '—'}</div>
+        </div>
+        <div class="song-item-actions">
+          <button class="btn-edit" onclick='openEditModal(${JSON.stringify(song)})'>Edit</button>
+          <button class="btn-remove" onclick='confirmRemove(${song.id}, ${JSON.stringify(song.song_name)})'>Remove</button>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  } catch (err) {
+    container.innerHTML = `<p class="empty-state">Could not load songs.</p>`;
+  }
+}
+
+// --- Modal ---
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = 'Add Song';
+  document.getElementById('editId').value = '';
+  clearForm();
+  document.getElementById('fTableName').value = currentTable;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function openEditModal(song) {
+  document.getElementById('modalTitle').textContent = 'Edit Song';
+  document.getElementById('editId').value = song.id;
+  document.getElementById('fSongName').value = song.song_name || '';
+  document.getElementById('fTableName').value = song.table_name || currentTable;
+  document.getElementById('fSpotifyUrl').value = song.spotify_url || '';
+  document.getElementById('fEmbedUrl').value = song.spotify_embed_url || '';
+  document.getElementById('fStreamCount').value = song.stream_count ?? 0;
+  document.getElementById('fReleaseDate').value = song.release_date || '';
+  document.getElementById('fArtNumber').value = song.art_number || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function clearForm() {
+  ['fSongName','fSpotifyUrl','fEmbedUrl','fReleaseDate','fArtNumber'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('fStreamCount').value = 0;
+}
+
+function autoEmbed() {
+  const url = document.getElementById('fSpotifyUrl').value.trim();
+  const match = url.match(/spotify\.com\/track\/([A-Za-z0-9]+)/);
+  if (match) {
+    document.getElementById('fEmbedUrl').value =
+      `https://open.spotify.com/embed/track/${match[1]}?utm_source=generator`;
+  }
+}
+
+async function saveForm() {
+  const id = document.getElementById('editId').value;
+  const song_name = document.getElementById('fSongName').value.trim();
+  const table_name = document.getElementById('fTableName').value;
+  const spotify_url = document.getElementById('fSpotifyUrl').value.trim();
+  const spotify_embed_url = document.getElementById('fEmbedUrl').value.trim();
+  const stream_count = parseInt(document.getElementById('fStreamCount').value) || 0;
+  const release_date = document.getElementById('fReleaseDate').value.trim();
+  const art_number = document.getElementById('fArtNumber').value.trim();
+
+  if (!song_name || !table_name || !spotify_url || !spotify_embed_url) {
+    showToast('Song name, table, Spotify URL, and embed URL are required.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const payload = { action: id ? 'edit' : 'add', song_name, table_name, spotify_url,
+                    spotify_embed_url, stream_count, release_date, art_number };
+  if (id) payload.id = parseInt(id);
+
+  try {
+    const res = await fetch('/admin-content-manager', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal();
+      showToast(data.message, 'success');
+      await loadSongs();
+    } else {
+      showToast(data.message || 'Save failed.', 'error');
+    }
+  } catch {
+    showToast('Network error.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save';
+  }
+}
+
+// --- Confirm Remove ---
+let pendingRemoveId = null;
+function confirmRemove(id, name) {
+  pendingRemoveId = id;
+  document.getElementById('confirmSongName').textContent = name;
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('btnConfirmDelete').onclick = async () => {
+    closeConfirm();
+    try {
+      const res = await fetch('/admin-content-manager', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'remove', id: pendingRemoveId })
+      });
+      const data = await res.json();
+      showToast(data.success ? 'Song removed.' : (data.message || 'Remove failed.'),
+                data.success ? 'success' : 'error');
+      if (data.success) await loadSongs();
+    } catch {
+      showToast('Network error.', 'error');
+    }
+  };
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  pendingRemoveId = null;
+}
+
+// --- Toast ---
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+document.getElementById('confirmOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeConfirm();
+});
+
+init();
+</script>
+</body>
+</html>
