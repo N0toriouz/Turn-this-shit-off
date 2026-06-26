@@ -12,8 +12,19 @@
 --gold: #D4AF37; --gold-dim: #9A7D1A; --white: #F2F2F2;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { background: var(--black); color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
+html { scroll-behavior: smooth; background: #0A0A0A; overflow: hidden; }
+body { background: transparent; color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
+#page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: #0A0A0A;
+  background-size: cover;
+  background-position: center center;
+  filter: blur(12px) saturate(0.6) brightness(0.9);
+  transform: scale(1.15);
+  pointer-events: none;
+}
 nav {
 position: sticky; top: 0; z-index: 100;
 background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
@@ -102,6 +113,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 </style>
 </head>
 <body>
+<div id="page-backdrop"></div>
 
 <nav>
 <a href="/" class="nav-logo">MadeUp MonkeyShit</a>
@@ -133,7 +145,8 @@ Apple Music
 Tidal
 </a>
 <a href="https://music.amazon.ca/albums/B0GV8VD9DJ" target="_blank" class="platform-link-sm">
-<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
+<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144
+                                                                            C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
 Amazon Music
 </a>
 <a href="https://music.youtube.com/playlist?list=OLAK5uy_kHGBabscO2FFp2NKx7yWEgy0wxDGUWhPY" target="_blank" class="platform-link-sm">
@@ -143,14 +156,12 @@ YouTube Music
 </div>
 </div>
 </div>
-
 <div class="song-table-section">
 <p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
 <div id="songTable" class="song-table">
 <p class="songs-loading">Loading...</p>
 </div>
 </div>
-
 <main>
 <p class="section-eyebrow">All 15 Tracks</p>
 <div class="tracks-grid">
@@ -171,12 +182,10 @@ YouTube Music
 <div class="track-card"><div class="track-card-label"><span class="track-number">15</span><span class="track-name">One of My Socks has an Enormous Hole in It</span></div><iframe src="https://open.spotify.com/embed/track/6Xfd3uDFLApLzu9HeROvr1?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
 </div>
 </main>
-
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
 <span class="footer-note">Proud to make just awful music.</span>
 </footer>
-
 <script>
 function formatStreams(n) {
   if (n < 1000) return '▶ ' + String(n);
@@ -204,6 +213,11 @@ row.innerHTML = `
 `;
 container.appendChild(row);
 });
+if (data.results[0].art_number) {
+  const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
+  document.getElementById('page-backdrop').style.backgroundImage =
+    `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
+}
 } catch (err) {
 container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
 }
