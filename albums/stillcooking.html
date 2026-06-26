@@ -12,8 +12,19 @@
 --gold: #D4AF37; --gold-dim: #9A7D1A; --white: #F2F2F2;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { background: var(--black); color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
+html { scroll-behavior: smooth; background: #0A0A0A; overflow: hidden; }
+body { background: transparent; color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
+#page-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: #0A0A0A;
+  background-size: cover;
+  background-position: center center;
+  filter: blur(12px) saturate(0.6) brightness(0.9);
+  transform: scale(1.15);
+  pointer-events: none;
+}
 nav {
 position: sticky; top: 0; z-index: 100;
 background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
@@ -102,6 +113,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 </style>
 </head>
 <body>
+<div id="page-backdrop"></div>
 
 <nav>
 <a href="/" class="nav-logo">MadeUp MonkeyShit</a>
@@ -200,6 +212,11 @@ row.innerHTML = `
 `;
 container.appendChild(row);
 });
+if (data.results[0].art_number) {
+  const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
+  document.getElementById('page-backdrop').style.backgroundImage =
+    `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
+}
 } catch (err) {
 container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
 }
