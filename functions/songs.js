@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
   try {
     const { results } = await env.CONTENT_DB.prepare(
       `SELECT id, spotify_url, spotify_embed_url, stream_count,
-              release_date, song_name
+              release_date, song_name, art_number
        FROM songs
        WHERE table_name = ?
        ORDER BY stream_count DESC`
