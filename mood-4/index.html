@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,21 +16,14 @@
 html { background: #0A0A0A; overflow-x: hidden; }
 body { background: transparent; color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
 #page-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: #0A0A0A;
-  background-size: cover;
-  background-position: center center;
-  filter: blur(12px) saturate(0.6) brightness(0.9);
-  transform: scale(1.15);
-  pointer-events: none;
+  position: fixed; inset: 0; z-index: -1;
+  background-color: #0A0A0A; background-size: cover; background-position: center center;
+  filter: blur(12px) saturate(0.6) brightness(0.9); transform: scale(1.15); pointer-events: none;
 }
 nav {
 position: fixed; top: 0; left: 0; right: 0; z-index: 100;
 background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
-border-bottom: 1px solid var(--border);
-padding: 0 2rem; height: 60px;
+border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px;
 display: flex; align-items: center; justify-content: space-between;
 }
 .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--gold); text-decoration: none; }
@@ -45,6 +39,7 @@ display: flex; align-items: center; justify-content: space-between;
 .song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .song-row iframe { display: block; width: 100%; }
 .song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
+.track-social { display: flex; gap: 1.5rem; padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); border-top: 1px solid var(--border); }
 .songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--near-black); }
 .footer-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--gold); font-style: italic; }
@@ -86,35 +81,65 @@ function formatStreams(n) {
   if (n === 1000) return '▶ 1K';
   return '▶ ' + (n / 1000).toFixed(1) + 'K';
 }
-async function loadSongs() {
-const container = document.getElementById('songTable');
-try {
-const res = await fetch('/songs?table=mood-4');
-const data = await res.json();
-if (!data.success || !data.results || data.results.length === 0) {
-container.innerHTML = '<p class="songs-empty">No songs here yet.</p>';
-return;
+function fmtStat(n) {
+  n = parseInt(n) || 0;
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
 }
-container.innerHTML = '';
-data.results.forEach(song => {
-const row = document.createElement('div');
-row.className = 'song-row';
-row.innerHTML = `
+async function loadTrackSocial(container) {
+  const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
+  if (!rows.length) return;
+  try {
+    const results = await Promise.all(
+      rows.map(row =>
+        fetch('/track-stats?name=' + encodeURIComponent(row.dataset.songName))
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      )
+    );
+    rows.forEach((row, i) => {
+      const data = results[i];
+      if (!data?.success || !data.result) return;
+      const s = data.result;
+      if (!s.total_likes && !s.total_shares) return;
+      const div = document.createElement('div');
+      div.className = 'track-social';
+      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
+      row.appendChild(div);
+    });
+  } catch(e) {}
+}
+async function loadSongs() {
+  const container = document.getElementById('songTable');
+  try {
+    const res = await fetch('/songs?table=mood-4');
+    const data = await res.json();
+    if (!data.success || !data.results || data.results.length === 0) {
+      container.innerHTML = '<p class="songs-empty">No songs here yet.</p>';
+      return;
+    }
+    container.innerHTML = '';
+    data.results.forEach(song => {
+      const row = document.createElement('div');
+      row.className = 'song-row';
+      row.dataset.songName = song.song_name;
+      row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
-container.appendChild(row);
-});
-if (data.results[0].art_number) {
-  const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
-  document.getElementById('page-backdrop').style.backgroundImage =
-    `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
-}
-} catch (err) {
-container.innerHTML = '<p class="songs-empty">Could not load songs.</p>';
-}
+      container.appendChild(row);
+    });
+    if (data.results[0].art_number) {
+      const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
+      document.getElementById('page-backdrop').style.backgroundImage =
+        `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
+    }
+    loadTrackSocial(container);
+  } catch (err) {
+    container.innerHTML = '<p class="songs-empty">Could not load songs.</p>';
+  }
 }
 document.addEventListener('DOMContentLoaded', loadSongs);
 </script>
