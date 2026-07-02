@@ -23,6 +23,12 @@ export async function onRequestGet(context) {
 
     if (action === 'list') {
       const tableName = url.searchParams.get('table');
+          if (action === 'counts') {
+      const { results } = await env.CONTENT_DB.prepare(
+        `SELECT table_name, COUNT(*) as count FROM songs GROUP BY table_name`
+      ).all();
+      return json({ success: true, results: results || [] });
+    }
       if (!tableName) return json({ success: false, message: 'table required' }, 400);
       const { results } = await env.CONTENT_DB.prepare(
         `SELECT id, song_name, table_name, spotify_url, spotify_embed_url,
