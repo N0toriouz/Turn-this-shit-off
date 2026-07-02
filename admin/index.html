@@ -130,11 +130,9 @@
         <thead>
           <tr>
             <th>Song</th>
+            <th>Stats Entered</th>
             <th>Streams</th>
-            <th>Release Date</th>
-            <th>Art #</th>
-            <th>Spotify</th>
-            <th>Actions</th>
+            <th>Likes</th>
           </tr>
         </thead>
         <tbody id="songTableBody">
@@ -770,30 +768,41 @@ async function saveAlbumForm() {
 async function loadSongStatsList() {
   const album_id = document.getElementById('ssFilterAlbum').value;
   const tbody = document.getElementById('ssTableBody');
-  tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+  if (!album_id) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Select an album above</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Loading…</td></tr>';
   try {
-    let url = '/admin-song-stats-query?action=list';
-    if (album_id) url += `&album_id=${album_id}`;
-    const data = await apiFetch(url);
-    const songs = data.songs || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No song stats yet</td></tr>'; return; }
-    tbody.innerHTML = songs.map(s => {
-      const streams = computeSongStreams(s);
-      const likes = computeSongLikes(s);
-      const albumName = (_albumNames.find(a => a.id == s.album_id) || {}).name || s.album_id || '—';
-      return `<tr>
-        <td>${s.name}</td>
-        <td>${albumName}</td>
-        <td>${s.release_date || '—'}</td>
-        <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
+    const album = _albumNames.find(a => a.id == album_id);
+    const tableName = album ? ALBUM_TABLE_NAME[album.name] : null;
+    const [contentData, statsData] = await Promise.all([
+      tableName ? apiFetch(`/admin-content-query?action=list&table=${encodeURIComponent(tableName)}`) : Promise.resolve({ results: [] }),
+      apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`).catch(() => ({ results: [] }))
+    ]);
+    const contentSongs = contentData.results || [];
+    const statsResults = statsData.results || [];
+    const statsMap = {};
+    statsResults.forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
+    if (!contentSongs.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No songs assigned to this album yet</td></tr>';
+      return;
+    }
+    _ssSongRows = contentSongs.map(song => ({
+      song,
+      stats: statsMap[song.song_name.trim().toLowerCase()] || null
+    }));
+    tbody.innerHTML = _ssSongRows.map(({ song, stats }, i) => {
+      const streams = stats ? computeSongStreams(stats) : 0;
+      const likes = stats ? computeSongLikes(stats) : 0;
+      return `<tr style="cursor:pointer" ondblclick="openSongStatsFromRow(${i})">
+        <td>${song.song_name}</td>
+        <td><span class="badge ${stats ? 'badge-yes' : 'badge-no'}">${stats ? 'Yes' : 'No'}</span></td>
         <td>${fmt(streams)}</td>
         <td>${fmt(likes)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick='openSongStatsModal("edit", ${JSON.stringify(s).replace(/'/g,"&#39;")})'>Edit</button>
-        </td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error: ${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="4" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
 function computeSongStreams(s) {
@@ -804,6 +813,19 @@ function computeSongLikes(s) {
 }
 
 let _currentSs = null;
+let _ssSongRows = [];
+
+function openSongStatsFromRow(i) {
+  const { song, stats } = _ssSongRows[i];
+  if (stats) {
+    openSongStatsModal('edit', stats);
+  } else {
+    openSongStatsModal('create');
+    const album_id = document.getElementById('ssFilterAlbum').value;
+    document.getElementById('ssAlbum').value = album_id;
+    document.getElementById('ssName').value = song.song_name;
+  }
+}
 
 function openSongStatsModal(type, song = null) {
   _currentSs = song;
