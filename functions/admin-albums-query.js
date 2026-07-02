@@ -59,6 +59,7 @@ function buildTotalsMap(songs) {
   for (const s of songs) {
     if (!map[s.album_id]) map[s.album_id] = zeroes();
     const t = map[s.album_id];
+    t.song_count++;
     t.total_streams += (s.tiktok_views||0)+(s.facebook_views||0)+(s.instagram_views||0)+(s.youtube_views||0)+(s.youtube_music||0)+(s.spotify_streams||0)+(s.apple_streams||0)+(s.amazon_streams||0)+(s.tidal_streams||0);
     t.total_likes   += (s.tt_likes||0)+(s.fb_likes||0)+(s.in_likes||0)+(s.yt_likes||0);
     t.total_shares  += (s.tt_shares||0)+(s.fb_shares||0)+(s.in_shares||0)+(s.in_reposts||0);
@@ -80,7 +81,7 @@ function computeTotals(songs) {
 }
 
 function zeroes() {
-  return { total_streams:0, total_likes:0, total_shares:0, total_saves:0, total_listeners:0 };
+  return { total_streams:0, total_likes:0, total_shares:0, total_saves:0, total_listeners:0, song_count:0 };
 }
 
 function json(body, status = 200) {
