@@ -817,11 +817,20 @@ let _ssSongRows = [];
 
 function openSongStatsFromRow(i) {
   const { song, stats } = _ssSongRows[i];
+  const album_id = document.getElementById('ssFilterAlbum').value;
+  document.getElementById('modal-ss').classList.add('open');
+  if (_albumNames.length === 0) fetchAlbumNames().then(() => populateAlbumDropdowns());
   if (stats) {
-    openSongStatsModal('edit', stats);
+    _currentSs = stats;
+    onSsTypeChange('edit');
+    document.getElementById('ssAlbum').value = album_id;
+    loadSsSongDropdown(album_id, song.song_name).then(() => {
+      document.getElementById('ssSongSelect').value = song.song_name;
+      populateSsFields(stats);
+    });
   } else {
-    openSongStatsModal('create');
-    const album_id = document.getElementById('ssFilterAlbum').value;
+    _currentSs = null;
+    onSsTypeChange('create');
     document.getElementById('ssAlbum').value = album_id;
     document.getElementById('ssName').value = song.song_name;
   }
@@ -865,29 +874,45 @@ async function onSsAlbumChange() {
   }
 }
 
-async function loadSsSongDropdown(album_id, selectedId = null) {
+async function loadSsSongDropdown(album_id, selectedName = null) {
   const sel = document.getElementById('ssSongSelect');
   sel.innerHTML = '<option value="">— Select Song —</option>';
   if (!album_id) return;
   try {
-    const data = await apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`);
-    (data.songs || []).forEach(s => {
+    const album = _albumNames.find(a => a.id == album_id);
+    const tableName = album ? ALBUM_TABLE_NAME[album.name] : null;
+    if (!tableName) return;
+    const data = await apiFetch(`/admin-content-query?action=list&table=${encodeURIComponent(tableName)}`);
+    (data.results || []).forEach(s => {
       const o = document.createElement('option');
-      o.value = s.id; o.textContent = s.name;
+      o.value = s.song_name; o.textContent = s.song_name;
       sel.appendChild(o);
     });
-    if (selectedId) sel.value = selectedId;
+    if (selectedName) sel.value = selectedName;
   } catch(e) { console.error('loadSsSongDropdown', e); }
 }
 
 async function onSsSongSelectChange() {
-  const id = document.getElementById('ssSongSelect').value;
-  if (!id) return;
+  const songName = document.getElementById('ssSongSelect').value;
+  const album_id = document.getElementById('ssAlbum').value;
+  if (!songName || !album_id) return;
+  document.getElementById('ssName').value = songName;
   try {
-    const data = await apiFetch(`/admin-song-stats-query?action=get&id=${id}`);
-    _currentSs = data.song;
-    populateSsFields(data.song);
-  } catch(e) { showStatus('Error loading song stat: ' + e.message, 'error'); }
+    const data = await apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`);
+    const existing = (data.results || []).find(s => s.name.trim().toLowerCase() === songName.trim().toLowerCase());
+    if (existing) {
+      _currentSs = existing;
+      onSsTypeChange('edit');
+      document.getElementById('ssAlbum').value = album_id;
+      document.getElementById('ssSongSelect').value = songName;
+      populateSsFields(existing);
+    } else {
+      _currentSs = null;
+      onSsTypeChange('create');
+      document.getElementById('ssAlbum').value = album_id;
+      document.getElementById('ssName').value = songName;
+    }
+  } catch(e) { showStatus('Error loading song stats: ' + e.message, 'error'); }
 }
 
 const SS_FIELDS = ['tiktok_views','tt_likes','tt_saves','tt_shares',
@@ -983,7 +1008,7 @@ async function saveSsForm() {
   };
   SS_FIELDS.forEach(f => { body[f] = parseInt(document.getElementById('ss-' + f)?.value) || 0; });
   if (isEdit) {
-    body.id = _currentSs?.id || document.getElementById('ssSongSelect').value;
+    body.id = _currentSs?.id;
     if (!body.id) { alert('No song selected.'); return; }
   }
   try {
