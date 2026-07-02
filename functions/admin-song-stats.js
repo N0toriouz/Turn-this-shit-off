@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
       const cf = countryValues(countries || []);
-      await env.CONTENT_DB.prepare(`
+      await env.SONGS_DB.prepare(`
         INSERT INTO song_stats (
           album_id, name, art, release_date, active,
           tiktok_views, tt_likes, tt_saves, tt_shares,
@@ -33,8 +33,8 @@ export async function onRequestPost(context) {
           ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
         )
       `).bind(
-        parseInt(album_id), name.trim(), parseInt(art) || 0,
-        (release_date || '').trim(), active || 'Yes',
+        parseInt(album_id), name.trim(), parseInt(art)||0,
+        (release_date||'').trim(), active||'Yes',
         ...pf, ...cf
       ).run();
       return json({ success: true, message: 'Song stats created' });
@@ -46,7 +46,7 @@ export async function onRequestPost(context) {
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
       const cf = countryValues(countries || []);
-      const result = await env.CONTENT_DB.prepare(`
+      const result = await env.SONGS_DB.prepare(`
         UPDATE song_stats SET
           album_id=?, name=?, art=?, release_date=?, active=?,
           tiktok_views=?, tt_likes=?, tt_saves=?, tt_shares=?,
@@ -59,8 +59,8 @@ export async function onRequestPost(context) {
           co6=?, cl6=?, co7=?, cl7=?, co8=?, cl8=?, co9=?, cl9=?, co10=?, cl10=?
         WHERE id=?
       `).bind(
-        parseInt(album_id), name.trim(), parseInt(art) || 0,
-        (release_date || '').trim(), active || 'Yes',
+        parseInt(album_id), name.trim(), parseInt(art)||0,
+        (release_date||'').trim(), active||'Yes',
         ...pf, ...cf, id
       ).run();
       if (result.meta.changes === 0) return json({ success: false, message: 'Song not found' }, 404);
@@ -70,7 +70,7 @@ export async function onRequestPost(context) {
     if (action === 'delete') {
       const { id } = body;
       if (!id) return json({ success: false, message: 'id required' }, 400);
-      await env.CONTENT_DB.prepare(`DELETE FROM song_stats WHERE id=?`).bind(id).run();
+      await env.SONGS_DB.prepare(`DELETE FROM song_stats WHERE id=?`).bind(id).run();
       return json({ success: true, message: 'Song stats deleted' });
     }
 
@@ -105,7 +105,6 @@ function countryValues(countries) {
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
