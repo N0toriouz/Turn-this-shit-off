@@ -110,6 +110,10 @@ nav { padding: 0 1.5rem; }
 footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 .song-table-section { padding: 0 1.5rem 2rem; }
 }
+.album-stats-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.75rem; font-size: 0.82rem; color: var(--silver-dim); }
+.album-stats-bar .stat-item { display: flex; align-items: center; gap: 0.4rem; }
+.album-stats-bar .stat-item strong { color: var(--silver); }
+.track-social { display: flex; gap: 1.5rem; padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -128,6 +132,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 <p class="album-eyebrow">April 2026</p>
 <h1 class="album-title">Pick a Struggle</h1>
 <p class="album-meta">15 tracks</p>
+<div id="albumStatsBar" class="album-stats-bar"></div>
 <div class="album-cta">
 <a href="https://open.spotify.com/album/1gzXofsv7uCPq3ClpVfVL7" target="_blank" class="btn-primary">
 <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
@@ -193,32 +198,101 @@ function formatStreams(n) {
   if (n === 1000) return '▶ 1K';
   return '▶ ' + (n / 1000).toFixed(1) + 'K';
 }
+function fmtStat(n) {
+  n = parseInt(n) || 0;
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
+}
+async function loadTrackSocial(container) {
+  const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
+  if (!rows.length) return;
+  try {
+    const results = await Promise.all(
+      rows.map(row =>
+        fetch('/track-stats?name=' + encodeURIComponent(row.dataset.songName))
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      )
+    );
+    rows.forEach((row, i) => {
+      const data = results[i];
+      if (!data?.success || !data.result) return;
+      const s = data.result;
+      if (!s.total_likes && !s.total_shares) return;
+      const div = document.createElement('div');
+      div.className = 'track-social';
+      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
+      row.appendChild(div);
+    });
+  } catch(e) {}
+}
 async function loadAlbumSongs() {
-const container = document.getElementById('songTable');
-try {
-const res = await fetch('/songs?table=album-pick-a-struggle');
-const data = await res.json();
-if (!data.success || !data.results || data.results.length === 0) { container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>'; return; }
-container.innerHTML = '';
-data.results.forEach(song => {
-const row = document.createElement('div');
-row.className = 'song-row';
-row.innerHTML = `
+  const container = document.getElementById('songTable');
+  try {
+    const res = await fetch('/songs?table=album-pick-a-struggle');
+    const data = await res.json();
+    if (!data.success || !data.results || data.results.length === 0) {
+      container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>';
+      return;
+    }
+    container.innerHTML = '';
+    data.results.forEach(song => {
+      const row = document.createElement('div');
+      row.className = 'song-row';
+      row.dataset.songName = song.song_name;
+      row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
-container.appendChild(row);
+      container.appendChild(row);
+    });
+    if (data.results[0].art_number) {
+      const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
+      document.getElementById('page-backdrop').style.backgroundImage =
+        `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
+    }
+    loadTrackSocial(container);
+  } catch (err) {
+    container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
+  }
+}
+async function loadStats() {
+  try {
+    const ar = await fetch('/album-stats?name=' + encodeURIComponent('Pick a Struggle'));
+    if (!ar.ok) return;
+    const ad = await ar.json();
+    if (!ad.success || !ad.result) return;
+    const r = ad.result;
+    document.getElementById('albumStatsBar').innerHTML =
+      [['🎵', r.total_streams, 'Streams'], ['❤️', r.total_likes, 'Likes'],
+       ['🔁', r.total_shares, 'Shares'], ['💾', r.total_saves, 'Saves'],
+       ['👥', r.total_listeners, 'Listeners']]
+      .map(([e, v, l]) => `<span class="stat-item">${e} <strong>${fmtStat(v)}</strong> ${l}</span>`)
+      .join('');
+    const tr = await fetch('/track-stats?album_id=' + r.id);
+    if (!tr.ok) return;
+    const td = await tr.json();
+    if (!td.success || !td.results) return;
+    const songMap = {};
+    td.results.forEach(s => { songMap[s.name.trim().toLowerCase()] = s; });
+    document.querySelectorAll('.track-card').forEach(card => {
+      const nameEl = card.querySelector('.track-name');
+      if (!nameEl) return;
+      const s = songMap[nameEl.textContent.trim().toLowerCase()];
+      if (!s || (!s.total_likes && !s.total_shares)) return;
+      const div = document.createElement('div');
+      div.className = 'track-social';
+      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
+      card.appendChild(div);
+    });
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', () => {
+  loadAlbumSongs();
+  loadStats();
 });
-if (data.results[0].art_number) {
-  const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
-  document.getElementById('page-backdrop').style.backgroundImage =
-    `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
-}
-} catch (err) { container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>'; }
-}
-document.addEventListener('DOMContentLoaded', loadAlbumSongs);
 </script>
 </body>
 </html>
