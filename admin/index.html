@@ -656,7 +656,7 @@ async function loadAlbums() {
   try {
     const [albumData, countData] = await Promise.all([
       apiFetch('/admin-albums-query?action=list'),
-      apiFetch('/admin-content-query?action=counts')
+      apiFetch('/admin-content-query?action=counts').catch(() => ({ results: [] }))
     ]);
     const albums = albumData.results || [];
     const countMap = {};
