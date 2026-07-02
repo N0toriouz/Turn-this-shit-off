@@ -160,10 +160,11 @@
             <th>Shares</th>
             <th>Saves</th>
             <th>Listeners</th>
+            <th>Tracks</th>
           </tr>
         </thead>
         <tbody id="albumTableBody">
-          <tr><td colspan="9" class="empty-state">Loading…</td></tr>
+          <tr><td colspan="10" class="empty-state">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -469,6 +470,15 @@ const TABLE_ENTRIES = [
   { value: 'album-ait',      label: 'AIT' }
 ];
   
+  const ALBUM_TABLE_NAME = {
+  'Melted Ice Cream': 'meltedicecream',
+  'Still Cooking':    'stillcooking',
+  'Pick a Struggle':  'pickastruggle',
+  'Half Way There':   'halfwaythere',
+  'Week 6':           'album-week-6',
+  'AIT':              'album-ait'
+};
+  
 function autoFillEmbed(url) {
   const embedField = document.getElementById('form-embed-url');
   if (!url) return;
@@ -549,7 +559,7 @@ async function loadTable() {
   tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
   try {
     const data = await apiFetch(`/songs?table=${encodeURIComponent(table)}`);
-    const songs = data.songs || [];
+    const songs = data.results || [];
     if (!songs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs found</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => `
       <tr style="cursor:pointer" ondblclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">
@@ -644,10 +654,18 @@ async function loadAlbums() {
   const tbody = document.getElementById('albumTableBody');
   tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
   try {
-    const data = await apiFetch('/admin-albums-query?action=list');
-    const albums = data.results || [];
-    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No albums yet</td></tr>'; return; }
-    tbody.innerHTML = albums.map(a => `
+    const [albumData, countData] = await Promise.all([
+      apiFetch('/admin-albums-query?action=list'),
+      apiFetch('/admin-content-query?action=counts')
+    ]);
+    const albums = albumData.results || [];
+    const countMap = {};
+    (countData.results || []).forEach(r => { countMap[r.table_name] = r.count; });
+    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
+    tbody.innerHTML = albums.map(a => {
+      const tn = ALBUM_TABLE_NAME[a.name] || '';
+      const trackCount = tn ? (countMap[tn] || 0) : '—';
+      return `
       <tr style="cursor:pointer" ondblclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>
         <td>${a.name}</td>
         <td>${a.art || '—'}</td>
@@ -658,7 +676,9 @@ async function loadAlbums() {
         <td>${fmt(a.total_shares || 0)}</td>
         <td>${fmt(a.total_saves || 0)}</td>
         <td>${fmt(a.total_listeners || 0)}</td>
-      </tr>`).join('');
+        <td>${trackCount}</td>
+      </tr>`;
+    }).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
