@@ -160,11 +160,10 @@
             <th>Shares</th>
             <th>Saves</th>
             <th>Listeners</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="albumTableBody">
-          <tr><td colspan="10" class="empty-state">Loading…</td></tr>
+          <tr><td colspan="9" class="empty-state">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -456,9 +455,19 @@
 
 <script>
 // ─── CONFIG ──────────────────────────────────────────────────────────────────
-const TABLES = ['mood-1','mood-2','mood-3','mood-4','mood-5','mood-6','mood-7',
-                'meltedicecream','stillcooking','pickastruggle','halfwaythere',
-                'album-week-6','album-ait'];
+const TABLE_ENTRIES = [
+  { value: 'mood-1',         label: 'Mood — Morning Commute' },
+  { value: 'mood-2',         label: 'Mood — Boss Talks Too Much' },
+  { value: 'mood-3',         label: 'Mood — High Energy' },
+  { value: 'mood-4',         label: 'Mood — These Things Happened' },
+  { value: 'mood-5',         label: 'Mood — Sleep or Chill' },
+  { value: 'meltedicecream', label: 'Melted Ice Cream' },
+  { value: 'stillcooking',   label: 'Still Cooking' },
+  { value: 'pickastruggle',  label: 'Pick a Struggle' },
+  { value: 'halfwaythere',   label: 'Half Way There' },
+  { value: 'album-week-6',   label: 'Week 6' },
+  { value: 'album-ait',      label: 'AIT' }
+];
   
 function autoFillEmbed(url) {
   const embedField = document.getElementById('form-embed-url');
@@ -526,9 +535,9 @@ function selectView(view) {
 // ─────────────────────────────────────────────────────────────────────────────
 (function populateTableSelect() {
   const sel = document.getElementById('tableSelect');
-  TABLES.forEach(t => {
+  TABLE_ENTRIES.forEach(t => {
     const o = document.createElement('option');
-    o.value = t; o.textContent = t;
+    o.value = t.value; o.textContent = t.label;
     sel.appendChild(o);
   });
 })();
@@ -543,14 +552,13 @@ async function loadTable() {
     const songs = data.songs || [];
     if (!songs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs found</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => `
-      <tr>
+      <tr style="cursor:pointer" ondblclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">
         <td>${s.song_name || ''}</td>
         <td>${fmt(s.stream_count)}</td>
         <td>${s.release_date || '—'}</td>
         <td>${s.art_number ?? '—'}</td>
         <td class="mono" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.spotify_url || '—'}</td>
         <td>
-          <button class="btn btn-secondary btn-sm" onclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="confirmRemove('song', ${s.id})">Del</button>
         </td>
       </tr>`).join('');
@@ -561,7 +569,7 @@ function openModal(type, song = null) {
   document.getElementById('modal-song').classList.add('open');
   document.getElementById('modal-title').textContent = type === 'add' ? 'Add Song' : 'Edit Song';
   const sel = document.getElementById('form-table');
-  if (!sel.options.length) TABLES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+    if (!sel.options.length) TABLE_ENTRIES.forEach(t => { const o = document.createElement('option'); o.value = t.value; o.textContent = t.label; sel.appendChild(o); });
   if (type === 'edit' && song) {
     document.getElementById('edit-id').value = song.id;
     document.getElementById('form-table').value = song.table_name || '';
@@ -612,7 +620,7 @@ let _albumNames = []; // {id, name}
 async function fetchAlbumNames() {
   try {
     const data = await apiFetch('/admin-albums-query?action=names');
-    _albumNames = data.albums || [];
+    _albumNames = data.results || [];
     populateAlbumDropdowns();
   } catch(e) { console.error('fetchAlbumNames', e); }
 }
@@ -637,22 +645,19 @@ async function loadAlbums() {
   tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
   try {
     const data = await apiFetch('/admin-albums-query?action=list');
-    const albums = data.albums || [];
-    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
+    const albums = data.results || [];
+    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No albums yet</td></tr>'; return; }
     tbody.innerHTML = albums.map(a => `
-      <tr>
+      <tr style="cursor:pointer" ondblclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>
         <td>${a.name}</td>
         <td>${a.art || '—'}</td>
         <td>${a.release_date || '—'}</td>
         <td><span class="badge ${a.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${a.active}</span></td>
-        <td>${fmt(a.totals?.streams || 0)}</td>
-        <td>${fmt(a.totals?.likes || 0)}</td>
-        <td>${fmt(a.totals?.shares || 0)}</td>
-        <td>${fmt(a.totals?.saves || 0)}</td>
-        <td>${fmt(a.totals?.listeners || 0)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>Edit</button>
-        </td>
+        <td>${fmt(a.total_streams || 0)}</td>
+        <td>${fmt(a.total_likes || 0)}</td>
+        <td>${fmt(a.total_shares || 0)}</td>
+        <td>${fmt(a.total_saves || 0)}</td>
+        <td>${fmt(a.total_listeners || 0)}</td>
       </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
@@ -691,8 +696,8 @@ async function onAlbumSelectChange() {
   if (!id) return;
   try {
     const data = await apiFetch(`/admin-albums-query?action=get&id=${id}`);
-    _currentAlbum = data.album;
-    populateAlbumEdit(data.album);
+    _currentAlbum = data.result;
+    populateAlbumEdit(data.result);
   } catch(e) { showStatus('Error loading album: ' + e.message, 'error'); }
 }
 
