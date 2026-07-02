@@ -5,25 +5,31 @@ export async function onRequestGet(context) {
   const id = url.searchParams.get('id');
   if (!name && !id) return json({ success: false, message: 'name or id required' }, 400);
 
-  const BASE = `
-    SELECT
-      a.id, a.name, a.art, a.release_date, a.active,
-      COALESCE(SUM(s.tiktok_views + s.facebook_views + s.instagram_views +
-        s.youtube_views + s.youtube_music + s.spotify_streams +
-        s.apple_streams + s.amazon_streams + s.tidal_streams), 0) AS total_streams,
-      COALESCE(SUM(s.tt_likes + s.fb_likes + s.in_likes + s.yt_likes), 0) AS total_likes,
-      COALESCE(SUM(s.tt_shares + s.fb_shares + s.in_shares + s.in_reposts), 0) AS total_shares,
-      COALESCE(SUM(s.tt_saves + s.fb_saves + s.in_saves + s.sp_saves), 0) AS total_saves,
-      COALESCE(SUM(s.sp_listeners), 0) AS total_listeners
-    FROM albums a
-    LEFT JOIN song_stats s ON s.album_id = a.id`;
-
   try {
-    const row = id
-      ? await env.CONTENT_DB.prepare(`${BASE} WHERE a.id=? GROUP BY a.id`).bind(id).first()
-      : await env.CONTENT_DB.prepare(`${BASE} WHERE a.name=? GROUP BY a.id`).bind(name).first();
-    if (!row) return json({ success: false, message: 'Album not found' }, 404);
-    return json({ success: true, result: row });
+    const album = id
+      ? await env.ALBUMS_DB.prepare(`SELECT * FROM albums WHERE id=?`).bind(id).first()
+      : await env.ALBUMS_DB.prepare(`SELECT * FROM albums WHERE name=?`).bind(name).first();
+    if (!album) return json({ success: false, message: 'Album not found' }, 404);
+
+    const { results: songs } = await env.SONGS_DB.prepare(
+      `SELECT tiktok_views, facebook_views, instagram_views, youtube_views,
+              youtube_music, spotify_streams, apple_streams, amazon_streams, tidal_streams,
+              tt_likes, fb_likes, in_likes, yt_likes,
+              tt_shares, fb_shares, in_shares, in_reposts,
+              tt_saves, fb_saves, in_saves, sp_saves, sp_listeners
+       FROM song_stats WHERE album_id=?`
+    ).bind(album.id).all();
+
+    const totals = (songs || []).reduce((t, s) => {
+      t.total_streams   += (s.tiktok_views||0)+(s.facebook_views||0)+(s.instagram_views||0)+(s.youtube_views||0)+(s.youtube_music||0)+(s.spotify_streams||0)+(s.apple_streams||0)+(s.amazon_streams||0)+(s.tidal_streams||0);
+      t.total_likes     += (s.tt_likes||0)+(s.fb_likes||0)+(s.in_likes||0)+(s.yt_likes||0);
+      t.total_shares    += (s.tt_shares||0)+(s.fb_shares||0)+(s.in_shares||0)+(s.in_reposts||0);
+      t.total_saves     += (s.tt_saves||0)+(s.fb_saves||0)+(s.in_saves||0)+(s.sp_saves||0);
+      t.total_listeners += (s.sp_listeners||0);
+      return t;
+    }, { total_streams:0, total_likes:0, total_shares:0, total_saves:0, total_listeners:0 });
+
+    return json({ success: true, result: { ...album, ...totals } });
   } catch (err) {
     return json({ success: false, message: err.message }, 500);
   }
@@ -31,7 +37,6 @@ export async function onRequestGet(context) {
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
