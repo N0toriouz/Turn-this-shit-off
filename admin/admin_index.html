@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; display: flex; height: 100vh; overflow: hidden; }
+
+    /* Sidebar */
+    #sidebar { width: 220px; background: #141414; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
+    #sidebar h1 { font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; padding: 0 20px 20px; border-bottom: 1px solid #222; }
+    .sidebar-section { padding: 16px 20px 8px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; }
+    .sidebar-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: #aaa; padding: 9px 20px; font-size: 13px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .sidebar-btn:hover { background: #1e1e1e; color: #fff; }
+    .sidebar-btn.active { background: #1e1e1e; color: #fff; border-left: 3px solid #7b61ff; padding-left: 17px; }
+
+    /* Main content */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    #topbar { background: #141414; border-bottom: 1px solid #222; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
+    #topbar h2 { font-size: 16px; font-weight: 600; }
+    #content { flex: 1; overflow-y: auto; padding: 24px; }
+
+    /* View containers */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Table toolbar */
+    .toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+    .toolbar select, .toolbar input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 7px 12px; border-radius: 6px; font-size: 13px; }
+    .btn { padding: 7px 16px; border-radius: 6px; border: none; font-size: 13px; cursor: pointer; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #7b61ff; color: #fff; }
+    .btn-danger { background: #c0392b; color: #fff; }
+    .btn-secondary { background: #2a2a2a; color: #ccc; border: 1px solid #333; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #1a1a1a; color: #888; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; padding: 10px 12px; text-align: left; border-bottom: 1px solid #222; }
+    td { padding: 10px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
+    tr:hover td { background: #161616; }
+    .mono { font-family: monospace; font-size: 12px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .badge-yes { background: #1a3d2b; color: #4caf82; }
+    .badge-no { background: #3d1a1a; color: #e57373; }
+
+    /* Modals */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #161616; border: 1px solid #2a2a2a; border-radius: 10px; padding: 28px; width: 520px; max-height: 90vh; overflow-y: auto; }
+    .modal.modal-wide { width: 680px; }
+    .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    .form-group input, .form-group select, .form-group textarea { background: #1e1e1e; border: 1px solid #333; color: #e0e0e0; padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 100%; }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+    .req { color: #e57373; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    /* Platform groups in SS modal */
+    .platform-group { margin-bottom: 14px; }
+    .platform-group-title { font-size: 11px; color: #7b61ff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #252525; }
+    .platform-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* Computed totals */
+    .computed-section { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+    .computed-section h4 { font-size: 11px; color: #7b61ff; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+    .computed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .computed-item { display: flex; flex-direction: column; gap: 3px; }
+    .computed-item label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+    .computed-item span { font-size: 15px; font-weight: 600; color: #c0b4ff; }
+
+    /* Country sub-table */
+    .country-section { margin-bottom: 14px; }
+    .country-section h4 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+    .country-row { display: grid; grid-template-columns: 1fr 100px 32px; gap: 8px; align-items: center; margin-bottom: 6px; }
+    .country-row input { background: #1e1e1e; border: 1px solid #333; color: #e0e0e0; padding: 6px 10px; border-radius: 5px; font-size: 12px; width: 100%; }
+    .country-remove { background: #3d1a1a; border: none; color: #e57373; border-radius: 5px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    #countryRows { max-height: 200px; overflow-y: auto; }
+
+    /* Type toggle */
+    .type-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+    .type-toggle button { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #333; background: #1e1e1e; color: #888; cursor: pointer; font-size: 13px; transition: all 0.15s; }
+    .type-toggle button.active { background: #7b61ff; border-color: #7b61ff; color: #fff; }
+
+    /* Albums table stats */
+    .stat-pill { display: inline-block; background: #1a1a2e; color: #c0b4ff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin: 1px; }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px; color: #555; font-size: 14px; }
+
+    /* Status message */
+    #status-msg { position: fixed; bottom: 20px; right: 20px; background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 10px 18px; font-size: 13px; display: none; z-index: 2000; }
+    #status-msg.success { border-color: #4caf82; color: #4caf82; }
+    #status-msg.error { border-color: #e57373; color: #e57373; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <h1>Admin</h1>
+  <div class="sidebar-section">Content</div>
+  <button class="sidebar-btn active" id="btn-tables" onclick="selectView('tables')">Song Tables</button>
+  <div class="sidebar-section">Catalog</div>
+  <button class="sidebar-btn" id="btn-albums" onclick="selectView('albums')">Albums</button>
+  <button class="sidebar-btn" id="btn-song-stats" onclick="selectView('song-stats')">Song Stats</button>
+</nav>
+
+<!-- Main -->
+<div id="main">
+  <div id="topbar">
+    <h2 id="view-title">Song Tables</h2>
+  </div>
+  <div id="content">
+
+    <!-- ==================== VIEW: TABLES (existing) ==================== -->
+    <div class="view active" id="view-tables">
+      <div class="toolbar">
+        <select id="tableSelect" onchange="loadTable()">
+          <option value="">— Select table —</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('add')">+ Add Song</button>
+      </div>
+      <table id="songTable">
+        <thead>
+          <tr>
+            <th>Song</th>
+            <th>Streams</th>
+            <th>Release Date</th>
+            <th>Art #</th>
+            <th>Spotify</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="songTableBody">
+          <tr><td colspan="6" class="empty-state">Select a table above</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ==================== VIEW: ALBUMS ==================== -->
+    <div class="view" id="view-albums">
+      <div class="toolbar">
+        <button class="btn btn-primary" onclick="openAlbumModal('create')">+ Add Album</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Art #</th>
+            <th>Release Date</th>
+            <th>Active</th>
+            <th>Streams</th>
+            <th>Likes</th>
+            <th>Shares</th>
+            <th>Saves</th>
+            <th>Listeners</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="albumTableBody">
+          <tr><td colspan="10" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ==================== VIEW: SONG STATS ==================== -->
+    <div class="view" id="view-song-stats">
+      <div class="toolbar">
+        <select id="ssFilterAlbum" onchange="loadSongStatsList()">
+          <option value="">— All Albums —</option>
+        </select>
+        <button class="btn btn-primary" onclick="openSongStatsModal('create')">+ Add Song Stats</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Song</th>
+            <th>Album</th>
+            <th>Release Date</th>
+            <th>Active</th>
+            <th>Streams</th>
+            <th>Likes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ssTableBody">
+          <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- end #content -->
+</div><!-- end #main -->
+
+<!-- ==================== MODAL: SONG (existing) ==================== -->
+<div class="modal-overlay" id="modal-song">
+  <div class="modal">
+    <h3 id="modal-title">Add Song</h3>
+    <input type="hidden" id="edit-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label>Table <span class="req">*</span></label>
+        <select id="form-table"></select>
+      </div>
+      <div class="form-group">
+        <label>Song Name <span class="req">*</span></label>
+        <input type="text" id="form-name" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Stream Count</label>
+        <input type="number" id="form-streams" value="0" />
+      </div>
+      <div class="form-group">
+        <label>Art Number</label>
+        <input type="number" id="form-art" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Release Date</label>
+        <input type="date" id="form-date" />
+      </div>
+      <div class="form-group">
+        <label>Spotify URL</label>
+        <input type="text" id="form-spotify-url" />
+      </div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group">
+        <label>Spotify Embed URL</label>
+        <input type="text" id="form-embed-url" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: ALBUMS ==================== -->
+<div class="modal-overlay" id="modal-album">
+  <div class="modal">
+    <h3 id="album-modal-title">Album</h3>
+    <div class="type-toggle">
+      <button id="atype-create" class="active" onclick="onAlbumTypeChange('create')">Create</button>
+      <button id="atype-edit" onclick="onAlbumTypeChange('edit')">Edit</button>
+    </div>
+    <!-- Edit: album selector -->
+    <div id="album-select-row" class="form-row single" style="display:none">
+      <div class="form-group">
+        <label>Select Album</label>
+        <select id="aEditSelect" onchange="onAlbumSelectChange()">
+          <option value="">— Select —</option>
+        </select>
+      </div>
+    </div>
+    <!-- Fields -->
+    <div id="album-fields">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name <span class="req">*</span></label>
+          <input type="text" id="aName" />
+        </div>
+        <div class="form-group">
+          <label>Art (filename / number)</label>
+          <input type="text" id="aArt" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Release Date</label>
+          <input type="date" id="aDate" />
+        </div>
+        <div class="form-group">
+          <label>Active</label>
+          <select id="aActive">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+      <!-- Computed totals (edit only) -->
+      <div class="computed-section" id="album-computed" style="display:none">
+        <h4>Computed Totals</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="ac-streams">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="ac-likes">—</span></div>
+          <div class="computed-item"><label>Shares</label><span id="ac-shares">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="ac-saves">—</span></div>
+          <div class="computed-item"><label>Listeners</label><span id="ac-listeners">—</span></div>
+          <div class="computed-item"><label>Songs</label><span id="ac-songs">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAlbumModal()">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="album-delete-btn" style="display:none;margin-right:auto" onclick="confirmRemove('album')">Delete</button>
+      <button class="btn btn-primary" onclick="saveAlbumForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL: SONG STATS ==================== -->
+<div class="modal-overlay" id="modal-ss">
+  <div class="modal modal-wide">
+    <h3 id="ss-modal-title">Song Stats</h3>
+    <div class="type-toggle">
+      <button id="sstype-create" class="active" onclick="onSsTypeChange('create')">Create</button>
+      <button id="sstype-edit" onclick="onSsTypeChange('edit')">Edit</button>
+    </div>
+    <!-- Edit: song selector -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Album <span class="req">*</span></label>
+        <select id="ssAlbum" onchange="onSsAlbumChange()">
+          <option value="">— Select Album —</option>
+        </select>
+      </div>
+      <div class="form-group" id="ss-song-select-group" style="display:none">
+        <label>Song (Edit)</label>
+        <select id="ssSongSelect" onchange="onSsSongSelectChange()">
+          <option value="">— Select Song —</option>
+        </select>
+      </div>
+    </div>
+    <!-- Fields -->
+    <div id="ss-fields">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Song Name <span class="req">*</span></label>
+          <input type="text" id="ssName" />
+        </div>
+        <div class="form-group">
+          <label>Art Number</label>
+          <input type="number" id="ssArt" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Release Date</label>
+          <input type="date" id="ssDate" />
+        </div>
+        <div class="form-group">
+          <label>Active</label>
+          <select id="ssActive">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TikTok -->
+      <div class="platform-group">
+        <div class="platform-group-title">TikTok</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Views</label><input type="number" id="ss-tiktok_views" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Likes</label><input type="number" id="ss-tt_likes" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Saves</label><input type="number" id="ss-tt_saves" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Shares</label><input type="number" id="ss-tt_shares" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- Facebook -->
+      <div class="platform-group">
+        <div class="platform-group-title">Facebook</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Views</label><input type="number" id="ss-facebook_views" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Likes</label><input type="number" id="ss-fb_likes" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Saves</label><input type="number" id="ss-fb_saves" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Shares</label><input type="number" id="ss-fb_shares" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="platform-group">
+        <div class="platform-group-title">Instagram</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Views</label><input type="number" id="ss-instagram_views" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Likes</label><input type="number" id="ss-in_likes" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Saves</label><input type="number" id="ss-in_saves" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Reposts</label><input type="number" id="ss-in_reposts" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Shares</label><input type="number" id="ss-in_shares" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- YouTube -->
+      <div class="platform-group">
+        <div class="platform-group-title">YouTube</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Views</label><input type="number" id="ss-youtube_views" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Likes</label><input type="number" id="ss-yt_likes" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Music Streams</label><input type="number" id="ss-youtube_music" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- Spotify -->
+      <div class="platform-group">
+        <div class="platform-group-title">Spotify</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Streams</label><input type="number" id="ss-spotify_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Listeners</label><input type="number" id="ss-sp_listeners" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Playlist Adds</label><input type="number" id="ss-sp_playlist_adds" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Saves</label><input type="number" id="ss-sp_saves" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- Other Streaming -->
+      <div class="platform-group">
+        <div class="platform-group-title">Other Streaming</div>
+        <div class="platform-fields">
+          <div class="form-group"><label>Apple Streams</label><input type="number" id="ss-apple_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Amazon Streams</label><input type="number" id="ss-amazon_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>Tidal Streams</label><input type="number" id="ss-tidal_streams" value="0" oninput="updateComputed()" /></div>
+        </div>
+      </div>
+
+      <!-- Live computed totals -->
+      <div class="computed-section">
+        <h4>Computed Totals (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="ss-c-streams">0</span></div>
+          <div class="computed-item"><label>Likes</label><span id="ss-c-likes">0</span></div>
+          <div class="computed-item"><label>Shares</label><span id="ss-c-shares">0</span></div>
+          <div class="computed-item"><label>Saves</label><span id="ss-c-saves">0</span></div>
+          <div class="computed-item"><label>Listeners</label><span id="ss-c-listeners">0</span></div>
+        </div>
+      </div>
+
+      <!-- Country sub-table -->
+      <div class="country-section">
+        <h4>Top Countries <span style="color:#555;font-weight:400">(max 10 — lowest count dropped on overflow)</span></h4>
+        <div id="countryRows"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addCountryRow('',0)" style="margin-top:6px">+ Add Country</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSsModal()">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="ss-delete-btn" style="display:none;margin-right:auto" onclick="confirmRemove('song-stat')">Delete</button>
+      <button class="btn btn-primary" onclick="saveSsForm()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Status message -->
+<div id="status-msg"></div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const TABLES = ['mood-1','mood-2','mood-3','mood-4','mood-5','mood-6','mood-7',
+                'meltedicecream','stillcooking','pickastruggle','halfwaythere'];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function getToken() {
+  return sessionStorage.getItem('admin_token') || '';
+}
+
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() };
+}
+
+function fmt(n) {
+  n = parseInt(n) || 0;
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function showStatus(msg, type = 'success') {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3500);
+}
+
+async function apiFetch(url, opts = {}) {
+  const res = await fetch(url, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || res.statusText);
+  }
+  return res.json();
+}
+
+// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
+const viewTitles = { tables: 'Song Tables', albums: 'Albums', 'song-stats': 'Song Stats' };
+
+function selectView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + (view === 'song-stats' ? 'song-stats' : view === 'albums' ? 'albums' : 'tables')).classList.add('active');
+  document.getElementById('btn-' + (view === 'song-stats' ? 'song-stats' : view)).classList.add('active');
+  document.getElementById('view-title').textContent = viewTitles[view] || view;
+  if (view === 'albums') loadAlbums();
+  if (view === 'song-stats') { fetchAlbumNames(); loadSongStatsList(); }
+}
+
+// ─── TOKEN PROMPT ─────────────────────────────────────────────────────────────
+(function initToken() {
+  if (!sessionStorage.getItem('admin_token')) {
+    const t = prompt('Admin token:');
+    if (t) sessionStorage.setItem('admin_token', t);
+  }
+})();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXISTING SONG TABLE SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+(function populateTableSelect() {
+  const sel = document.getElementById('tableSelect');
+  TABLES.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    sel.appendChild(o);
+  });
+})();
+
+async function loadTable() {
+  const table = document.getElementById('tableSelect').value;
+  const tbody = document.getElementById('songTableBody');
+  if (!table) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Select a table above</td></tr>'; return; }
+  tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
+  try {
+    const data = await apiFetch(`/songs?table=${encodeURIComponent(table)}`);
+    const songs = data.songs || [];
+    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs found</td></tr>'; return; }
+    tbody.innerHTML = songs.map(s => `
+      <tr>
+        <td>${s.song_name || ''}</td>
+        <td>${fmt(s.stream_count)}</td>
+        <td>${s.release_date || '—'}</td>
+        <td>${s.art_number ?? '—'}</td>
+        <td class="mono" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.spotify_url || '—'}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmRemove('song', ${s.id})">Del</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Error: ${e.message}</td></tr>`; }
+}
+
+function openModal(type, song = null) {
+  document.getElementById('modal-song').classList.add('open');
+  document.getElementById('modal-title').textContent = type === 'add' ? 'Add Song' : 'Edit Song';
+  const sel = document.getElementById('form-table');
+  if (!sel.options.length) TABLES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+  if (type === 'edit' && song) {
+    document.getElementById('edit-id').value = song.id;
+    document.getElementById('form-table').value = song.table_name || '';
+    document.getElementById('form-name').value = song.song_name || '';
+    document.getElementById('form-streams').value = song.stream_count || 0;
+    document.getElementById('form-art').value = song.art_number || '';
+    document.getElementById('form-date').value = song.release_date || '';
+    document.getElementById('form-spotify-url').value = song.spotify_url || '';
+    document.getElementById('form-embed-url').value = song.spotify_embed_url || '';
+  } else {
+    document.getElementById('edit-id').value = '';
+    document.getElementById('form-table').value = document.getElementById('tableSelect').value || '';
+    ['form-name','form-streams','form-art','form-date','form-spotify-url','form-embed-url'].forEach(id => {
+      document.getElementById(id).value = id === 'form-streams' ? '0' : '';
+    });
+  }
+}
+
+function closeModal() { document.getElementById('modal-song').classList.remove('open'); }
+
+async function saveForm() {
+  const id = document.getElementById('edit-id').value;
+  const body = {
+    action: id ? 'edit' : 'add',
+    id: id || undefined,
+    table_name: document.getElementById('form-table').value,
+    song_name: document.getElementById('form-name').value,
+    stream_count: parseInt(document.getElementById('form-streams').value) || 0,
+    art_number: document.getElementById('form-art').value || null,
+    release_date: document.getElementById('form-date').value || '',
+    spotify_url: document.getElementById('form-spotify-url').value || '',
+    spotify_embed_url: document.getElementById('form-embed-url').value || ''
+  };
+  if (!body.table_name || !body.song_name) { alert('Table and song name are required.'); return; }
+  try {
+    await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify(body) });
+    closeModal();
+    showStatus(id ? 'Song updated.' : 'Song added.');
+    loadTable();
+  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ALBUMS SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+let _albumNames = []; // {id, name}
+
+async function fetchAlbumNames() {
+  try {
+    const data = await apiFetch('/admin-albums-query?action=names');
+    _albumNames = data.albums || [];
+    populateAlbumDropdowns();
+  } catch(e) { console.error('fetchAlbumNames', e); }
+}
+
+function populateAlbumDropdowns() {
+  ['aEditSelect', 'ssAlbum', 'ssFilterAlbum'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const val = sel.value;
+    while (sel.options.length > 1) sel.remove(1);
+    _albumNames.forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.id; o.textContent = a.name;
+      sel.appendChild(o);
+    });
+    if (val) sel.value = val;
+  });
+}
+
+async function loadAlbums() {
+  const tbody = document.getElementById('albumTableBody');
+  tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
+  try {
+    const data = await apiFetch('/admin-albums-query?action=list');
+    const albums = data.albums || [];
+    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
+    tbody.innerHTML = albums.map(a => `
+      <tr>
+        <td>${a.name}</td>
+        <td>${a.art || '—'}</td>
+        <td>${a.release_date || '—'}</td>
+        <td><span class="badge ${a.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${a.active}</span></td>
+        <td>${fmt(a.totals?.streams || 0)}</td>
+        <td>${fmt(a.totals?.likes || 0)}</td>
+        <td>${fmt(a.totals?.shares || 0)}</td>
+        <td>${fmt(a.totals?.saves || 0)}</td>
+        <td>${fmt(a.totals?.listeners || 0)}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>Edit</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Error: ${e.message}</td></tr>`; }
+}
+
+let _currentAlbum = null;
+
+function openAlbumModal(type, album = null) {
+  _currentAlbum = album;
+  document.getElementById('modal-album').classList.add('open');
+  onAlbumTypeChange(type);
+  if (type === 'edit' && album) {
+    document.getElementById('aEditSelect').value = album.id;
+    populateAlbumEdit(album);
+  } else {
+    clearAlbumForm();
+  }
+}
+
+function closeAlbumModal() {
+  document.getElementById('modal-album').classList.remove('open');
+  _currentAlbum = null;
+}
+
+function onAlbumTypeChange(type) {
+  document.getElementById('atype-create').classList.toggle('active', type === 'create');
+  document.getElementById('atype-edit').classList.toggle('active', type === 'edit');
+  document.getElementById('album-select-row').style.display = type === 'edit' ? '' : 'none';
+  document.getElementById('album-computed').style.display = type === 'edit' ? '' : 'none';
+  document.getElementById('album-delete-btn').style.display = type === 'edit' ? '' : 'none';
+  document.getElementById('album-modal-title').textContent = type === 'edit' ? 'Edit Album' : 'Create Album';
+  if (type === 'create') clearAlbumForm();
+}
+
+async function onAlbumSelectChange() {
+  const id = document.getElementById('aEditSelect').value;
+  if (!id) return;
+  try {
+    const data = await apiFetch(`/admin-albums-query?action=get&id=${id}`);
+    _currentAlbum = data.album;
+    populateAlbumEdit(data.album);
+  } catch(e) { showStatus('Error loading album: ' + e.message, 'error'); }
+}
+
+function populateAlbumEdit(album) {
+  document.getElementById('aName').value = album.name || '';
+  document.getElementById('aArt').value = album.art || '';
+  document.getElementById('aDate').value = album.release_date || '';
+  document.getElementById('aActive').value = album.active || 'Yes';
+  const t = album.totals || {};
+  document.getElementById('ac-streams').textContent = fmt(t.streams || 0);
+  document.getElementById('ac-likes').textContent = fmt(t.likes || 0);
+  document.getElementById('ac-shares').textContent = fmt(t.shares || 0);
+  document.getElementById('ac-saves').textContent = fmt(t.saves || 0);
+  document.getElementById('ac-listeners').textContent = fmt(t.listeners || 0);
+  document.getElementById('ac-songs').textContent = (t.song_count || 0).toString();
+}
+
+function clearAlbumForm() {
+  ['aName','aArt','aDate'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('aActive').value = 'Yes';
+  document.getElementById('aEditSelect').value = '';
+}
+
+async function saveAlbumForm() {
+  const isEdit = document.getElementById('atype-edit').classList.contains('active');
+  const body = {
+    action: isEdit ? 'edit' : 'add',
+    name: document.getElementById('aName').value.trim(),
+    art: document.getElementById('aArt').value.trim(),
+    release_date: document.getElementById('aDate').value,
+    active: document.getElementById('aActive').value
+  };
+  if (isEdit) {
+    body.id = _currentAlbum?.id || document.getElementById('aEditSelect').value;
+    if (!body.id) { alert('No album selected.'); return; }
+  }
+  if (!body.name) { alert('Name is required.'); return; }
+  try {
+    await apiFetch('/admin-albums', { method: 'POST', body: JSON.stringify(body) });
+    closeAlbumModal();
+    showStatus(isEdit ? 'Album updated.' : 'Album created.');
+    fetchAlbumNames();
+    loadAlbums();
+  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SONG STATS SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadSongStatsList() {
+  const album_id = document.getElementById('ssFilterAlbum').value;
+  const tbody = document.getElementById('ssTableBody');
+  tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+  try {
+    let url = '/admin-song-stats-query?action=list';
+    if (album_id) url += `&album_id=${album_id}`;
+    const data = await apiFetch(url);
+    const songs = data.songs || [];
+    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No song stats yet</td></tr>'; return; }
+    tbody.innerHTML = songs.map(s => {
+      const streams = computeSongStreams(s);
+      const likes = computeSongLikes(s);
+      const albumName = (_albumNames.find(a => a.id == s.album_id) || {}).name || s.album_id || '—';
+      return `<tr>
+        <td>${s.name}</td>
+        <td>${albumName}</td>
+        <td>${s.release_date || '—'}</td>
+        <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
+        <td>${fmt(streams)}</td>
+        <td>${fmt(likes)}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick='openSongStatsModal("edit", ${JSON.stringify(s).replace(/'/g,"&#39;")})'>Edit</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error: ${e.message}</td></tr>`; }
+}
+
+function computeSongStreams(s) {
+  return (s.spotify_streams||0)+(s.apple_streams||0)+(s.amazon_streams||0)+(s.tidal_streams||0)+(s.youtube_music||0)+(s.youtube_views||0)+(s.tiktok_views||0)+(s.facebook_views||0)+(s.instagram_views||0);
+}
+function computeSongLikes(s) {
+  return (s.tt_likes||0)+(s.fb_likes||0)+(s.in_likes||0)+(s.yt_likes||0);
+}
+
+let _currentSs = null;
+
+function openSongStatsModal(type, song = null) {
+  _currentSs = song;
+  document.getElementById('modal-ss').classList.add('open');
+  if (_albumNames.length === 0) fetchAlbumNames().then(() => populateAlbumDropdowns());
+  onSsTypeChange(type);
+  if (type === 'edit' && song) {
+    document.getElementById('ssAlbum').value = song.album_id || '';
+    onSsAlbumChange().then(() => {
+      document.getElementById('ssSongSelect').value = song.id;
+      populateSsFields(song);
+    });
+  } else {
+    clearSsForm();
+  }
+}
+
+function closeSsModal() {
+  document.getElementById('modal-ss').classList.remove('open');
+  _currentSs = null;
+}
+
+function onSsTypeChange(type) {
+  document.getElementById('sstype-create').classList.toggle('active', type === 'create');
+  document.getElementById('sstype-edit').classList.toggle('active', type === 'edit');
+  document.getElementById('ss-song-select-group').style.display = type === 'edit' ? '' : 'none';
+  document.getElementById('ss-delete-btn').style.display = type === 'edit' ? '' : 'none';
+  document.getElementById('ss-modal-title').textContent = type === 'edit' ? 'Edit Song Stats' : 'Create Song Stats';
+  if (type === 'create') clearSsForm();
+}
+
+async function onSsAlbumChange() {
+  const album_id = document.getElementById('ssAlbum').value;
+  const isEdit = document.getElementById('sstype-edit').classList.contains('active');
+  if (isEdit && album_id) {
+    await loadSsSongDropdown(album_id);
+  }
+}
+
+async function loadSsSongDropdown(album_id, selectedId = null) {
+  const sel = document.getElementById('ssSongSelect');
+  sel.innerHTML = '<option value="">— Select Song —</option>';
+  if (!album_id) return;
+  try {
+    const data = await apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`);
+    (data.songs || []).forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.id; o.textContent = s.name;
+      sel.appendChild(o);
+    });
+    if (selectedId) sel.value = selectedId;
+  } catch(e) { console.error('loadSsSongDropdown', e); }
+}
+
+async function onSsSongSelectChange() {
+  const id = document.getElementById('ssSongSelect').value;
+  if (!id) return;
+  try {
+    const data = await apiFetch(`/admin-song-stats-query?action=get&id=${id}`);
+    _currentSs = data.song;
+    populateSsFields(data.song);
+  } catch(e) { showStatus('Error loading song stat: ' + e.message, 'error'); }
+}
+
+const SS_FIELDS = ['tiktok_views','tt_likes','tt_saves','tt_shares',
+  'facebook_views','fb_likes','fb_saves','fb_shares',
+  'instagram_views','in_likes','in_saves','in_reposts','in_shares',
+  'youtube_views','yt_likes','youtube_music',
+  'spotify_streams','sp_listeners','sp_playlist_adds','sp_saves',
+  'apple_streams','amazon_streams','tidal_streams'];
+
+function populateSsFields(song) {
+  document.getElementById('ssName').value = song.name || '';
+  document.getElementById('ssArt').value = song.art || '';
+  document.getElementById('ssDate').value = song.release_date || '';
+  document.getElementById('ssActive').value = song.active || 'Yes';
+  SS_FIELDS.forEach(f => {
+    const el = document.getElementById('ss-' + f);
+    if (el) el.value = song[f] || 0;
+  });
+  // countries
+  document.getElementById('countryRows').innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    if (song['co' + i]) addCountryRow(song['co' + i], song['cl' + i] || 0);
+  }
+  updateComputed();
+}
+
+function clearSsForm() {
+  document.getElementById('ssName').value = '';
+  document.getElementById('ssArt').value = '';
+  document.getElementById('ssDate').value = '';
+  document.getElementById('ssActive').value = 'Yes';
+  SS_FIELDS.forEach(f => { const el = document.getElementById('ss-' + f); if (el) el.value = 0; });
+  document.getElementById('countryRows').innerHTML = '';
+  updateComputed();
+}
+
+function updateComputed() {
+  const v = f => parseInt(document.getElementById('ss-' + f)?.value) || 0;
+  const streams = v('spotify_streams')+v('apple_streams')+v('amazon_streams')+v('tidal_streams')+v('youtube_music')+v('youtube_views')+v('tiktok_views')+v('facebook_views')+v('instagram_views');
+  const likes = v('tt_likes')+v('fb_likes')+v('in_likes')+v('yt_likes');
+  const shares = v('tt_shares')+v('fb_shares')+v('in_shares');
+  const saves = v('tt_saves')+v('fb_saves')+v('in_saves')+v('sp_saves');
+  const listeners = v('sp_listeners');
+  document.getElementById('ss-c-streams').textContent = fmt(streams);
+  document.getElementById('ss-c-likes').textContent = fmt(likes);
+  document.getElementById('ss-c-shares').textContent = fmt(shares);
+  document.getElementById('ss-c-saves').textContent = fmt(saves);
+  document.getElementById('ss-c-listeners').textContent = fmt(listeners);
+}
+
+function addCountryRow(name = '', count = 0) {
+  const container = document.getElementById('countryRows');
+  if (container.children.length >= 10) {
+    // drop lowest
+    let minVal = Infinity, minEl = null;
+    Array.from(container.children).forEach(row => {
+      const c = parseInt(row.querySelector('.country-count').value) || 0;
+      if (c < minVal) { minVal = c; minEl = row; }
+    });
+    if (minEl) minEl.remove();
+  }
+  const row = document.createElement('div');
+  row.className = 'country-row';
+  row.innerHTML = `
+    <input type="text" class="country-name" placeholder="Country" value="${name}" />
+    <input type="number" class="country-count" placeholder="Count" value="${count}" min="0" />
+    <button class="country-remove" onclick="this.closest('.country-row').remove()">×</button>`;
+  container.appendChild(row);
+}
+
+function collectCountries() {
+  const rows = document.querySelectorAll('#countryRows .country-row');
+  return Array.from(rows)
+    .map(r => ({ name: r.querySelector('.country-name').value.trim(), count: parseInt(r.querySelector('.country-count').value) || 0 }))
+    .filter(c => c.name);
+}
+
+async function saveSsForm() {
+  const isEdit = document.getElementById('sstype-edit').classList.contains('active');
+  const album_id = document.getElementById('ssAlbum').value;
+  if (!album_id) { alert('Album is required.'); return; }
+  const name = document.getElementById('ssName').value.trim();
+  if (!name) { alert('Song name is required.'); return; }
+
+  const body = {
+    action: isEdit ? 'edit' : 'add',
+    album_id,
+    name,
+    art: document.getElementById('ssArt').value || null,
+    release_date: document.getElementById('ssDate').value || '',
+    active: document.getElementById('ssActive').value,
+    countries: collectCountries()
+  };
+  SS_FIELDS.forEach(f => { body[f] = parseInt(document.getElementById('ss-' + f)?.value) || 0; });
+  if (isEdit) {
+    body.id = _currentSs?.id || document.getElementById('ssSongSelect').value;
+    if (!body.id) { alert('No song selected.'); return; }
+  }
+  try {
+    await apiFetch('/admin-song-stats', { method: 'POST', body: JSON.stringify(body) });
+    closeSsModal();
+    showStatus(isEdit ? 'Song stats updated.' : 'Song stats created.');
+    loadSongStatsList();
+  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHARED DELETE
+// ─────────────────────────────────────────────────────────────────────────────
+async function confirmRemove(type, id = null) {
+  const labels = { song: 'song', album: 'album', 'song-stat': 'song stat entry' };
+  if (!confirm(`Delete this ${labels[type] || type}? This cannot be undone.`)) return;
+
+  try {
+    if (type === 'song') {
+      await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
+      showStatus('Song deleted.');
+      loadTable();
+    } else if (type === 'album') {
+      const albumId = _currentAlbum?.id || document.getElementById('aEditSelect').value;
+      await apiFetch('/admin-albums', { method: 'POST', body: JSON.stringify({ action: 'delete', id: albumId }) });
+      closeAlbumModal();
+      showStatus('Album deleted.');
+      fetchAlbumNames();
+      loadAlbums();
+    } else if (type === 'song-stat') {
+      const ssId = _currentSs?.id || document.getElementById('ssSongSelect').value;
+      await apiFetch('/admin-song-stats', { method: 'POST', body: JSON.stringify({ action: 'delete', id: ssId }) });
+      closeSsModal();
+      showStatus('Song stat deleted.');
+      loadSongStatsList();
+    }
+  } catch(e) { showStatus('Delete failed: ' + e.message, 'error'); }
+}
+</script>
+</body>
+</html>
