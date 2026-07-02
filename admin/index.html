@@ -97,6 +97,11 @@
     #status-msg { position: fixed; bottom: 20px; right: 20px; background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 10px 18px; font-size: 13px; display: none; z-index: 2000; }
     #status-msg.success { border-color: #4caf82; color: #4caf82; }
     #status-msg.error { border-color: #e57373; color: #e57373; }
+
+    th { position: relative; }
+.col-resizer { position: absolute; right: 0; top: 0; bottom: 0; width: 5px; cursor: col-resize; z-index: 1; }
+.col-resizer:hover, .col-resizing { background: #555; }
+th.col-narrow { width: 80px; min-width: 60px; }
   </style>
 </head>
 <body>
@@ -179,16 +184,15 @@
         <thead>
           <tr>
             <th>Song</th>
-            <th>Album</th>
-            <th>Release Date</th>
-            <th>Active</th>
-            <th>Streams</th>
+            <th>Stats</th>
+            <th class="col-narrow">Streams</th>
             <th>Likes</th>
-            <th>Actions</th>
+            <th>Shares</th>
+            <th>Saves</th>
           </tr>
         </thead>
         <tbody id="ssTableBody">
-          <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+          <tr><td colspan="6" class="empty-state">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -652,18 +656,10 @@ async function loadAlbums() {
   const tbody = document.getElementById('albumTableBody');
   tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
   try {
-    const [albumData, countData] = await Promise.all([
-      apiFetch('/admin-albums-query?action=list'),
-      apiFetch('/admin-content-query?action=counts').catch(() => ({ results: [] }))
-    ]);
+    const albumData = await apiFetch('/admin-albums-query?action=list');
     const albums = albumData.results || [];
-    const countMap = {};
-    (countData.results || []).forEach(r => { countMap[r.table_name] = r.count; });
     if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
-    tbody.innerHTML = albums.map(a => {
-      const tn = ALBUM_TABLE_NAME[a.name] || '';
-      const trackCount = tn ? (countMap[tn] || 0) : '—';
-      return `
+    tbody.innerHTML = albums.map(a => `
       <tr style="cursor:pointer" ondblclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>
         <td>${a.name}</td>
         <td>${a.art || '—'}</td>
@@ -674,9 +670,8 @@ async function loadAlbums() {
         <td>${fmt(a.total_shares || 0)}</td>
         <td>${fmt(a.total_saves || 0)}</td>
         <td>${fmt(a.total_listeners || 0)}</td>
-        <td>${trackCount}</td>
-      </tr>`;
-    }).join('');
+        <td>${a.song_count || 0}</td>
+      </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
@@ -769,10 +764,10 @@ async function loadSongStatsList() {
   const album_id = document.getElementById('ssFilterAlbum').value;
   const tbody = document.getElementById('ssTableBody');
   if (!album_id) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Select an album above</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Select an album above</td></tr>';
     return;
   }
-  tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
   try {
     const album = _albumNames.find(a => a.id == album_id);
     const tableName = album ? ALBUM_TABLE_NAME[album.name] : null;
@@ -785,7 +780,7 @@ async function loadSongStatsList() {
     const statsMap = {};
     statsResults.forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
     if (!contentSongs.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No songs assigned to this album yet</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs assigned to this album yet</td></tr>';
       return;
     }
     _ssSongRows = contentSongs.map(song => ({
@@ -794,12 +789,16 @@ async function loadSongStatsList() {
     }));
     tbody.innerHTML = _ssSongRows.map(({ song, stats }, i) => {
       const streams = stats ? computeSongStreams(stats) : 0;
-      const likes = stats ? computeSongLikes(stats) : 0;
+      const likes   = stats ? computeSongLikes(stats)   : 0;
+      const shares  = stats ? computeSongShares(stats)  : 0;
+      const saves   = stats ? computeSongSaves(stats)   : 0;
       return `<tr style="cursor:pointer" ondblclick="openSongStatsFromRow(${i})">
         <td>${song.song_name}</td>
         <td><span class="badge ${stats ? 'badge-yes' : 'badge-no'}">${stats ? 'Yes' : 'No'}</span></td>
         <td>${fmt(streams)}</td>
         <td>${fmt(likes)}</td>
+        <td>${fmt(shares)}</td>
+        <td>${fmt(saves)}</td>
       </tr>`;
     }).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="4" class="empty-state">Error: ${e.message}</td></tr>`; }
@@ -810,6 +809,12 @@ function computeSongStreams(s) {
 }
 function computeSongLikes(s) {
   return (s.tt_likes||0)+(s.fb_likes||0)+(s.in_likes||0)+(s.yt_likes||0);
+}
+function computeSongShares(s) {
+  return (s.tt_shares||0)+(s.fb_shares||0)+(s.in_shares||0)+(s.in_reposts||0);
+}
+function computeSongSaves(s) {
+  return (s.tt_saves||0)+(s.fb_saves||0)+(s.in_saves||0)+(s.sp_saves||0)+(s.sp_playlist_adds||0);
 }
 
 let _currentSs = null;
@@ -953,7 +958,7 @@ function updateComputed() {
   const v = f => parseInt(document.getElementById('ss-' + f)?.value) || 0;
   const streams = v('spotify_streams')+v('apple_streams')+v('amazon_streams')+v('tidal_streams')+v('youtube_music')+v('youtube_views')+v('tiktok_views')+v('facebook_views')+v('instagram_views');
   const likes = v('tt_likes')+v('fb_likes')+v('in_likes')+v('yt_likes');
-  const shares = v('tt_shares')+v('fb_shares')+v('in_shares');
+  const shares = v('tt_shares')+v('fb_shares')+v('in_shares')+v('in_reposts');
   const saves = v('tt_saves')+v('fb_saves')+v('in_saves')+v('sp_saves')+v('sp_playlist_adds');
   const listeners = v('sp_listeners');
   document.getElementById('ss-c-streams').textContent = fmt(streams);
@@ -1047,6 +1052,26 @@ async function confirmRemove(type, id = null) {
     }
   } catch(e) { showStatus('Delete failed: ' + e.message, 'error'); }
 }
+
+// ─── COLUMN RESIZE ────────────────────────────────────────────────────────────
+function makeResizable(table) {
+  table.querySelectorAll('th').forEach(th => {
+    const resizer = document.createElement('div');
+    resizer.className = 'col-resizer';
+    th.appendChild(resizer);
+    let startX, startW;
+    resizer.addEventListener('mousedown', e => {
+      startX = e.pageX; startW = th.offsetWidth;
+      resizer.classList.add('col-resizing');
+      const onMove = e => { th.style.width = Math.max(50, startW + e.pageX - startX) + 'px'; };
+      const onUp = () => { resizer.classList.remove('col-resizing'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded', () => { document.querySelectorAll('table').forEach(makeResizable); });
 </script>
 </body>
 </html>
