@@ -597,7 +597,7 @@ async function saveForm() {
   };
   if (!body.table_name || !body.song_name) { alert('Table and song name are required.'); return; }
   try {
-    await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify(body) });
+    await apiFetch('/admin-content-manager', { method: 'POST', body: JSON.stringify(body) });
     closeModal();
     showStatus(id ? 'Song updated.' : 'Song added.');
     loadTable();
@@ -956,7 +956,7 @@ async function confirmRemove(type, id = null) {
 
   try {
     if (type === 'song') {
-      await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
+      await apiFetch('/admin-content-manager', { method: 'POST', body: JSON.stringify({ action: 'remove', id }) });
       showStatus('Song deleted.');
       loadTable();
     } else if (type === 'album') {
