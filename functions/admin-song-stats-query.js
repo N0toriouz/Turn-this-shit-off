@@ -11,8 +11,8 @@ export async function onRequestGet(context) {
     if (action === 'list') {
       const album_id = url.searchParams.get('album_id');
       if (!album_id) return json({ success: false, message: 'album_id required' }, 400);
-      const { results } = await env.CONTENT_DB.prepare(
-        `SELECT * FROM song_stats WHERE album_id = ? ORDER BY name ASC`
+      const { results } = await env.SONGS_DB.prepare(
+        `SELECT * FROM song_stats WHERE album_id=? ORDER BY name ASC`
       ).bind(album_id).all();
       return json({ success: true, results: results || [] });
     }
@@ -20,8 +20,8 @@ export async function onRequestGet(context) {
     if (action === 'get') {
       const id = url.searchParams.get('id');
       if (!id) return json({ success: false, message: 'id required' }, 400);
-      const row = await env.CONTENT_DB.prepare(
-        `SELECT * FROM song_stats WHERE id = ?`
+      const row = await env.SONGS_DB.prepare(
+        `SELECT * FROM song_stats WHERE id=?`
       ).bind(id).first();
       if (!row) return json({ success: false, message: 'Not found' }, 404);
       return json({ success: true, result: row });
@@ -35,7 +35,6 @@ export async function onRequestGet(context) {
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
