@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +49,10 @@ border: 1px solid var(--gold-dim); border-radius: 2px; z-index: 0;
 .album-cover-frame img { width: 100%; display: block; border-radius: 2px; position: relative; z-index: 1; }
 .album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
 .album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 4vw, 3.2rem); color: var(--white); margin-bottom: 0.75rem; line-height: 1.05; }
-.album-meta { color: var(--silver-dim); font-size: 0.9rem; margin-bottom: 1.75rem; }
+.album-meta { color: var(--silver-dim); font-size: 0.9rem; margin-bottom: 0.75rem; }
+.album-stats-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.75rem; font-size: 0.82rem; color: var(--silver-dim); }
+.album-stats-bar .stat-item { display: flex; align-items: center; gap: 0.4rem; }
+.album-stats-bar .stat-item strong { color: var(--silver); }
 .album-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
 .btn-primary {
 display: inline-flex; align-items: center; gap: 0.5rem;
@@ -80,7 +84,6 @@ font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 
 .song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .song-row iframe { display: block; width: 100%; }
 .song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
-.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
 .section-eyebrow {
 font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -95,6 +98,7 @@ border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
 .track-number { color: var(--gold-dim); flex-shrink: 0; }
 .track-name { color: var(--silver); }
 .track-card iframe { display: block; width: 100%; }
+.track-social { display: flex; gap: 1.5rem; padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); border-top: 1px solid var(--border); }
 footer {
 border-top: 1px solid var(--border); padding: 2rem 4rem;
 display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
@@ -128,6 +132,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
 <p class="album-eyebrow">June 2026</p>
 <h1 class="album-title">Melted Ice Cream</h1>
 <p class="album-meta">15 tracks</p>
+<div id="albumStatsBar" class="album-stats-bar"></div>
 <div class="album-cta">
 <a href="https://open.spotify.com/album/08JfB2oxrD4HQlSJgyCrqq" target="_blank" class="btn-primary">
 <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
@@ -145,8 +150,7 @@ Apple Music
 Tidal
 </a>
 <a href="https://music.amazon.ca/albums/B0GV8VD9DJ" target="_blank" class="platform-link-sm">
-<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144
-                                                                            C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
+<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
 Amazon Music
 </a>
 <a href="https://music.youtube.com/playlist?list=OLAK5uy_kHGBabscO2FFp2NKx7yWEgy0wxDGUWhPY" target="_blank" class="platform-link-sm">
@@ -156,12 +160,14 @@ YouTube Music
 </div>
 </div>
 </div>
+
 <div class="song-table-section">
 <p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
 <div id="songTable" class="song-table">
 <p class="songs-loading">Loading...</p>
 </div>
 </div>
+
 <main>
 <p class="section-eyebrow">All 15 Tracks</p>
 <div class="tracks-grid">
@@ -182,47 +188,113 @@ YouTube Music
 <div class="track-card"><div class="track-card-label"><span class="track-number">15</span><span class="track-name">One of My Socks has an Enormous Hole in It</span></div><iframe src="https://open.spotify.com/embed/track/6Xfd3uDFLApLzu9HeROvr1?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
 </div>
 </main>
+
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
 <span class="footer-note">Proud to make just awful music.</span>
 </footer>
+
 <script>
 function formatStreams(n) {
   if (n < 1000) return '▶ ' + String(n);
   if (n === 1000) return '▶ 1K';
   return '▶ ' + (n / 1000).toFixed(1) + 'K';
 }
-async function loadAlbumSongs() {
-const container = document.getElementById('songTable');
-try {
-const res = await fetch('/songs?table=album-melted-ice-cream');
-const data = await res.json();
-if (!data.success || !data.results || data.results.length === 0) {
-container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>';
-return;
+function fmtStat(n) {
+  n = parseInt(n) || 0;
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+  return n.toString();
 }
-container.innerHTML = '';
-data.results.forEach(song => {
-const row = document.createElement('div');
-row.className = 'song-row';
-row.innerHTML = `
+async function loadTrackSocial(container) {
+  const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
+  if (!rows.length) return;
+  try {
+    const results = await Promise.all(
+      rows.map(row =>
+        fetch('/track-stats?name=' + encodeURIComponent(row.dataset.songName))
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      )
+    );
+    rows.forEach((row, i) => {
+      const data = results[i];
+      if (!data?.success || !data.result) return;
+      const s = data.result;
+      if (!s.total_likes && !s.total_shares) return;
+      const div = document.createElement('div');
+      div.className = 'track-social';
+      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
+      row.appendChild(div);
+    });
+  } catch(e) {}
+}
+async function loadAlbumSongs() {
+  const container = document.getElementById('songTable');
+  try {
+    const res = await fetch('/songs?table=album-melted-ice-cream');
+    const data = await res.json();
+    if (!data.success || !data.results || data.results.length === 0) {
+      container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>';
+      return;
+    }
+    container.innerHTML = '';
+    data.results.forEach(song => {
+      const row = document.createElement('div');
+      row.className = 'song-row';
+      row.dataset.songName = song.song_name;
+      row.innerHTML = `
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 <div class="song-streams">${formatStreams(song.stream_count)}</div>
 `;
-container.appendChild(row);
+      container.appendChild(row);
+    });
+    if (data.results[0].art_number) {
+      const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
+      document.getElementById('page-backdrop').style.backgroundImage =
+        `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
+    }
+    loadTrackSocial(container);
+  } catch (err) {
+    container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
+  }
+}
+async function loadStats() {
+  try {
+    const ar = await fetch('/album-stats?name=' + encodeURIComponent('Melted Ice Cream'));
+    if (!ar.ok) return;
+    const ad = await ar.json();
+    if (!ad.success || !ad.result) return;
+    const r = ad.result;
+    document.getElementById('albumStatsBar').innerHTML =
+      [['🎵', r.total_streams, 'Streams'], ['❤️', r.total_likes, 'Likes'],
+       ['🔁', r.total_shares, 'Shares'], ['💾', r.total_saves, 'Saves'],
+       ['👥', r.total_listeners, 'Listeners']]
+      .map(([e, v, l]) => `<span class="stat-item">${e} <strong>${fmtStat(v)}</strong> ${l}</span>`)
+      .join('');
+    const tr = await fetch('/track-stats?album_id=' + r.id);
+    if (!tr.ok) return;
+    const td = await tr.json();
+    if (!td.success || !td.results) return;
+    const songMap = {};
+    td.results.forEach(s => { songMap[s.name.trim().toLowerCase()] = s; });
+    document.querySelectorAll('.track-card').forEach(card => {
+      const nameEl = card.querySelector('.track-name');
+      if (!nameEl) return;
+      const s = songMap[nameEl.textContent.trim().toLowerCase()];
+      if (!s || (!s.total_likes && !s.total_shares)) return;
+      const div = document.createElement('div');
+      div.className = 'track-social';
+      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
+      card.appendChild(div);
+    });
+  } catch(e) {}
+}
+document.addEventListener('DOMContentLoaded', () => {
+  loadAlbumSongs();
+  loadStats();
 });
-if (data.results[0].art_number) {
-  const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
-  document.getElementById('page-backdrop').style.backgroundImage =
-    `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
-}
-} catch (err) {
-container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
-}
-}
-document.addEventListener('DOMContentLoaded', loadAlbumSongs);
 </script>
 </body>
 </html>
