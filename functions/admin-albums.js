@@ -14,9 +14,9 @@ export async function onRequestPost(context) {
     if (action === 'add') {
       const { name, art, release_date, active } = body;
       if (!name) return json({ success: false, message: 'name is required' }, 400);
-      await env.CONTENT_DB.prepare(
+      await env.ALBUMS_DB.prepare(
         `INSERT INTO albums (name, art, release_date, active) VALUES (?, ?, ?, ?)`
-      ).bind(name.trim(), (art || '').trim(), (release_date || '').trim(), active || 'Yes').run();
+      ).bind(name.trim(), (art||'').trim(), (release_date||'').trim(), active||'Yes').run();
       return json({ success: true, message: 'Album created' });
     }
 
@@ -24,9 +24,9 @@ export async function onRequestPost(context) {
       const { id, name, art, release_date, active } = body;
       if (!id) return json({ success: false, message: 'id required' }, 400);
       if (!name) return json({ success: false, message: 'name is required' }, 400);
-      const result = await env.CONTENT_DB.prepare(
+      const result = await env.ALBUMS_DB.prepare(
         `UPDATE albums SET name=?, art=?, release_date=?, active=? WHERE id=?`
-      ).bind(name.trim(), (art || '').trim(), (release_date || '').trim(), active || 'Yes', id).run();
+      ).bind(name.trim(), (art||'').trim(), (release_date||'').trim(), active||'Yes', id).run();
       if (result.meta.changes === 0) return json({ success: false, message: 'Album not found' }, 404);
       return json({ success: true, message: 'Album updated' });
     }
@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
     if (action === 'delete') {
       const { id } = body;
       if (!id) return json({ success: false, message: 'id required' }, 400);
-      await env.CONTENT_DB.prepare(`DELETE FROM albums WHERE id=?`).bind(id).run();
+      await env.ALBUMS_DB.prepare(`DELETE FROM albums WHERE id=?`).bind(id).run();
       return json({ success: true, message: 'Album deleted' });
     }
 
@@ -46,7 +46,6 @@ export async function onRequestPost(context) {
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
+    status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }
   });
 }
