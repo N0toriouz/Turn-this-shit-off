@@ -1,14 +1,28 @@
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
-  const album_id = url.searchParams.get('album_id');
-  const name = url.searchParams.get('name');
-  if (!album_id && !name) return json({ success: false, message: 'album_id or name required' }, 400);
+  const album_id   = url.searchParams.get('album_id');
+  const album_name = url.searchParams.get('album_name');
+  const name       = url.searchParams.get('name');
+  if (!album_id && !album_name && !name) {
+    return json({ success: false, message: 'album_id, album_name, or name required' }, 400);
+  }
 
   try {
-    if (album_id) {
+    if (album_id || album_name) {
+      let numericId = album_id ? parseInt(album_id) : null;
+
+      // If album_name was passed, look up the integer ID from the albums table.
+      if (!numericId && album_name) {
+        const albumRow = await env.ALBUMS_DB.prepare(
+          `SELECT id FROM albums WHERE name=? LIMIT 1`
+        ).bind(album_name).first();
+        if (!albumRow) return json({ success: false, message: 'Album not found' }, 404);
+        numericId = albumRow.id;
+      }
+
       const { results } = await env.SONGS_DB.prepare(`
-        SELECT id, name, art,
+        SELECT id, name, art, spotify_url, spotify_embed_url,
           (tiktok_views+facebook_views+instagram_views+youtube_views+youtube_music+
            spotify_streams+apple_streams+amazon_streams+tidal_streams) AS total_streams,
           (tt_likes+fb_likes+in_likes+yt_likes) AS total_likes,
@@ -18,13 +32,13 @@ export async function onRequestGet(context) {
           co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
           co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10
         FROM song_stats WHERE album_id=? ORDER BY name ASC
-      `).bind(album_id).all();
+      `).bind(numericId).all();
       const mapped = (results || []).map(r => ({ ...r, top_country: topCountry(r) }));
       return json({ success: true, results: mapped });
     }
 
     const row = await env.SONGS_DB.prepare(`
-      SELECT id, name, art,
+      SELECT id, name, art, spotify_url, spotify_embed_url,
         (tiktok_views+facebook_views+instagram_views+youtube_views+youtube_music+
          spotify_streams+apple_streams+amazon_streams+tidal_streams) AS total_streams,
         (tt_likes+fb_likes+in_likes+yt_likes) AS total_likes,
