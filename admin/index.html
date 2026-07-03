@@ -547,7 +547,7 @@ async function loadTable() {
   tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
   try {
     const data = await apiFetch(`/songs?table=${encodeURIComponent(table)}`);
-    const songs = data.songs || [];
+    const songs = data.results || [];
     if (!songs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs found</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => `
       <tr>
@@ -619,7 +619,7 @@ let _albumNames = []; // {id, name}
 async function fetchAlbumNames() {
   try {
     const data = await apiFetch('/admin-albums-query?action=names');
-    _albumNames = data.albums || [];
+    _albumNames = data.results || [];
     populateAlbumDropdowns();
   } catch(e) { console.error('fetchAlbumNames', e); }
 }
@@ -644,7 +644,7 @@ async function loadAlbums() {
   tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
   try {
     const data = await apiFetch('/admin-albums-query?action=list');
-    const albums = data.albums || [];
+    const albums = data.results || [];
     if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
     tbody.innerHTML = albums.map(a => `
       <tr>
@@ -757,7 +757,7 @@ async function loadSongStatsList() {
     let url = '/admin-song-stats-query?action=list';
     if (album_id) url += `&album_id=${album_id}`;
     const data = await apiFetch(url);
-    const songs = data.songs || [];
+    const songs = data.results || [];
     if (!songs.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No song stats yet</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => {
       const streams = computeSongStreams(s);
@@ -831,7 +831,7 @@ async function loadSsSongDropdown(album_id, selectedId = null) {
   if (!album_id) return;
   try {
     const data = await apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`);
-    (data.songs || []).forEach(s => {
+    (data.results || []).forEach(s => {
       const o = document.createElement('option');
       o.value = s.id; o.textContent = s.name;
       sel.appendChild(o);
