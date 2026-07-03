@@ -608,12 +608,19 @@ function openModal() {
   }
   tSel.value = document.getElementById('tableSelect').value || '';
   const aSel = document.getElementById('form-album');
-  while (aSel.options.length > 1) aSel.remove(1);
-  _albumNames.forEach(a => {
-    const o = document.createElement('option');
-    o.value = a.id; o.textContent = a.name;
-    aSel.appendChild(o);
-  });
+  const populateAlbumSel = () => {
+    while (aSel.options.length > 1) aSel.remove(1);
+    _albumNames.forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.id; o.textContent = a.name;
+      aSel.appendChild(o);
+    });
+  };
+  if (_albumNames.length === 0) {
+    fetchAlbumNames().then(populateAlbumSel);
+  } else {
+    populateAlbumSel();
+  }
   aSel.value = '';
   document.getElementById('form-name').innerHTML = '<option value="">— Select Song —</option>';
   ['form-streams','form-likes','form-shares','form-saves','form-country'].forEach(id => {
