@@ -461,6 +461,23 @@ th.col-narrow { width: 80px; min-width: 60px; }
         <div id="countryRows"></div>
         <button class="btn btn-secondary btn-sm" onclick="addCountryRow('',0)" style="margin-top:6px">+ Add Country</button>
       </div>
+
+      <!-- Spotify URLs -->
+      <div class="platform-group" style="margin-top:14px">
+        <div class="platform-group-title">Spotify Links</div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Spotify URL</label>
+            <input type="text" id="ss-spotify-url" placeholder="https://open.spotify.com/track/..." oninput="onSpotifyUrlInput()" />
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Embed URL <span style="color:#555;font-weight:400">(auto-filled)</span></label>
+            <input type="text" id="ss-spotify-embed-url" placeholder="https://open.spotify.com/embed/track/..." readonly style="background:#111;color:#888;" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -1040,6 +1057,9 @@ function populateSsFields(song) {
   for (let i = 1; i <= 10; i++) {
     if (song['co' + i]) addCountryRow(song['co' + i], song['cl' + i] || 0);
   }
+  // spotify urls
+  document.getElementById('ss-spotify-url').value = song.spotify_url || '';
+  document.getElementById('ss-spotify-embed-url').value = song.spotify_embed_url || '';
   updateComputed();
 }
 
@@ -1050,7 +1070,18 @@ function clearSsForm() {
   document.getElementById('ssActive').value = 'Yes';
   SS_FIELDS.forEach(f => { const el = document.getElementById('ss-' + f); if (el) el.value = 0; });
   document.getElementById('countryRows').innerHTML = '';
+  document.getElementById('ss-spotify-url').value = '';
+  document.getElementById('ss-spotify-embed-url').value = '';
   updateComputed();
+}
+
+function onSpotifyUrlInput() {
+  const raw = document.getElementById('ss-spotify-url').value.trim();
+  // Convert https://open.spotify.com/track/ID?... → https://open.spotify.com/embed/track/ID
+  const match = raw.match(/open\.spotify\.com\/(track\/[A-Za-z0-9]+)/);
+  document.getElementById('ss-spotify-embed-url').value = match
+    ? 'https://open.spotify.com/embed/' + match[1]
+    : '';
 }
 
 function updateComputed() {
@@ -1108,6 +1139,8 @@ async function saveSsForm() {
     art: document.getElementById('ssArt').value || null,
     release_date: document.getElementById('ssDate').value || '',
     active: document.getElementById('ssActive').value,
+    spotify_url: document.getElementById('ss-spotify-url').value.trim(),
+    spotify_embed_url: document.getElementById('ss-spotify-embed-url').value.trim(),
     countries: collectCountries()
   };
   SS_FIELDS.forEach(f => { body[f] = parseInt(document.getElementById('ss-' + f)?.value) || 0; });
