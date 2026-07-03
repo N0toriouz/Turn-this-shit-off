@@ -1130,7 +1130,7 @@ async function exportToExcel() {
   if (typeof XLSX === 'undefined') { showStatus('SheetJS not loaded yet, try again in a moment.', 'error'); return; }
   showStatus('Fetching data for export...');
   try {
-    const res = await apiFetch('/admin-song-stats?action=list');
+    const res = await apiFetch('/admin-song-stats-query?action=list');
     if (!res.success || !res.results) throw new Error('No data returned');
     const rows = res.results;
     const albumName = id => (_albumNames.find(a => String(a.id) === String(id))?.name) || '';
