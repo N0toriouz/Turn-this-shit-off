@@ -84,7 +84,7 @@ function fmtStat(n) {
 function countryAbbr(name) {
   if (!name) return '';
   const m = {'united states':'USA','us':'USA','usa':'USA','united kingdom':'GBR','uk':'GBR','canada':'CAN','australia':'AUS','germany':'DEU','france':'FRA','brazil':'BRA','mexico':'MEX','japan':'JPN','south korea':'KOR','india':'IND','nigeria':'NGA','spain':'ESP','italy':'ITA','netherlands':'NLD','sweden':'SWE','norway':'NOR','philippines':'PHL','ghana':'GHA','south africa':'ZAF','new zealand':'NZL','ireland':'IRL','portugal':'PRT','colombia':'COL','argentina':'ARG','chile':'CHL','turkey':'TUR','russia':'RUS','poland':'POL','singapore':'SGP','malaysia':'MYS','thailand':'THA','indonesia':'IDN','kenya':'KEN'};
-  return m[name.trim().toLowerCase()] || name.trim().slice(0, 3).toUpperCase();
+  return m[name.trim().toLowerCase()] || name.trim().slice(0, 6).toUpperCase();
 }
 async function loadTrackSocial(container) {
   const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
