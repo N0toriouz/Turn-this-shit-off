@@ -879,14 +879,23 @@ async function loadSongStatsList() {
     const statsResults = statsData.results || [];
     const statsMap = {};
     statsResults.forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
-    if (!contentSongs.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No songs assigned to this album yet</td></tr>';
-      return;
-    }
-    _ssSongRows = contentSongs.map(song => ({
+    const contentKeys = new Set(contentSongs.map(s => s.song_name.trim().toLowerCase()));
+
+    const contentRows = contentSongs.map(song => ({
       song,
       stats: statsMap[song.song_name.trim().toLowerCase()] || null
     }));
+
+    // stats-only entries (created via Add Song Stats, not yet in any content table)
+    const statsOnlyRows = statsResults
+      .filter(s => !contentKeys.has(s.name.trim().toLowerCase()))
+      .map(s => ({ song: { song_name: s.name }, stats: s }));
+
+    if (!contentRows.length && !statsOnlyRows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No songs assigned to this album yet</td></tr>';
+      return;
+    }
+    _ssSongRows = [...contentRows, ...statsOnlyRows];
     tbody.innerHTML = _ssSongRows.map(({ song, stats }, i) => {
       const streams = stats ? computeSongStreams(stats) : 0;
       const likes   = stats ? computeSongLikes(stats)   : 0;
