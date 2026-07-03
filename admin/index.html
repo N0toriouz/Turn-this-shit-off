@@ -126,19 +126,21 @@
         </select>
         <button class="btn btn-primary" onclick="openModal('add')">+ Add Song</button>
       </div>
-      <table id="songTable">
+      <table id="songTable" style="table-layout:fixed;width:100%">
         <thead>
           <tr>
-            <th>Song</th>
-            <th>Streams</th>
-            <th>Release Date</th>
-            <th>Art #</th>
-            <th>Spotify</th>
-            <th>Actions</th>
+            <th style="width:200px;resize:horizontal;overflow:hidden">Song</th>
+            <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
+            <th style="width:55px;resize:horizontal;overflow:hidden">Cntry</th>
+            <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
+            <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
+            <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
+            <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
+            <th style="width:120px">Actions</th>
           </tr>
         </thead>
         <tbody id="songTableBody">
-          <tr><td colspan="6" class="empty-state">Select a table above</td></tr>
+          <tr><td colspan="8" class="empty-state">Select a table above</td></tr>
         </tbody>
       </table>
     </div>
@@ -563,25 +565,40 @@ function selectView(view) {
 async function loadTable() {
   const table = document.getElementById('tableSelect').value;
   const tbody = document.getElementById('songTableBody');
-  if (!table) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Select a table above</td></tr>'; return; }
-  tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
+  if (!table) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Select a table above</td></tr>'; return; }
+  tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Loading…</td></tr>';
   try {
-    const data = await apiFetch(`/songs?table=${encodeURIComponent(table)}`);
-    const songs = data.results || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No songs found</td></tr>'; return; }
-    tbody.innerHTML = songs.map(s => `
-      <tr>
+    const [tableData, statsData] = await Promise.all([
+      apiFetch(`/songs?table=${encodeURIComponent(table)}`),
+      apiFetch('/admin-song-stats-query?action=list').catch(() => ({ results: [] }))
+    ]);
+    const songs = tableData.results || [];
+    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No songs found</td></tr>'; return; }
+    const statsMap = {};
+    (statsData.results || []).forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
+    tbody.innerHTML = songs.map(s => {
+      const st = statsMap[s.song_name.trim().toLowerCase()] || {};
+      const streams = st.name ? computeSongStreams(st) : (s.stream_count || 0);
+      const likes   = st.name ? computeSongLikes(st)   : 0;
+      const saves   = st.name ? computeSongSaves(st)   : 0;
+      const shares  = st.name ? computeSongShares(st)  : 0;
+      const active  = st.active || '—';
+      const country = st.co1 ? st.co1.substring(0,3).toUpperCase() : '—';
+      return `<tr>
         <td>${s.song_name || ''}</td>
-        <td>${fmt(s.stream_count)}</td>
-        <td>${s.release_date || '—'}</td>
-        <td>${s.art_number ?? '—'}</td>
-        <td class="mono" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.spotify_url || '—'}</td>
+        <td><span class="badge ${active === 'Yes' ? 'badge-yes' : (active === 'No' ? 'badge-no' : '')}">${active}</span></td>
+        <td>${country}</td>
+        <td>${fmt(streams)}</td>
+        <td>${fmt(likes)}</td>
+        <td>${fmt(saves)}</td>
+        <td>${fmt(shares)}</td>
         <td>
           <button class="btn btn-secondary btn-sm" onclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="confirmRemove('song', ${s.id})">Del</button>
         </td>
-      </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Error: ${e.message}</td></tr>`; }
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
 function openModal(type, song = null) {
