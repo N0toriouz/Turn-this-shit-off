@@ -658,14 +658,30 @@ async function onModalAlbumChange() {
   if (!album_id) return;
   const album = _albumNames.find(a => a.id == album_id);
   const tableName = album ? ALBUM_TABLE_NAME[album.name] : null;
-  if (!tableName) return;
   try {
-    const data = await apiFetch(`/admin-content-query?action=list&table=${encodeURIComponent(tableName)}`);
-    (data.results || []).forEach(s => {
-      const o = document.createElement('option');
-      o.value = s.song_name; o.textContent = s.song_name;
-      songSel.appendChild(o);
-    });
+    // Pull from song_stats (master list) so all songs for this album appear,
+    // not just the ones already added to the content table.
+    const [statsData, contentData] = await Promise.all([
+      apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`).catch(() => ({ results: [] })),
+      tableName ? apiFetch(`/admin-content-query?action=list&table=${encodeURIComponent(tableName)}`).catch(() => ({ results: [] })) : Promise.resolve({ results: [] })
+    ]);
+    const alreadyAdded = new Set((contentData.results || []).map(s => s.song_name.trim().toLowerCase()));
+    const statsSongs = statsData.results || [];
+    if (statsSongs.length) {
+      statsSongs.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s.name;
+        o.textContent = s.name + (alreadyAdded.has(s.name.trim().toLowerCase()) ? ' ✓' : '');
+        songSel.appendChild(o);
+      });
+    } else if (tableName) {
+      // fallback: no stats entries yet, show content table songs
+      (contentData.results || []).forEach(s => {
+        const o = document.createElement('option');
+        o.value = s.song_name; o.textContent = s.song_name;
+        songSel.appendChild(o);
+      });
+    }
   } catch(e) { showStatus('Error loading songs: ' + e.message, 'error'); }
 }
 
@@ -697,6 +713,11 @@ async function onModalSongChange() {
       document.getElementById('form-shares').value  = stats ? fmt(computeSongShares(stats))  : '—';
       document.getElementById('form-saves').value   = stats ? fmt(computeSongSaves(stats))   : '—';
       document.getElementById('form-country').value = topCountry(stats);
+      // pre-fill embed URL from stats if content table had no entry for this song
+      if (stats && !document.getElementById('form-embed-url').value) {
+        document.getElementById('form-spotify-url').value = stats.spotify_url || '';
+        document.getElementById('form-embed-url').value = stats.spotify_embed_url || '';
+      }
     } catch(e) {}
   }
 }
