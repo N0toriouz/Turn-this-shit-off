@@ -29,10 +29,12 @@ display: flex; align-items: center; justify-content: space-between;
 .nav-back { color: var(--silver-dim); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
 .nav-back:hover { color: var(--gold); }
 .album-header { padding: 100px 4rem 3rem; max-width: 1200px; margin: 0 auto; display: flex; gap: 2.5rem; align-items: flex-end; border-bottom: 1px solid var(--border); }
-.album-art { width: 240px; height: 240px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+.album-art-frame { position: relative; width: 336px; max-width: 100%; flex-shrink: 0; margin-top: 12px; margin-left: 12px; }
+.album-art-frame::before { content: ''; position: absolute; top: -10px; left: -10px; right: 10px; bottom: 10px; border: 1px solid rgba(212,175,55,0.55); border-radius: 2px; z-index: 0; pointer-events: none; }
+.album-art-frame img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 2px; display: block; position: relative; z-index: 1; filter: contrast(1.05) saturate(0.9); }
 .stream-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-.stream-btn { display: inline-block; padding: 0.4rem 0.9rem; border: 1px solid var(--border); border-radius: 2px; color: var(--silver-dim); text-decoration: none; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s, border-color 0.2s; }
-.stream-btn:hover { color: var(--gold); border-color: var(--gold); }
+.stream-btn { display: inline-block; padding: 0.4rem 0.9rem; background: var(--gold); border: 1px solid var(--gold); border-radius: 2px; color: var(--black); text-decoration: none; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; transition: background 0.2s, border-color 0.2s; }
+.stream-btn:hover { background: #E8C547; border-color: #E8C547; }
 .album-meta { flex: 1; }
 .album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
 .album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--white); line-height: 1.1; margin-bottom: 0.5rem; }
@@ -55,8 +57,11 @@ footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex;
 .footer-note { font-size: 0.75rem; color: var(--silver-dim); opacity: 0.5; }
 @media (max-width: 768px) {
 .album-header { padding: 90px 1.5rem 2rem; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-.album-art { width: 120px; height: 120px; }
+.album-art-frame { width: 160px; margin-top: 8px; margin-left: 8px; }
+.album-art-frame::before { top: -6px; left: -6px; right: 6px; bottom: 6px; }
 .section { padding: 2rem 1.5rem; }
+.track-list { grid-template-columns: 1fr; }
+.song-grid { grid-template-columns: 1fr; }
 footer { padding: 2rem 1.5rem; flex-direction: column; }
 }
 </style>
@@ -69,7 +74,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 </nav>
 
 <div class="album-header">
-<img class="album-art" src="../Pick a Struggle.jpg" alt="Pick a Struggle album art" onerror="this.style.display='none'">
+<div class="album-art-frame"><img src="../Pick a Struggle.jpg" alt="Pick a Struggle album art" onerror="this.parentElement.style.display='none'"></div>
 <div class="album-meta">
 <p class="album-eyebrow">Album</p>
 <h1 class="album-title">Pick a Struggle</h1>
@@ -139,6 +144,7 @@ async function loadStats() {
     const res = await fetch('/track-stats?album_name=Pick%20a%20Struggle');
     const data = await res.json();
     if (!data.success || !data.results) return;
+    data.results.sort((a, b) => (parseInt(a.art_number) || 0) - (parseInt(b.art_number) || 0));
     trackList.innerHTML = '';
     data.results.forEach((s, i) => {
       const card = document.createElement('div');
@@ -164,6 +170,7 @@ async function loadHighlights() {
       document.getElementById('highlightsSection').style.display = 'none';
       return;
     }
+    data.results.sort((a, b) => (parseInt(b.stream_count) || 0) - (parseInt(a.stream_count) || 0));
     grid.innerHTML = '';
     data.results.forEach(song => {
       const row = document.createElement('div');
