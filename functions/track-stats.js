@@ -14,10 +14,13 @@ export async function onRequestGet(context) {
           (tt_likes+fb_likes+in_likes+yt_likes) AS total_likes,
           (tt_shares+fb_shares+in_shares+in_reposts) AS total_shares,
           (tt_saves+fb_saves+in_saves+sp_saves) AS total_saves,
-          sp_listeners
+          sp_listeners,
+          co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
+          co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10
         FROM song_stats WHERE album_id=? ORDER BY name ASC
       `).bind(album_id).all();
-      return json({ success: true, results: results || [] });
+      const mapped = (results || []).map(r => ({ ...r, top_country: topCountry(r) }));
+      return json({ success: true, results: mapped });
     }
 
     const row = await env.SONGS_DB.prepare(`
@@ -27,13 +30,25 @@ export async function onRequestGet(context) {
         (tt_likes+fb_likes+in_likes+yt_likes) AS total_likes,
         (tt_shares+fb_shares+in_shares+in_reposts) AS total_shares,
         (tt_saves+fb_saves+in_saves+sp_saves) AS total_saves,
-        sp_listeners
+        sp_listeners,
+        co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
+        co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10
       FROM song_stats WHERE name=? LIMIT 1
     `).bind(name).first();
+    if (row) row.top_country = topCountry(row);
     return json({ success: true, result: row || null });
   } catch (err) {
     return json({ success: false, message: err.message }, 500);
   }
+}
+
+function topCountry(row) {
+  let best = null, bestVal = 0;
+  for (let i = 1; i <= 10; i++) {
+    const val = parseInt(row['cl' + i]) || 0;
+    if (val > bestVal) { bestVal = val; best = row['co' + i] || null; }
+  }
+  return best;
 }
 
 function json(body, status = 200) {
