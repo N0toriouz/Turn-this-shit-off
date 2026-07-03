@@ -144,7 +144,7 @@ async function loadStats() {
     const res = await fetch('/track-stats?album_name=Pick%20a%20Struggle');
     const data = await res.json();
     if (!data.success || !data.results) return;
-    data.results.sort((a, b) => (parseInt(a.art_number) || 0) - (parseInt(b.art_number) || 0));
+    data.results.sort((a, b) => (parseInt(a.art) || 0) - (parseInt(b.art) || 0));
     trackList.innerHTML = '';
     data.results.forEach((s, i) => {
       const card = document.createElement('div');
