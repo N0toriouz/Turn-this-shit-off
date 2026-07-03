@@ -12,7 +12,7 @@ export async function onRequestPost(context) {
 
   try {
     if (action === 'add') {
-      const { album_id, name, art, release_date, active, countries } = body;
+      const { album_id, name, art, release_date, active, countries, spotify_url, spotify_embed_url } = body;
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
       const cf = countryValues(countries || []);
@@ -26,22 +26,25 @@ export async function onRequestPost(context) {
           spotify_streams, sp_listeners, sp_playlist_adds, sp_saves,
           apple_streams, amazon_streams, tidal_streams,
           co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
-          co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10
+          co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10,
+          spotify_url, spotify_embed_url
         ) VALUES (
           ?,?,?,?,?,
           ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-          ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+          ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+          ?,?
         )
       `).bind(
         parseInt(album_id), name.trim(), parseInt(art)||0,
         (release_date||'').trim(), active||'Yes',
-        ...pf, ...cf
+        ...pf, ...cf,
+        (spotify_url||'').trim(), (spotify_embed_url||'').trim()
       ).run();
       return json({ success: true, message: 'Song stats created' });
     }
 
     if (action === 'edit') {
-      const { id, album_id, name, art, release_date, active, countries } = body;
+      const { id, album_id, name, art, release_date, active, countries, spotify_url, spotify_embed_url } = body;
       if (!id) return json({ success: false, message: 'id required' }, 400);
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
@@ -56,12 +59,15 @@ export async function onRequestPost(context) {
           spotify_streams=?, sp_listeners=?, sp_playlist_adds=?, sp_saves=?,
           apple_streams=?, amazon_streams=?, tidal_streams=?,
           co1=?, cl1=?, co2=?, cl2=?, co3=?, cl3=?, co4=?, cl4=?, co5=?, cl5=?,
-          co6=?, cl6=?, co7=?, cl7=?, co8=?, cl8=?, co9=?, cl9=?, co10=?, cl10=?
+          co6=?, cl6=?, co7=?, cl7=?, co8=?, cl8=?, co9=?, cl9=?, co10=?, cl10=?,
+          spotify_url=?, spotify_embed_url=?
         WHERE id=?
       `).bind(
         parseInt(album_id), name.trim(), parseInt(art)||0,
         (release_date||'').trim(), active||'Yes',
-        ...pf, ...cf, id
+        ...pf, ...cf,
+        (spotify_url||'').trim(), (spotify_embed_url||'').trim(),
+        id
       ).run();
       if (result.meta.changes === 0) return json({ success: false, message: 'Song not found' }, 404);
       return json({ success: true, message: 'Song stats updated' });
