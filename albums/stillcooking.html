@@ -118,6 +118,7 @@ async function loadTrackSocial(container) {
       const bar = row.querySelector('.stats-bar');
       if (!bar) return;
       const spans = bar.querySelectorAll('span');
+      if (spans[0] && s.total_streams) spans[0].textContent = '🎵 ' + fmtStat(s.total_streams);
       if (spans[1] && s.total_likes) spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
       if (spans[2] && s.top_country) spans[2].textContent = countryAbbr(s.top_country);
     });
@@ -126,21 +127,19 @@ async function loadTrackSocial(container) {
 async function loadStats() {
   const trackList = document.getElementById('trackList');
   try {
-    const res = await fetch('/track-stats?album_id=album-still-cooking');
+    const res = await fetch('/track-stats?album_name=Still%20Cooking');
     const data = await res.json();
     if (!data.success || !data.results) return;
     trackList.innerHTML = '';
     data.results.forEach((s, i) => {
       const card = document.createElement('div');
-      card.className = 'track-card';
-      card.innerHTML = `<span class="track-num">${i + 1}</span><span class="track-name">${s.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>`;
-      if (s) {
-        const div = document.createElement('div');
-        div.className = 'stats-bar';
-        div.style.cssText = 'border-top:none;padding:0;flex-shrink:0;gap:1rem;';
-        div.innerHTML = `<span>🎵 ${fmtStat(s.total_streams)}</span><span>${s.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s.top_country ? countryAbbr(s.top_country) : ''}</span>`;
-        card.appendChild(div);
-      }
+      card.className = 'song-row';
+      const safeName = s.name.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      card.innerHTML = `<div class="song-title">${safeName}</div>` +
+        (s.spotify_embed_url
+          ? `<iframe src="${s.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`
+          : '') +
+        `<div class="stats-bar"><span>🎵 ${fmtStat(s.total_streams)}</span><span>${s.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s.top_country ? countryAbbr(s.top_country) : ''}</span></div>`;
       trackList.appendChild(card);
     });
   } catch(e) {
