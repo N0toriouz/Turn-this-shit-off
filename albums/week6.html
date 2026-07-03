@@ -9,226 +9,80 @@
 :root {
 --black: #0A0A0A; --near-black: #111111; --card-bg: #161616;
 --border: #2A2A2A; --silver: #C8C8C8; --silver-dim: #888888;
---gold: #D4AF37; --gold-dim: #9A7D1A; --white: #F2F2F2;
+--gold: #D4AF37; --white: #F2F2F2;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; background: #0A0A0A; overflow-x: hidden; }
+html { background: #0A0A0A; overflow-x: hidden; }
 body { background: transparent; color: var(--silver); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; }
 #page-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: #0A0A0A;
-  background-size: cover;
-  background-position: center center;
-  filter: blur(12px) saturate(0.6) brightness(0.9);
-  transform: scale(1.15);
-  pointer-events: none;
+  position: fixed; inset: 0; z-index: -1;
+  background-color: #0A0A0A; background-size: cover; background-position: center center;
+  filter: blur(12px) saturate(0.6) brightness(0.9); transform: scale(1.15); pointer-events: none;
 }
 nav {
-position: sticky; top: 0; z-index: 100;
+position: fixed; top: 0; left: 0; right: 0; z-index: 100;
 background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
-border-bottom: 1px solid var(--border);
-padding: 0 2rem; height: 60px;
+border-bottom: 1px solid var(--border); padding: 0 2rem; height: 60px;
 display: flex; align-items: center; justify-content: space-between;
 }
 .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--gold); text-decoration: none; }
-.nav-back { color: var(--silver-dim); text-decoration: none; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.nav-back { color: var(--silver-dim); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
 .nav-back:hover { color: var(--gold); }
-.album-hero {
-max-width: 1000px; margin: 0 auto; padding: 4rem 2rem 3rem;
-display: grid; grid-template-columns: 280px 1fr; gap: 3rem; align-items: end;
-}
-.album-cover-frame { position: relative; width: 100%; }
-.album-cover-frame::before {
-content: ''; position: absolute;
-top: -10px; left: -10px; right: 10px; bottom: 10px;
-border: 1px solid var(--gold-dim); border-radius: 2px; z-index: 0;
-}
-.album-cover-frame img { width: 100%; display: block; border-radius: 2px; position: relative; z-index: 1; }
-.album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
-.album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.2rem, 4vw, 3.2rem); color: var(--white); margin-bottom: 0.75rem; line-height: 1.05; }
-.album-meta { color: var(--silver-dim); font-size: 0.9rem; margin-bottom: 1.75rem; }
-.album-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
-.btn-primary {
-display: inline-flex; align-items: center; gap: 0.5rem;
-background: var(--gold); color: var(--black);
-padding: 0.7rem 1.6rem; border-radius: 2px; text-decoration: none;
-font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-transition: background 0.2s, transform 0.1s;
-}
-.btn-primary:hover { background: #E8C547; transform: translateY(-1px); }
-.btn-secondary {
-display: inline-flex; align-items: center; gap: 0.5rem;
-border: 1px solid var(--border); color: var(--silver);
-padding: 0.7rem 1.6rem; border-radius: 2px; text-decoration: none;
-font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
-transition: border-color 0.2s, color 0.2s;
-}
-.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-.platform-link-sm {
-display: inline-flex; align-items: center; gap: 0.4rem;
-padding: 0.4rem 0.8rem; background: var(--card-bg);
-border: 1px solid var(--border); border-radius: 2px;
-color: var(--silver-dim); text-decoration: none;
-font-size: 0.7rem; letter-spacing: 0.04em; transition: border-color 0.2s, color 0.2s;
-}
-.platform-link-sm:hover { border-color: var(--gold); color: var(--gold); }
-.song-table-section { max-width: 1000px; margin: 0 auto; padding: 0 2rem 3rem; }
-.song-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.album-header { padding: 100px 4rem 3rem; max-width: 1200px; margin: 0 auto; display: flex; gap: 2.5rem; align-items: flex-end; border-bottom: 1px solid var(--border); }
+.album-art { width: 160px; height: 160px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+.album-meta { flex: 1; }
+.album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+.album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--white); line-height: 1.1; margin-bottom: 0.5rem; }
+.album-track-count { font-size: 0.8rem; color: var(--silver-dim); }
+.section { padding: 3rem 4rem; max-width: 1200px; margin: 0 auto; }
+.section-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+.song-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
 .song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
 .song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .song-row iframe { display: block; width: 100%; }
-.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
-.songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
-main { max-width: 1000px; margin: 0 auto; padding: 1rem 2rem 5rem; }
-.section-eyebrow {
-font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
-color: var(--gold); margin-bottom: 1.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
-}
-.tracks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-.track-card { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
-.track-card-label {
-padding: 0.6rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim);
-border-bottom: 1px solid var(--border); display: flex; gap: 0.6rem;
-}
-.track-number { color: var(--gold-dim); flex-shrink: 0; }
-.track-name { color: var(--silver); }
-.track-card iframe { display: block; width: 100%; }
-footer {
-border-top: 1px solid var(--border); padding: 2rem 4rem;
-display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-background: var(--near-black);
-}
+.stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.04em; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.stats-bar .country { font-variant: small-caps; letter-spacing: 0.1em; }
+.track-list { display: flex; flex-direction: column; gap: 0; }
+.track-card { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: var(--card-bg); }
+.track-card:last-child { border-bottom: none; }
+.track-num { font-size: 0.7rem; color: var(--silver-dim); width: 1.5rem; text-align: right; flex-shrink: 0; }
+.track-name { flex: 1; font-size: 0.88rem; color: var(--silver); }
+footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--near-black); margin-top: 3rem; }
 .footer-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--gold); font-style: italic; }
 .footer-note { font-size: 0.75rem; color: var(--silver-dim); opacity: 0.5; }
-@media (max-width: 700px) {
-.album-hero { grid-template-columns: 1fr; padding: 2.5rem 1.5rem 2rem; }
-.album-cover-frame { max-width: 240px; margin: 0 auto; }
-.song-table-section { padding: 0 1.5rem 2rem; }
-main { padding: 1rem 1.5rem 4rem; }
-nav { padding: 0 1.5rem; }
-footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+@media (max-width: 768px) {
+.album-header { padding: 90px 1.5rem 2rem; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+.album-art { width: 120px; height: 120px; }
+.section { padding: 2rem 1.5rem; }
+footer { padding: 2rem 1.5rem; flex-direction: column; }
 }
-.album-stats-bar { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.75rem; font-size: 0.82rem; color: var(--silver-dim); }
-.album-stats-bar .stat-item { display: flex; align-items: center; gap: 0.4rem; }
-.album-stats-bar .stat-item strong { color: var(--silver); }
-.track-social { display: flex; gap: 1.5rem; padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
 <div id="page-backdrop"></div>
-
 <nav>
 <a href="/" class="nav-logo">MadeUp MonkeyShit</a>
-<a href="/#albums" class="nav-back">← All Albums</a>
+<a href="/#catalog" class="nav-back">← All Albums</a>
 </nav>
 
-<div class="album-hero">
-<div class="album-cover-frame">
-<img src="../Week 6.jpg" alt="Week 6 album cover">
-</div>
-<div>
-<p class="album-eyebrow">March 2026</p>
+<div class="album-header">
+<img class="album-art" src="../Week 6.jpg" alt="Week 6 album art" onerror="this.style.display='none'">
+<div class="album-meta">
+<p class="album-eyebrow">Album</p>
 <h1 class="album-title">Week 6</h1>
-<p class="album-meta">15 tracks</p>
-<div id="albumStatsBar" class="album-stats-bar"></div>
-<div class="album-cta">
-<a href="https://open.spotify.com/album/7DDTVHiPantN7Z1RcWwrpb" target="_blank" class="btn-primary">
-<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.623.623 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.52-.973c3.632-1.102 8.147-.568 11.233 1.329a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.794c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.613z"/></svg>
-Play Full Album on Spotify
-</a>
-<a href="/" class="btn-secondary">Back to Site</a>
-</div>
-<div class="album-platforms" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
-<a href="https://music.apple.com/us/album/week-6/1881562476" target="_blank" class="platform-link-sm">
-<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-Apple Music
-</a>
-<a href="https://tidal.com/album/503422336" target="_blank" class="platform-link-sm">
-<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M12.012 3.992L8.008 7.996 4.004 3.992 0 7.996l4.004 4.004L8.008 7.996l4.004 4.004 4.004-4.004zM8.008 16.004l-4.004-4.004L0 16.004 4.004 20.008l4.004-4.004zM16.016 3.992l-4.004 4.004 4.004 4.004L20.02 7.996zM16.016 12l-4.004 4.004 4.004 4.004L20.02 16.004z"/></svg>
-Tidal
-</a>
-<a href="https://music.amazon.ca/albums/B0GQRWQ7ZL" target="_blank" class="platform-link-sm">
-<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.7-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.768-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.097v-.41c0-.753.06-1.642-.383-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.581l-3.064-.33c-.259-.057-.548-.266-.472-.661C5.508 1.948 8.428.878 11.058.878c1.341 0 3.094.357 4.151 1.371C16.349 3.351 16.214 5.37 16.214 7v4.646c0 1.395.579 2.009 1.125 2.761.191.266.233.587-.013.786l-2.157 1.602h-.025zM21.658 19.144C19.348 20.895 16.01 21.828 13.122 21.828c-4.237 0-8.05-1.567-10.937-4.169-.228-.206-.024-.487.249-.328 3.114 1.813 6.966 2.903 10.947 2.903 2.684 0 5.636-.556 8.353-1.709.41-.173.753.269.324.619zm.943-1.07c-.311-.397-2.056-.188-2.838-.095-.239.031-.276-.179-.06-.33 1.389-.977 3.671-.695 3.937-.368.268.329-.072 2.607-1.374 3.694-.2.166-.389.078-.301-.143.293-.731.95-2.36.636-2.758z"/></svg>
-Amazon Music
-</a>
-</div>
+<p class="album-track-count">15 tracks</p>
 </div>
 </div>
 
-<div class="song-table-section">
-<p class="section-eyebrow" style="padding-top:2rem; border-top:1px solid var(--border);">Streaming Highlights</p>
-<div id="songTable" class="song-table">
-<p class="songs-loading">Loading...</p>
-</div>
+<div class="section" id="highlightsSection">
+<p class="section-label">Streaming Highlights</p>
+<div class="song-grid" id="songGrid"><p style="color:var(--silver-dim);font-style:italic;font-size:.85rem">Loading...</p></div>
 </div>
 
-<main>
-<p class="section-eyebrow">All 15 Tracks</p>
-<div class="tracks-grid">
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">01</span><span class="track-name">Spring is Slowly Arriving and It Can't Come Fast Enough</span></div>
-<iframe src="https://open.spotify.com/embed/track/0peZm4yev4HdeoulMlJ5V7?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<div class="section">
+<p class="section-label">All 15 Tracks</p>
+<div class="track-list" id="trackList"><p style="color:var(--silver-dim);font-style:italic;font-size:.85rem">Loading...</p></div>
 </div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">02</span><span class="track-name">After the Night We Had, Tomorrow's AFT Scores are Gonna be Ridiculous</span></div>
-<iframe src="https://open.spotify.com/embed/track/02wGrxm52ELgUXxRzGOXRC?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">03</span><span class="track-name">I Have to Find a Way to Restore My Morale</span></div>
-<iframe src="https://open.spotify.com/embed/track/6d0dLeTunynE5VSSusRp92?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">04</span><span class="track-name">2 Hours Until the Forex Market Opens and I'm Losing My Mind</span></div>
-<iframe src="https://open.spotify.com/embed/track/6fkrhXLedYcJeLRXcH4BvX?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">05</span><span class="track-name">When I Don't Feel Like Being Bothered, Everyone Thinks I'm High, and That's Weird</span></div>
-<iframe src="https://open.spotify.com/embed/track/3MuWWVQrJ2MXHCNgXFMU6R?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">06</span><span class="track-name">Considering Resigning for the First Time (Instrumental)</span></div>
-<iframe src="https://open.spotify.com/embed/track/4H3gf7eJXv6j5cR7uAHxPJ?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">07</span><span class="track-name">There's an Exam Scheduled for Today, and I'm Not Even in the Mood to Eat Breakfast</span></div>
-<iframe src="https://open.spotify.com/embed/track/334lMnipXzZCPNkSypZNAb?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">08</span><span class="track-name">Well, I'm Officially on Profile</span></div>
-<iframe src="https://open.spotify.com/embed/track/1zHmrbHAtcFZOlihPN0JN0?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">09</span><span class="track-name">When I Don't Feel Like Being Bothered (Remix)</span></div>
-<iframe src="https://open.spotify.com/embed/track/6QunJEqcVslkV0ZCQs1eu7?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">10</span><span class="track-name">Time for Today's Final Formation</span></div>
-<iframe src="https://open.spotify.com/embed/track/41Emyt172sN9R053xvS8Q2?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">11</span><span class="track-name">I am So Checked Out Right Now</span></div>
-<iframe src="https://open.spotify.com/embed/track/24XX35uKts3Rbk2BrFdtM5?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">12</span><span class="track-name">After the Night We Had, Tomorrow's AFT Scores are Gonna be Ridiculous (Remix)</span></div>
-<iframe src="https://open.spotify.com/embed/track/4lbjadH5sT4mskYzrSCON4?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">13</span><span class="track-name">On the Ride Home from that BCT Graduation Ceremony, You Just Stared Out the Window</span></div>
-<iframe src="https://open.spotify.com/embed/track/2u73iUxfINt48lMwr8bfpp?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">14</span><span class="track-name">I Have to Find a Way to Restore My Morale (Barely a Remix)</span></div>
-<iframe src="https://open.spotify.com/embed/track/5fgI0kc7nlOhTN7seVoI6f?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-<div class="track-card">
-<div class="track-card-label"><span class="track-number">15</span><span class="track-name">Who Dropped Their Bubble Again</span></div>
-<iframe src="https://open.spotify.com/embed/track/5kLd36b20uQ2MenAPfkHkc?utm_source=generator&theme=0" height="80" frameborder="0" allowtransparency="true" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-</div>
-</div>
-</main>
 
 <footer>
 <span class="footer-name">MadeUp MonkeyShit</span>
@@ -236,16 +90,16 @@ Amazon Music
 </footer>
 
 <script>
-function formatStreams(n) {
-  if (n < 1000) return '▶ ' + String(n);
-  if (n === 1000) return '▶ 1K';
-  return '▶ ' + (n / 1000).toFixed(1) + 'K';
-}
 function fmtStat(n) {
   n = parseInt(n) || 0;
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
   if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return n.toString();
+}
+function countryAbbr(name) {
+  if (!name) return '';
+  const m = {'united states':'USA','us':'USA','usa':'USA','united kingdom':'GBR','uk':'GBR','canada':'CAN','australia':'AUS','germany':'DEU','france':'FRA','brazil':'BRA','mexico':'MEX','japan':'JPN','south korea':'KOR','india':'IND','nigeria':'NGA','spain':'ESP','italy':'ITA','netherlands':'NLD','sweden':'SWE','norway':'NOR','philippines':'PHL','ghana':'GHA','south africa':'ZAF','new zealand':'NZL','ireland':'IRL','portugal':'PRT','colombia':'COL','argentina':'ARG','chile':'CHL','turkey':'TUR','russia':'RUS','poland':'POL','singapore':'SGP','malaysia':'MYS','thailand':'THA','indonesia':'IDN','kenya':'KEN'};
+  return m[name.trim().toLowerCase()] || name.trim().slice(0, 3).toUpperCase();
 }
 async function loadTrackSocial(container) {
   const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
@@ -261,81 +115,68 @@ async function loadTrackSocial(container) {
       const data = results[i];
       if (!data?.success || !data.result) return;
       const s = data.result;
-      if (!s.total_likes && !s.total_shares) return;
-      const div = document.createElement('div');
-      div.className = 'track-social';
-      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
-      row.appendChild(div);
+      const bar = row.querySelector('.stats-bar');
+      if (!bar) return;
+      const spans = bar.querySelectorAll('span');
+      if (spans[1] && s.total_likes) spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
+      if (spans[2] && s.top_country) spans[2].textContent = countryAbbr(s.top_country);
     });
   } catch(e) {}
 }
-async function loadAlbumSongs() {
-  const container = document.getElementById('songTable');
+async function loadStats() {
+  const trackList = document.getElementById('trackList');
+  try {
+    const res = await fetch('/track-stats?album_id=album-week-6');
+    const data = await res.json();
+    if (!data.success || !data.results) return;
+    trackList.innerHTML = '';
+    data.results.forEach((s, i) => {
+      const card = document.createElement('div');
+      card.className = 'track-card';
+      card.innerHTML = `<span class="track-num">${i + 1}</span><span class="track-name">${s.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>`;
+      if (s) {
+        const div = document.createElement('div');
+        div.className = 'stats-bar';
+        div.style.cssText = 'border-top:none;padding:0;flex-shrink:0;gap:1rem;';
+        div.innerHTML = `<span>🎵 ${fmtStat(s.total_streams)}</span><span>${s.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s.top_country ? countryAbbr(s.top_country) : ''}</span>`;
+        card.appendChild(div);
+      }
+      trackList.appendChild(card);
+    });
+  } catch(e) {
+    trackList.innerHTML = '<p style="color:var(--silver-dim);font-style:italic;font-size:.85rem">Could not load tracks.</p>';
+  }
+}
+async function loadHighlights() {
+  const grid = document.getElementById('songGrid');
   try {
     const res = await fetch('/songs?table=album-week-6');
     const data = await res.json();
-    if (!data.success || !data.results || data.results.length === 0) {
-      container.innerHTML = '<p class="songs-empty">No highlights added yet.</p>';
+    if (!data.success || !data.results || !data.results.length) {
+      document.getElementById('highlightsSection').style.display = 'none';
       return;
     }
-    container.innerHTML = '';
+    grid.innerHTML = '';
     data.results.forEach(song => {
       const row = document.createElement('div');
       row.className = 'song-row';
       row.dataset.songName = song.song_name;
       row.innerHTML = `
-<div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+<div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<div class="song-streams">${formatStreams(song.stream_count)}</div>
+<div class="stats-bar"><span>🎵 ${fmtStat(song.stream_count)}</span><span></span><span class="country"></span></div>
 `;
-      container.appendChild(row);
+      grid.appendChild(row);
     });
-    if (data.results[0].art_number) {
-      const artUrl = `https://raw.githubusercontent.com/N0toriouz/Turn-this-shit-off/main/art/${data.results[0].art_number}.jpg`;
-      document.getElementById('page-backdrop').style.backgroundImage =
-        `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
-    }
-    loadTrackSocial(container);
-  } catch (err) {
-    container.innerHTML = '<p class="songs-empty">Could not load highlights.</p>';
+    document.getElementById('page-backdrop').style.backgroundImage =
+      `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('../Week 6.jpg')`;
+    loadTrackSocial(grid);
+  } catch(e) {
+    document.getElementById('highlightsSection').style.display = 'none';
   }
 }
-async function loadStats() {
-  try {
-    const ar = await fetch('/album-stats?name=' + encodeURIComponent('Week 6'));
-    if (!ar.ok) return;
-    const ad = await ar.json();
-    if (!ad.success || !ad.result) return;
-    const r = ad.result;
-    document.getElementById('albumStatsBar').innerHTML =
-      [['🎵', r.total_streams, 'Streams'], ['❤️', r.total_likes, 'Likes'],
-       ['🔁', r.total_shares, 'Shares'], ['💾', r.total_saves, 'Saves'],
-       ['👥', r.total_listeners, 'Listeners']]
-      .map(([e, v, l]) => `<span class="stat-item">${e} <strong>${fmtStat(v)}</strong> ${l}</span>`)
-      .join('');
-    const tr = await fetch('/track-stats?album_id=' + r.id);
-    if (!tr.ok) return;
-    const td = await tr.json();
-    if (!td.success || !td.results) return;
-    const songMap = {};
-    td.results.forEach(s => { songMap[s.name.trim().toLowerCase()] = s; });
-    document.querySelectorAll('.track-card').forEach(card => {
-      const nameEl = card.querySelector('.track-name');
-      if (!nameEl) return;
-      const s = songMap[nameEl.textContent.trim().toLowerCase()];
-      if (!s || (!s.total_likes && !s.total_shares)) return;
-      const div = document.createElement('div');
-      div.className = 'track-social';
-      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
-      card.appendChild(div);
-    });
-  } catch(e) {}
-}
-document.addEventListener('DOMContentLoaded', () => {
-  loadAlbumSongs();
-  loadStats();
-});
+document.addEventListener('DOMContentLoaded', () => { loadHighlights(); loadStats(); });
 </script>
 </body>
 </html>
