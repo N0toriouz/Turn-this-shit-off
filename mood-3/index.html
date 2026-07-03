@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,8 +37,8 @@ display: flex; align-items: center; justify-content: space-between;
 .song-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
 .song-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
 .song-row iframe { display: block; width: 100%; }
-.song-streams { padding: 0.5rem 0.85rem; font-size: 0.78rem; color: var(--silver-dim); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
-.track-social { display: flex; gap: 1.5rem; padding: 0.4rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); border-top: 1px solid var(--border); }
+.stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.04em; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.stats-bar .country { font-variant: small-caps; letter-spacing: 0.1em; }
 .songs-loading, .songs-empty { color: var(--silver-dim); font-size: 0.85rem; font-style: italic; padding: 2rem 0; }
 footer { border-top: 1px solid var(--border); padding: 2rem 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; background: var(--near-black); }
 .footer-name { font-family: 'DM Serif Display', serif; font-size: 1rem; color: var(--gold); font-style: italic; }
@@ -76,16 +75,16 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 </footer>
 
 <script>
-function formatStreams(n) {
-  if (n < 1000) return '▶ ' + String(n);
-  if (n === 1000) return '▶ 1K';
-  return '▶ ' + (n / 1000).toFixed(1) + 'K';
-}
 function fmtStat(n) {
   n = parseInt(n) || 0;
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
   if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return n.toString();
+}
+function countryAbbr(name) {
+  if (!name) return '';
+  const m = {'united states':'USA','us':'USA','usa':'USA','united kingdom':'GBR','uk':'GBR','canada':'CAN','australia':'AUS','germany':'DEU','france':'FRA','brazil':'BRA','mexico':'MEX','japan':'JPN','south korea':'KOR','india':'IND','nigeria':'NGA','spain':'ESP','italy':'ITA','netherlands':'NLD','sweden':'SWE','norway':'NOR','philippines':'PHL','ghana':'GHA','south africa':'ZAF','new zealand':'NZL','ireland':'IRL','portugal':'PRT','colombia':'COL','argentina':'ARG','chile':'CHL','turkey':'TUR','russia':'RUS','poland':'POL','singapore':'SGP','malaysia':'MYS','thailand':'THA','indonesia':'IDN','kenya':'KEN'};
+  return m[name.trim().toLowerCase()] || name.trim().slice(0, 3).toUpperCase();
 }
 async function loadTrackSocial(container) {
   const rows = Array.from(container.querySelectorAll('.song-row[data-song-name]'));
@@ -101,11 +100,11 @@ async function loadTrackSocial(container) {
       const data = results[i];
       if (!data?.success || !data.result) return;
       const s = data.result;
-      if (!s.total_likes && !s.total_shares) return;
-      const div = document.createElement('div');
-      div.className = 'track-social';
-      div.innerHTML = `<span>❤️ ${fmtStat(s.total_likes)}</span><span>🔁 ${fmtStat(s.total_shares)}</span>`;
-      row.appendChild(div);
+      const bar = row.querySelector('.stats-bar');
+      if (!bar) return;
+      const spans = bar.querySelectorAll('span');
+      if (spans[1] && s.total_likes) spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
+      if (spans[2] && s.top_country) spans[2].textContent = countryAbbr(s.top_country);
     });
   } catch(e) {}
 }
@@ -127,7 +126,7 @@ async function loadSongs() {
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<div class="song-streams">${formatStreams(song.stream_count)}</div>
+<div class="stats-bar"><span>🎵 ${fmtStat(song.stream_count)}</span><span></span><span class="country"></span></div>
 `;
       container.appendChild(row);
     });
