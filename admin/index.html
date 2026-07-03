@@ -203,32 +203,14 @@
   <div class="modal">
     <h3 id="modal-title">Add Song</h3>
     <input type="hidden" id="edit-id" />
-    <input type="hidden" id="form-name" />
     <div class="form-row">
       <div class="form-group">
         <label>Table <span class="req">*</span></label>
         <select id="form-table"></select>
       </div>
       <div class="form-group">
-        <label>Album <span class="req">*</span></label>
-        <select id="form-album" onchange="onFormAlbumChange()">
-          <option value="">— Select Album —</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row" id="form-song-row" style="display:none">
-      <div class="form-group" style="flex:1">
         <label>Song Name <span class="req">*</span></label>
-        <select id="form-name-select" onchange="onFormSongChange()">
-          <option value="">— Select Song —</option>
-        </select>
-      </div>
-    </div>
-    <!-- Edit mode: plain name display -->
-    <div class="form-row" id="form-name-edit-row" style="display:none">
-      <div class="form-group" style="flex:1">
-        <label>Song Name</label>
-        <input type="text" id="form-name-edit-display" readonly style="background:var(--near-black);cursor:default;" />
+        <input type="text" id="form-name" />
       </div>
     </div>
     <div class="form-row">
@@ -459,6 +441,21 @@
         <div id="countryRows"></div>
         <button class="btn btn-secondary btn-sm" onclick="addCountryRow('',0)" style="margin-top:6px">+ Add Country</button>
       </div>
+
+      <!-- Spotify Links -->
+      <div class="platform-group">
+        <div class="platform-group-title">Spotify Links</div>
+        <div class="platform-fields">
+          <div class="form-group">
+            <label>Spotify URL</label>
+            <input type="text" id="ss-spotify-url" oninput="onSpotifyUrlInput()" placeholder="https://open.spotify.com/track/..." />
+          </div>
+          <div class="form-group">
+            <label>Embed URL <span style="color:var(--silver-dim);font-size:0.75em">(auto-filled)</span></label>
+            <input type="text" id="ss-spotify-embed-url" readonly style="opacity:0.6;cursor:default;" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -572,21 +569,10 @@ function openModal(type, song = null) {
   document.getElementById('modal-title').textContent = type === 'add' ? 'Add Song' : 'Edit Song';
   const tableSel = document.getElementById('form-table');
   if (!tableSel.options.length) TABLES.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; tableSel.appendChild(o); });
-  // populate album dropdown
-  const albumSel = document.getElementById('form-album');
-  while (albumSel.options.length > 1) albumSel.remove(1);
-  (_albumNames.length ? Promise.resolve() : fetchAlbumNames()).then(() => {
-    while (albumSel.options.length > 1) albumSel.remove(1);
-    _albumNames.forEach(a => { const o = document.createElement('option'); o.value = a.id; o.textContent = a.name; albumSel.appendChild(o); });
-  });
   if (type === 'edit' && song) {
     document.getElementById('edit-id').value = song.id;
     document.getElementById('form-table').value = song.table_name || '';
     document.getElementById('form-name').value = song.song_name || '';
-    document.getElementById('form-album').value = '';
-    document.getElementById('form-song-row').style.display = 'none';
-    document.getElementById('form-name-edit-row').style.display = '';
-    document.getElementById('form-name-edit-display').value = song.song_name || '';
     document.getElementById('form-streams').value = song.stream_count || 0;
     document.getElementById('form-art').value = song.art_number || '';
     document.getElementById('form-date').value = song.release_date || '';
@@ -595,51 +581,9 @@ function openModal(type, song = null) {
   } else {
     document.getElementById('edit-id').value = '';
     document.getElementById('form-table').value = document.getElementById('tableSelect').value || '';
-    document.getElementById('form-album').value = '';
-    document.getElementById('form-song-row').style.display = 'none';
-    document.getElementById('form-name-edit-row').style.display = 'none';
-    document.getElementById('form-name-select').innerHTML = '<option value="">— Select Song —</option>';
     ['form-name','form-streams','form-art','form-date','form-spotify-url','form-embed-url'].forEach(id => {
       document.getElementById(id).value = id === 'form-streams' ? '0' : '';
     });
-  }
-}
-
-async function onFormAlbumChange() {
-  const album_id = document.getElementById('form-album').value;
-  const songRow = document.getElementById('form-song-row');
-  const songSel = document.getElementById('form-name-select');
-  songSel.innerHTML = '<option value="">— Select Song —</option>';
-  document.getElementById('form-name').value = '';
-  if (!album_id) { songRow.style.display = 'none'; return; }
-  songRow.style.display = '';
-  const currentTable = document.getElementById('form-table').value;
-  try {
-    const [statsData, contentData] = await Promise.all([
-      apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`).catch(() => ({ results: [] })),
-      currentTable ? apiFetch(`/admin-content-query?action=list&table=${encodeURIComponent(currentTable)}`).catch(() => ({ results: [] })) : Promise.resolve({ results: [] })
-    ]);
-    const alreadyAdded = new Set((contentData.results || []).map(s => s.song_name.trim().toLowerCase()));
-    (statsData.results || []).forEach(s => {
-      const o = document.createElement('option');
-      o.value = s.name;
-      o.dataset.spotifyUrl = s.spotify_url || '';
-      o.dataset.spotifyEmbedUrl = s.spotify_embed_url || '';
-      o.dataset.streams = s.total_streams || 0;
-      o.textContent = s.name + (alreadyAdded.has(s.name.trim().toLowerCase()) ? ' ✓' : '');
-      songSel.appendChild(o);
-    });
-  } catch(e) { console.error('onFormAlbumChange', e); }
-}
-
-function onFormSongChange() {
-  const sel = document.getElementById('form-name-select');
-  const opt = sel.options[sel.selectedIndex];
-  document.getElementById('form-name').value = sel.value;
-  if (sel.value && opt) {
-    if (opt.dataset.spotifyUrl)      document.getElementById('form-spotify-url').value = opt.dataset.spotifyUrl;
-    if (opt.dataset.spotifyEmbedUrl) document.getElementById('form-embed-url').value = opt.dataset.spotifyEmbedUrl;
-    if (parseInt(opt.dataset.streams) > 0) document.getElementById('form-streams').value = opt.dataset.streams;
   }
 }
 
@@ -918,6 +862,8 @@ function populateSsFields(song) {
   document.getElementById('ssArt').value = song.art || '';
   document.getElementById('ssDate').value = song.release_date || '';
   document.getElementById('ssActive').value = song.active || 'Yes';
+  document.getElementById('ss-spotify-url').value = song.spotify_url || '';
+  document.getElementById('ss-spotify-embed-url').value = song.spotify_embed_url || '';
   SS_FIELDS.forEach(f => {
     const el = document.getElementById('ss-' + f);
     if (el) el.value = song[f] || 0;
@@ -935,9 +881,19 @@ function clearSsForm() {
   document.getElementById('ssArt').value = '';
   document.getElementById('ssDate').value = '';
   document.getElementById('ssActive').value = 'Yes';
+  document.getElementById('ss-spotify-url').value = '';
+  document.getElementById('ss-spotify-embed-url').value = '';
   SS_FIELDS.forEach(f => { const el = document.getElementById('ss-' + f); if (el) el.value = 0; });
   document.getElementById('countryRows').innerHTML = '';
   updateComputed();
+}
+
+function onSpotifyUrlInput() {
+  const raw = document.getElementById('ss-spotify-url').value.trim();
+  const match = raw.match(/open\.spotify\.com\/(track\/[A-Za-z0-9]+)/);
+  document.getElementById('ss-spotify-embed-url').value = match
+    ? 'https://open.spotify.com/embed/' + match[1]
+    : '';
 }
 
 function updateComputed() {
@@ -995,6 +951,8 @@ async function saveSsForm() {
     art: document.getElementById('ssArt').value || null,
     release_date: document.getElementById('ssDate').value || '',
     active: document.getElementById('ssActive').value,
+    spotify_url: (document.getElementById('ss-spotify-url').value || '').trim(),
+    spotify_embed_url: (document.getElementById('ss-spotify-embed-url').value || '').trim(),
     countries: collectCountries()
   };
   SS_FIELDS.forEach(f => { body[f] = parseInt(document.getElementById('ss-' + f)?.value) || 0; });
