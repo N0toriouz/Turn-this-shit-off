@@ -98,6 +98,7 @@
     #status-msg.success { border-color: #4caf82; color: #4caf82; }
     #status-msg.error { border-color: #e57373; color: #e57373; }
   </style>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -178,6 +179,7 @@
           <option value="">— All Albums —</option>
         </select>
         <button class="btn btn-primary" onclick="openSongStatsModal('create')">+ Add Song Stats</button>
+        <button class="btn" onclick="exportToExcel()" style="background:#1a472a;color:#4caf82;border-color:#2d6a40;margin-left:auto">&#8595; Export Excel</button>
       </div>
       <table id="ssTable" style="table-layout:fixed;width:100%">
         <thead>
@@ -582,7 +584,7 @@ async function loadTable() {
       const saves   = st.name ? computeSongSaves(st)   : 0;
       const shares  = st.name ? computeSongShares(st)  : 0;
       const active  = st.active || '—';
-      const country = st.co1 ? st.co1.substring(0,3).toUpperCase() : '—';
+      const country = st.co1 ? st.co1.substring(0,6).toUpperCase() : '—';
       return `<tr>
         <td>${s.song_name || ''}</td>
         <td><span class="badge ${active === 'Yes' ? 'badge-yes' : (active === 'No' ? 'badge-no' : '')}">${active}</span></td>
@@ -874,7 +876,7 @@ async function loadSongStatsList() {
       const likes = computeSongLikes(s);
       const saves = computeSongSaves(s);
       const shares = computeSongShares(s);
-      const country = s.co1 ? s.co1.substring(0,3).toUpperCase() : '—';
+      const country = s.co1 ? s.co1.substring(0,6).toUpperCase() : '—';
       return `<tr>
         <td>${s.name}</td>
         <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
@@ -1122,6 +1124,109 @@ async function confirmRemove(type, id = null) {
       loadSongStatsList();
     }
   } catch(e) { showStatus('Delete failed: ' + e.message, 'error'); }
+}
+
+async function exportToExcel() {
+  if (typeof XLSX === 'undefined') { showStatus('SheetJS not loaded yet, try again in a moment.', 'error'); return; }
+  showStatus('Fetching data for export...');
+  try {
+    const res = await apiFetch('/admin-song-stats?action=list');
+    if (!res.success || !res.results) throw new Error('No data returned');
+    const rows = res.results;
+    const albumName = id => (_albumNames.find(a => String(a.id) === String(id))?.name) || '';
+    const num = v => parseInt(v) || 0;
+
+    // Tab 1: Summary
+    const summary = rows.map(s => ({
+      'Song': s.name,
+      'Album': albumName(s.album_id),
+      'Release Date': s.release_date || '',
+      'Art #': s.art || '',
+      'Active': s.active || '',
+      'Total Streams': num(s.spotify_streams)+num(s.apple_streams)+num(s.amazon_streams)+num(s.tidal_streams)+num(s.youtube_music)+num(s.youtube_views)+num(s.tiktok_views)+num(s.facebook_views)+num(s.instagram_views),
+      'Total Likes': num(s.tt_likes)+num(s.fb_likes)+num(s.in_likes)+num(s.yt_likes),
+      'Total Saves': num(s.tt_saves)+num(s.fb_saves)+num(s.in_saves)+num(s.sp_saves)+num(s.sp_playlist_adds),
+      'Total Shares': num(s.tt_shares)+num(s.fb_shares)+num(s.in_shares)+num(s.in_reposts),
+      'Top Country': s.co1 || ''
+    }));
+
+    // Tab 2: Spotify
+    const spotify = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'Streams': num(s.spotify_streams),
+      'Monthly Listeners': num(s.sp_listeners),
+      'Saves': num(s.sp_saves),
+      'Playlist Adds': num(s.sp_playlist_adds)
+    }));
+
+    // Tab 3: TikTok
+    const tiktok = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'Views': num(s.tiktok_views),
+      'Likes': num(s.tt_likes),
+      'Saves': num(s.tt_saves),
+      'Shares': num(s.tt_shares)
+    }));
+
+    // Tab 4: YouTube
+    const youtube = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'YouTube Views': num(s.youtube_views),
+      'YouTube Music Streams': num(s.youtube_music),
+      'Likes': num(s.yt_likes)
+    }));
+
+    // Tab 5: Facebook/Instagram
+    const fbig = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'Facebook Views': num(s.facebook_views),
+      'Facebook Likes': num(s.fb_likes),
+      'Facebook Saves': num(s.fb_saves),
+      'Facebook Shares': num(s.fb_shares),
+      'Instagram Views': num(s.instagram_views),
+      'Instagram Likes': num(s.in_likes),
+      'Instagram Saves': num(s.in_saves),
+      'Instagram Shares': num(s.in_shares),
+      'Instagram Reposts': num(s.in_reposts)
+    }));
+
+    // Tab 6: Other Platforms
+    const other = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'Apple Music Streams': num(s.apple_streams),
+      'Amazon Music Streams': num(s.amazon_streams),
+      'Tidal Streams': num(s.tidal_streams)
+    }));
+
+    // Tab 7: Geography (co1-co10 / cl1-cl10)
+    const geo = rows.map(s => ({
+      'Song': s.name, 'Album': albumName(s.album_id),
+      'Country 1': s.co1||'', 'Listeners 1': num(s.cl1),
+      'Country 2': s.co2||'', 'Listeners 2': num(s.cl2),
+      'Country 3': s.co3||'', 'Listeners 3': num(s.cl3),
+      'Country 4': s.co4||'', 'Listeners 4': num(s.cl4),
+      'Country 5': s.co5||'', 'Listeners 5': num(s.cl5),
+      'Country 6': s.co6||'', 'Listeners 6': num(s.cl6),
+      'Country 7': s.co7||'', 'Listeners 7': num(s.cl7),
+      'Country 8': s.co8||'', 'Listeners 8': num(s.cl8),
+      'Country 9': s.co9||'', 'Listeners 9': num(s.cl9),
+      'Country 10': s.co10||'', 'Listeners 10': num(s.cl10)
+    }));
+
+    const wb = XLSX.utils.book_new();
+    const addSheet = (name, data) => XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), name);
+    addSheet('Summary', summary);
+    addSheet('Spotify', spotify);
+    addSheet('TikTok', tiktok);
+    addSheet('YouTube', youtube);
+    addSheet('Facebook-Instagram', fbig);
+    addSheet('Other Platforms', other);
+    addSheet('Geography', geo);
+
+    const today = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `MadeUp_MonkeyShit_Stats_${today}.xlsx`);
+    showStatus('Export complete!');
+  } catch(e) { showStatus('Export failed: ' + e.message, 'error'); }
 }
 </script>
 </body>
