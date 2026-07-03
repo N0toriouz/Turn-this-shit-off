@@ -29,7 +29,10 @@ display: flex; align-items: center; justify-content: space-between;
 .nav-back { color: var(--silver-dim); text-decoration: none; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
 .nav-back:hover { color: var(--gold); }
 .album-header { padding: 100px 4rem 3rem; max-width: 1200px; margin: 0 auto; display: flex; gap: 2.5rem; align-items: flex-end; border-bottom: 1px solid var(--border); }
-.album-art { width: 160px; height: 160px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+.album-art { width: 240px; height: 240px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+.stream-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+.stream-btn { display: inline-block; padding: 0.4rem 0.9rem; border: 1px solid var(--border); border-radius: 2px; color: var(--silver-dim); text-decoration: none; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s, border-color 0.2s; }
+.stream-btn:hover { color: var(--gold); border-color: var(--gold); }
 .album-meta { flex: 1; }
 .album-eyebrow { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
 .album-title { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--white); line-height: 1.1; margin-bottom: 0.5rem; }
@@ -42,7 +45,7 @@ display: flex; align-items: center; justify-content: space-between;
 .song-row iframe { display: block; width: 100%; }
 .stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.04em; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
 .stats-bar .country { font-variant: small-caps; letter-spacing: 0.1em; }
-.track-list { display: flex; flex-direction: column; gap: 0; }
+.track-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .track-card { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: var(--card-bg); }
 .track-card:last-child { border-bottom: none; }
 .track-num { font-size: 0.7rem; color: var(--silver-dim); width: 1.5rem; text-align: right; flex-shrink: 0; }
@@ -71,6 +74,12 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 <p class="album-eyebrow">Album</p>
 <h1 class="album-title">Pick a Struggle</h1>
 <p class="album-track-count">15 tracks</p>
+<div class="stream-links">
+<a href="https://music.apple.com/us/album/pick-a-struggle/1892599946" class="stream-btn" target="_blank" rel="noopener">Apple Music</a>
+<a href="https://music.youtube.com/playlist?list=OLAK5uy_lz09C2cUW_Vrsu1kz-QLSSyOcOdU88UUY" class="stream-btn" target="_blank" rel="noopener">YouTube Music</a>
+<a href="https://music.amazon.ca/albums/B0GWQWF5J5" class="stream-btn" target="_blank" rel="noopener">Amazon Music</a>
+<a href="https://tidal.com/album/514778342" class="stream-btn" target="_blank" rel="noopener">Tidal</a>
+</div>
 </div>
 </div>
 
