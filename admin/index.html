@@ -823,6 +823,14 @@ async function onSsAlbumChange() {
   if (isEdit && album_id) {
     await loadSsSongDropdown(album_id);
   }
+  if (album_id) {
+    try {
+      const data = await apiFetch('/admin-albums-query?action=get&id=' + album_id);
+      if (data.result?.release_date) {
+        document.getElementById('ssDate').value = data.result.release_date;
+      }
+    } catch(e) {}
+  }
 }
 
 async function loadSsSongDropdown(album_id, selectedId = null) {
@@ -900,8 +908,8 @@ function updateComputed() {
   const v = f => parseInt(document.getElementById('ss-' + f)?.value) || 0;
   const streams = v('spotify_streams')+v('apple_streams')+v('amazon_streams')+v('tidal_streams')+v('youtube_music')+v('youtube_views')+v('tiktok_views')+v('facebook_views')+v('instagram_views');
   const likes = v('tt_likes')+v('fb_likes')+v('in_likes')+v('yt_likes');
-  const shares = v('tt_shares')+v('fb_shares')+v('in_shares');
-  const saves = v('tt_saves')+v('fb_saves')+v('in_saves')+v('sp_saves');
+  const shares = v('tt_shares')+v('fb_shares')+v('in_shares')+v('in_reposts');
+  const saves = v('tt_saves')+v('fb_saves')+v('in_saves')+v('sp_saves')+v('sp_playlist_adds');
   const listeners = v('sp_listeners');
   document.getElementById('ss-c-streams').textContent = fmt(streams);
   document.getElementById('ss-c-likes').textContent = fmt(likes);
