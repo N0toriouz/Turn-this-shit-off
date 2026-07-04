@@ -16,6 +16,7 @@ export async function onRequestPost(context) {
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
       const cf = countryValues(countries || []);
+      const dk = dkValues(body);
       await env.SONGS_DB.prepare(`
         INSERT INTO song_stats (
           album_id, name, art, release_date, active,
@@ -27,18 +28,23 @@ export async function onRequestPost(context) {
           apple_streams, amazon_streams, tidal_streams,
           co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
           co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10,
-          spotify_url, spotify_embed_url
+          spotify_url, spotify_embed_url,
+          dk_tiktok, dk_instagram, dk_facebook, dk_spotify,
+          dk_apple, dk_amazon, dk_tidal,
+          dk_youtube_views, dk_youtube_music, dk_other, dk_total
         ) VALUES (
           ?,?,?,?,?,
           ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
           ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
-          ?,?
+          ?,?,
+          ?,?,?,?,?,?,?,?,?,?,?
         )
       `).bind(
         parseInt(album_id), name.trim(), parseInt(art)||0,
         (release_date||'').trim(), active||'Yes',
         ...pf, ...cf,
-        (spotify_url||'').trim(), (spotify_embed_url||'').trim()
+        (spotify_url||'').trim(), (spotify_embed_url||'').trim(),
+        ...dk
       ).run();
       return json({ success: true, message: 'Song stats created' });
     }
@@ -49,6 +55,7 @@ export async function onRequestPost(context) {
       if (!album_id || !name) return json({ success: false, message: 'album_id and name required' }, 400);
       const pf = platformValues(body);
       const cf = countryValues(countries || []);
+      const dk = dkValues(body);
       const result = await env.SONGS_DB.prepare(`
         UPDATE song_stats SET
           album_id=?, name=?, art=?, release_date=?, active=?,
@@ -60,13 +67,17 @@ export async function onRequestPost(context) {
           apple_streams=?, amazon_streams=?, tidal_streams=?,
           co1=?, cl1=?, co2=?, cl2=?, co3=?, cl3=?, co4=?, cl4=?, co5=?, cl5=?,
           co6=?, cl6=?, co7=?, cl7=?, co8=?, cl8=?, co9=?, cl9=?, co10=?, cl10=?,
-          spotify_url=?, spotify_embed_url=?
+          spotify_url=?, spotify_embed_url=?,
+          dk_tiktok=?, dk_instagram=?, dk_facebook=?, dk_spotify=?,
+          dk_apple=?, dk_amazon=?, dk_tidal=?,
+          dk_youtube_views=?, dk_youtube_music=?, dk_other=?, dk_total=?
         WHERE id=?
       `).bind(
         parseInt(album_id), name.trim(), parseInt(art)||0,
         (release_date||'').trim(), active||'Yes',
         ...pf, ...cf,
         (spotify_url||'').trim(), (spotify_embed_url||'').trim(),
+        ...dk,
         id
       ).run();
       if (result.meta.changes === 0) return json({ success: false, message: 'Song not found' }, 404);
@@ -97,6 +108,16 @@ function platformValues(b) {
     n(b.spotify_streams), n(b.sp_listeners), n(b.sp_playlist_adds), n(b.sp_saves),
     n(b.apple_streams), n(b.amazon_streams), n(b.tidal_streams)
   ];
+}
+
+function dkValues(b) {
+  const vals = [
+    n(b.dk_tiktok), n(b.dk_instagram), n(b.dk_facebook), n(b.dk_spotify),
+    n(b.dk_apple), n(b.dk_amazon), n(b.dk_tidal),
+    n(b.dk_youtube_views), n(b.dk_youtube_music), n(b.dk_other)
+  ];
+  const dk_total = vals.reduce((sum, v) => sum + v, 0);
+  return [...vals, dk_total];
 }
 
 function countryValues(countries) {
