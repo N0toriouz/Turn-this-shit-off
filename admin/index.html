@@ -159,6 +159,7 @@
             <th style="width:110px;resize:horizontal;overflow:hidden">Release Date</th>
             <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
             <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
+            <th style="width:90px;resize:horizontal;overflow:hidden">DistroKid</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
@@ -167,7 +168,7 @@
           </tr>
         </thead>
         <tbody id="albumTableBody">
-          <tr><td colspan="10" class="empty-state">Loading…</td></tr>
+          <tr><td colspan="11" class="empty-state">Loading…</td></tr>
         </tbody>
       </table>
     </div>
@@ -188,6 +189,8 @@
             <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
             <th style="width:55px;resize:horizontal;overflow:hidden">Cntry</th>
             <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
+            <th style="width:90px;resize:horizontal;overflow:hidden">DistroKid</th>
+            <th style="width:90px;resize:horizontal;overflow:hidden">Viral Spread</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
@@ -390,6 +393,7 @@
           <div class="form-group"><label>Likes</label><input type="number" id="ss-tt_likes" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Saves</label><input type="number" id="ss-tt_saves" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Shares</label><input type="number" id="ss-tt_shares" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid TikTok</label><input type="number" id="ss-dk_tiktok" value="0" oninput="updateComputed()" /></div>
         </div>
       </div>
 
@@ -401,6 +405,7 @@
           <div class="form-group"><label>Likes</label><input type="number" id="ss-fb_likes" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Saves</label><input type="number" id="ss-fb_saves" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Shares</label><input type="number" id="ss-fb_shares" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Facebook</label><input type="number" id="ss-dk_facebook" value="0" oninput="updateComputed()" /></div>
         </div>
       </div>
 
@@ -413,6 +418,7 @@
           <div class="form-group"><label>Saves</label><input type="number" id="ss-in_saves" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Reposts</label><input type="number" id="ss-in_reposts" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Shares</label><input type="number" id="ss-in_shares" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Instagram</label><input type="number" id="ss-dk_instagram" value="0" oninput="updateComputed()" /></div>
         </div>
       </div>
 
@@ -421,8 +427,10 @@
         <div class="platform-group-title">YouTube</div>
         <div class="platform-fields">
           <div class="form-group"><label>Views</label><input type="number" id="ss-youtube_views" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid YouTube Views</label><input type="number" id="ss-dk_youtube_views" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Likes</label><input type="number" id="ss-yt_likes" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Music Streams</label><input type="number" id="ss-youtube_music" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid YouTube Music</label><input type="number" id="ss-dk_youtube_music" value="0" oninput="updateComputed()" /></div>
         </div>
       </div>
 
@@ -431,6 +439,7 @@
         <div class="platform-group-title">Spotify</div>
         <div class="platform-fields">
           <div class="form-group"><label>Streams</label><input type="number" id="ss-spotify_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Spotify</label><input type="number" id="ss-dk_spotify" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Listeners</label><input type="number" id="ss-sp_listeners" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Playlist Adds</label><input type="number" id="ss-sp_playlist_adds" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Saves</label><input type="number" id="ss-sp_saves" value="0" oninput="updateComputed()" /></div>
@@ -442,8 +451,12 @@
         <div class="platform-group-title">Other Streaming</div>
         <div class="platform-fields">
           <div class="form-group"><label>Apple Streams</label><input type="number" id="ss-apple_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Apple</label><input type="number" id="ss-dk_apple" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Amazon Streams</label><input type="number" id="ss-amazon_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Amazon</label><input type="number" id="ss-dk_amazon" value="0" oninput="updateComputed()" /></div>
           <div class="form-group"><label>Tidal Streams</label><input type="number" id="ss-tidal_streams" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Tidal</label><input type="number" id="ss-dk_tidal" value="0" oninput="updateComputed()" /></div>
+          <div class="form-group"><label>DistroKid Other Stores (Pandora, Snapchat, Audiomack, etc.)</label><input type="number" id="ss-dk_other" value="0" oninput="updateComputed()" /></div>
         </div>
       </div>
 
@@ -456,6 +469,24 @@
           <div class="computed-item"><label>Shares</label><span id="ss-c-shares">0</span></div>
           <div class="computed-item"><label>Saves</label><span id="ss-c-saves">0</span></div>
           <div class="computed-item"><label>Listeners</label><span id="ss-c-listeners">0</span></div>
+        </div>
+        <h4 style="margin-top:10px">DistroKid Total (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Total DistroKid</label><span id="ss-c-dk-total">0</span></div>
+        </div>
+        <h4 style="margin-top:10px">Viral Spread (live — display only, never stored)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>TikTok</label><span id="ss-c-vs-tiktok">+0</span></div>
+          <div class="computed-item"><label>Instagram</label><span id="ss-c-vs-instagram">+0</span></div>
+          <div class="computed-item"><label>Facebook</label><span id="ss-c-vs-facebook">+0</span></div>
+          <div class="computed-item"><label>Spotify</label><span id="ss-c-vs-spotify">+0</span></div>
+          <div class="computed-item"><label>Apple</label><span id="ss-c-vs-apple">+0</span></div>
+          <div class="computed-item"><label>Amazon</label><span id="ss-c-vs-amazon">+0</span></div>
+          <div class="computed-item"><label>Tidal</label><span id="ss-c-vs-tidal">+0</span></div>
+          <div class="computed-item"><label>YT Views</label><span id="ss-c-vs-yt-views">+0</span></div>
+          <div class="computed-item"><label>YT Music</label><span id="ss-c-vs-yt-music">+0</span></div>
+          <div class="computed-item"><label>Other Stores</label><span id="ss-c-vs-other">+0</span></div>
+          <div class="computed-item"><label>Total Viral Spread</label><span id="ss-c-vs-total">+0</span></div>
         </div>
       </div>
 
@@ -753,7 +784,7 @@ function populateAlbumDropdowns() {
 
 async function loadAlbums() {
   const tbody = document.getElementById('albumTableBody');
-  tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Loading…</td></tr>';
   try {
     const data = await apiFetch('/admin-albums-query?action=list');
     const albums = data.results || [];
@@ -765,6 +796,7 @@ async function loadAlbums() {
         <td>${a.release_date || '—'}</td>
         <td><span class="badge ${a.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${a.active}</span></td>
         <td>${fmt(a.total_streams || 0)}</td>
+        <td>${fmt(a.dk_total_streams || 0)}</td>
         <td>${fmt(a.total_likes || 0)}</td>
         <td>${fmt(a.total_shares || 0)}</td>
         <td>${fmt(a.total_saves || 0)}</td>
@@ -773,7 +805,7 @@ async function loadAlbums() {
           <button class="btn btn-secondary btn-sm" onclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>Edit</button>
         </td>
       </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Error: ${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="11" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
 let _currentAlbum = null;
@@ -864,24 +896,28 @@ async function saveAlbumForm() {
 async function loadSongStatsList() {
   const album_id = document.getElementById('ssFilterAlbum').value;
   const tbody = document.getElementById('ssTableBody');
-  tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
   try {
     let url = '/admin-song-stats-query?action=list';
     if (album_id) url += `&album_id=${album_id}`;
     const data = await apiFetch(url);
     const songs = data.results || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No song stats yet</td></tr>'; return; }
+    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No song stats yet</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => {
       const streams = computeSongStreams(s);
       const likes = computeSongLikes(s);
       const saves = computeSongSaves(s);
       const shares = computeSongShares(s);
       const country = s.co1 ? s.co1.substring(0,6).toUpperCase() : '—';
+      const dk_total = s.dk_total || 0;
+      const viral_spread = Math.max(0, dk_total - streams);
       return `<tr>
         <td>${s.name}</td>
         <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
         <td>${country}</td>
         <td>${fmt(streams)}</td>
+        <td>${fmt(dk_total)}</td>
+        <td>${viral_spread > 0 ? '+' + fmt(viral_spread) : '—'}</td>
         <td>${fmt(likes)}</td>
         <td>${fmt(saves)}</td>
         <td>${fmt(shares)}</td>
@@ -984,7 +1020,10 @@ const SS_FIELDS = ['tiktok_views','tt_likes','tt_saves','tt_shares',
   'instagram_views','in_likes','in_saves','in_reposts','in_shares',
   'youtube_views','yt_likes','youtube_music',
   'spotify_streams','sp_listeners','sp_playlist_adds','sp_saves',
-  'apple_streams','amazon_streams','tidal_streams'];
+  'apple_streams','amazon_streams','tidal_streams',
+  'dk_tiktok','dk_instagram','dk_facebook','dk_spotify',
+  'dk_apple','dk_amazon','dk_tidal',
+  'dk_youtube_views','dk_youtube_music','dk_other'];
 
 function populateSsFields(song) {
   document.getElementById('ssName').value = song.name || '';
@@ -1027,6 +1066,8 @@ function onSpotifyUrlInput() {
 
 function updateComputed() {
   const v = f => parseInt(document.getElementById('ss-' + f)?.value) || 0;
+
+  // Step 1: compiled platform totals (unchanged)
   const streams = v('spotify_streams')+v('apple_streams')+v('amazon_streams')+v('tidal_streams')+v('youtube_music')+v('youtube_views')+v('tiktok_views')+v('facebook_views')+v('instagram_views');
   const likes = v('tt_likes')+v('fb_likes')+v('in_likes')+v('yt_likes');
   const shares = v('tt_shares')+v('fb_shares')+v('in_shares')+v('in_reposts');
@@ -1037,6 +1078,28 @@ function updateComputed() {
   document.getElementById('ss-c-shares').textContent = fmt(shares);
   document.getElementById('ss-c-saves').textContent = fmt(saves);
   document.getElementById('ss-c-listeners').textContent = fmt(listeners);
+
+  // Step 2: dk_total
+  const dk_tiktok = v('dk_tiktok'), dk_instagram = v('dk_instagram'), dk_facebook = v('dk_facebook');
+  const dk_spotify = v('dk_spotify'), dk_apple = v('dk_apple'), dk_amazon = v('dk_amazon');
+  const dk_tidal = v('dk_tidal'), dk_youtube_views = v('dk_youtube_views');
+  const dk_youtube_music = v('dk_youtube_music'), dk_other = v('dk_other');
+  const dk_total = dk_tiktok+dk_instagram+dk_facebook+dk_spotify+dk_apple+dk_amazon+dk_tidal+dk_youtube_views+dk_youtube_music+dk_other;
+  document.getElementById('ss-c-dk-total').textContent = fmt(dk_total);
+
+  // Step 3: Viral Spread (computed last, display only)
+  const vs = (dk, compiled) => '+' + fmt(Math.max(0, dk - compiled));
+  document.getElementById('ss-c-vs-tiktok').textContent   = vs(dk_tiktok,        v('tiktok_views'));
+  document.getElementById('ss-c-vs-instagram').textContent = vs(dk_instagram,     v('instagram_views'));
+  document.getElementById('ss-c-vs-facebook').textContent  = vs(dk_facebook,      v('facebook_views'));
+  document.getElementById('ss-c-vs-spotify').textContent   = vs(dk_spotify,       v('spotify_streams'));
+  document.getElementById('ss-c-vs-apple').textContent     = vs(dk_apple,         v('apple_streams'));
+  document.getElementById('ss-c-vs-amazon').textContent    = vs(dk_amazon,        v('amazon_streams'));
+  document.getElementById('ss-c-vs-tidal').textContent     = vs(dk_tidal,         v('tidal_streams'));
+  document.getElementById('ss-c-vs-yt-views').textContent  = vs(dk_youtube_views, v('youtube_views'));
+  document.getElementById('ss-c-vs-yt-music').textContent  = vs(dk_youtube_music, v('youtube_music'));
+  document.getElementById('ss-c-vs-other').textContent     = '+' + fmt(dk_other);
+  document.getElementById('ss-c-vs-total').textContent     = '+' + fmt(Math.max(0, dk_total - streams));
 }
 
 function addCountryRow(name = '', count = 0) {
