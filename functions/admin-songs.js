@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
         table_name.trim(),
         song_name.trim(),
         parseInt(stream_count) || 0,
-        art_number ? parseInt(art_number) : null,
+        parseInt(art_number) || 0,
         (release_date || '').trim(),
         (spotify_url || '').trim(),
         (spotify_embed_url || '').trim()
@@ -51,7 +51,7 @@ export async function onRequestPost(context) {
         table_name.trim(),
         song_name.trim(),
         parseInt(stream_count) || 0,
-        art_number ? parseInt(art_number) : null,
+        parseInt(art_number) || 0,
         (release_date || '').trim(),
         (spotify_url || '').trim(),
         (spotify_embed_url || '').trim(),
