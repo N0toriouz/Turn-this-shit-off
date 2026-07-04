@@ -184,6 +184,21 @@ instructions, stop and surface the question. Do not improvise.
 
 ---
 
+## Embedded Player Stream Display Rule
+The 🎵 stream count displayed in all embedded 
+Spotify player stats bars uses:
+
+Math.max(dk_total, compiled_streams)
+
+Always display whichever value is greater. 
+Never display a number lower than what has been 
+compiled from directly observable platform data.
+This ensures correct display during periods of 
+incomplete DistroKid reporting AND after full 
+reports are available.
+
+---
+
 ## END OF ORIENTATION DOCUMENT
 ## Version 1.0 — Pending human review and approval
 ## This document should be updated whenever the stack or
