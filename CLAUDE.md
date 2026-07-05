@@ -140,6 +140,106 @@ Access is gated by Cloudflare Access authentication.
 
 ---
 
+---
+
+## DATABASE LAYER — THREE SEPARATE D1 INSTANCES
+
+There are three distinct D1 databases bound to this project.
+Each serves a different purpose. Using the wrong one in a function
+will cause silent failures or wrong data.
+
+SONGS_DB — song performance statistics
+  Table: song_stats
+  Contains: per-song platform metrics, DistroKid columns, country data,
+  Spotify URLs, album assignment (album_id foreign key to ALBUMS_DB)
+
+ALBUMS_DB — album catalog
+  Table: albums
+  Contains: album name, art number, release date, active status
+
+CONTENT_DB — display roster
+  Table: songs
+  Contains: song display entries used by the public site
+  (table_name, song_name, stream_count, art_number, release_date,
+  spotify_url, spotify_embed_url)
+  This is separate from song_stats — it is the public-facing song list,
+  not the analytics store.
+
+---
+
+## DISTROKID INTEGRATION — COLUMN REFERENCE
+
+song_stats in SONGS_DB contains 11 DistroKid columns added via migration:
+
+  dk_tiktok, dk_instagram, dk_facebook, dk_spotify,
+  dk_apple, dk_amazon, dk_tidal,
+  dk_youtube_views, dk_youtube_music, dk_other,
+  dk_total (sum of all ten above, computed server-side on write)
+
+dk_total is never stored by the client — admin-song-stats.js computes
+it via dkValues() and writes it. Never accept dk_total from the request body.
+
+Viral Spread = dk_platform_field − compiled_platform_field
+This is display-only in the admin panel. It is never stored.
+
+---
+
+## ADMIN PANEL
+
+Location: admin/index.html
+Single self-contained HTML file. All admin UI, logic, and API calls
+are in this one file.
+
+Authentication: Cloudflare Access gates the /admin/ route before
+any request reaches the file or functions.
+
+All admin API calls use the apiFetch() helper, which attaches the
+X-Admin-Token header (matched against env.ADMIN_TOKEN on the server).
+Every admin function must validate this token before processing.
+
+Pattern for all admin functions:
+  const token = request.headers.get('X-Admin-Token');
+  if (!token || token !== env.ADMIN_TOKEN) {
+    return json({ success: false, message: 'Unauthorized' }, 401);
+  }
+
+---
+
+## FUNCTIONS INVENTORY
+
+All files live in /functions/. Current function list:
+
+  track-stats.js            Public endpoint. Returns song stats by album_id,
+                            album_name, or song name. Returns
+                            Math.max(dk_total, compiled_streams) as
+                            total_streams. Read-only. No auth required.
+
+  admin-song-stats.js       Admin write endpoint (POST). Handles add, edit,
+                            delete for song_stats records. Computes dk_total
+                            server-side. Requires X-Admin-Token.
+
+  admin-song-stats-query.js Admin read endpoint (GET). Returns song_stats
+                            rows by album_id (list) or id (get). Uses
+                            SELECT * — all dk_* columns return automatically.
+                            Requires X-Admin-Token.
+
+  admin-albums-query.js     Admin read endpoint (GET). Returns album list
+                            with aggregated totals (total_streams,
+                            dk_total_streams, total_likes, total_shares,
+                            total_saves, song_count) computed in JS from
+                            song_stats rows. Requires X-Admin-Token.
+
+  admin-songs.js            Admin write endpoint (POST). Handles add, edit,
+                            delete for CONTENT_DB songs table (display roster).
+                            art_number defaults to 0, never null.
+                            Requires X-Admin-Token.
+
+When adding new functions, follow the existing pattern:
+named export onRequestGet or onRequestPost, token check first,
+json() helper at the bottom of the file.
+
+---
+
 ## CONVENTIONS
 
 HTML: Semantic, readable, no unnecessary nesting.
