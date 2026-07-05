@@ -199,6 +199,26 @@ reports are available.
 
 ---
 
+## Token-Saving Scratchpad Protocol
+
+All code updates are written to the scratchpad folder located at 
+.claude/scratchpad/ in the local drive. The scratchpad maintains 
+a folder tree identical to the GitHub repo, with matching files.
+
+Workflow:
+1. Code rewrites updated .txt, .js, .html, or .py files in the scratchpad
+2. Code does NOT print updated code directly to the chat screen
+3. Owner retrieves updated files from scratchpad
+4. Owner copies and pastes rewritten code into identical files 
+   in the GitHub repo
+5. Owner pushes to GitHub — owner is the filter between 
+   scratchpad and repo at all times
+
+This method conserves tokens and keeps the owner as the 
+review gate between what Code writes and what goes live.
+New Claude Code sessions should follow this protocol by default 
+unless explicitly told otherwise for a specific task.
+
 ## END OF ORIENTATION DOCUMENT
 ## Version 1.0 — Pending human review and approval
 ## This document should be updated whenever the stack or
