@@ -98,7 +98,7 @@
     #status-msg.success { border-color: #4caf82; color: #4caf82; }
     #status-msg.error { border-color: #e57373; color: #e57373; }
   </style>
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 </head>
 <body>
 
@@ -546,6 +546,15 @@ const HIGHLIGHT_TABLES = [
   { value: 'album-half-way-there',     label: 'Half Way There' },
   { value: 'album-week-6',             label: 'Week 6' }
 ];
+
+// Campaign Priority Export thresholds — edit these to adjust eligibility
+// cutoffs and conditional-formatting bands. Also mirrored into the exported
+// workbook's "Settings" tab for reference and to drive the live
+// conditional-formatting rules there.
+const FLOOR_THRESHOLD = 400;         // min Spotify streams for Spotify Signal Ranking eligibility
+const SIGNAL_THRESHOLD_MIN = 0.04;   // yellow band / Campaign Shortlist gate
+const SIGNAL_THRESHOLD_MID = 0.07;   // light green band
+const SIGNAL_THRESHOLD_HIGH = 0.10;  // dark green band
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function getToken() {
@@ -1248,8 +1257,69 @@ async function confirmRemove(type, id = null) {
   } catch(e) { showStatus('Delete failed: ' + e.message, 'error'); }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// EXCEL EXPORT — HELPERS (ExcelJS)
+// ─────────────────────────────────────────────────────────────────────────────
+function floorStatus(spotifyStreams) {
+  return spotifyStreams >= FLOOR_THRESHOLD ? 'Eligible' : 'Below Floor';
+}
+
+// Live, threshold-cell-driven conditional formatting (stop-if-true, high-to-low).
+// References the Settings tab by cell address rather than hardcoding the cutoffs,
+// so editing those cells in the exported file still recolors bands correctly —
+// it just won't change which rows are included/sorted (that requires re-export).
+function addSignalBands(ws, col, firstRow, lastRow) {
+  if (lastRow < firstRow) return;
+  const anchor = `${col}${firstRow}`;
+  ws.addConditionalFormatting({
+    ref: `${col}${firstRow}:${col}${lastRow}`,
+    rules: [
+      { type: 'expression', formulae: [`${anchor}>=Settings!$B$5`], priority: 1, stopIfTrue: true,
+        style: { font: { name: 'Arial', bold: true, color: { argb: 'FFFFFF00' } },
+                 fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E7942' } } } },
+      { type: 'expression', formulae: [`${anchor}>=Settings!$B$4`], priority: 2, stopIfTrue: true,
+        style: { font: { name: 'Arial', bold: true },
+                 fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC6EFCE' } } } },
+      { type: 'expression', formulae: [`${anchor}>=Settings!$B$3`], priority: 3, stopIfTrue: true,
+        style: { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFEB9C' } } } }
+    ]
+  });
+}
+
+// Final pass — forces Arial across every cell in the sheet without disturbing
+// bold/fill/color already set (merges rather than replaces).
+function arialize(ws) {
+  ws.eachRow({ includeEmpty: true }, row => {
+    row.eachCell({ includeEmpty: true }, cell => { cell.font = { ...cell.font, name: 'Arial' }; });
+  });
+}
+
+// Builds a plain data tab, auto-deriving columns from the first row's keys —
+// used for the 7 existing recurring-export tabs (their row-shaping logic is
+// unchanged from before).
+function addFlatSheet(wb, name, data) {
+  const ws = wb.addWorksheet(name);
+  if (!data.length) { ws.addRow(['No data']); arialize(ws); return ws; }
+  const keys = Object.keys(data[0]);
+  ws.columns = keys.map(k => ({ header: k, key: k, width: Math.max(12, k.length + 2) }));
+  ws.getRow(1).font = { name: 'Arial', bold: true };
+  data.forEach(d => ws.addRow(d));
+  arialize(ws);
+  return ws;
+}
+
+async function downloadWorkbook(wb, filename) {
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 async function exportToExcel() {
-  if (typeof XLSX === 'undefined') { showStatus('SheetJS not loaded yet, try again in a moment.', 'error'); return; }
+  if (typeof ExcelJS === 'undefined') { showStatus('ExcelJS not loaded yet, try again in a moment.', 'error'); return; }
   showStatus('Fetching data for export...');
   try {
     if (!_albumNames.length) throw new Error('Album list not loaded — open Song Stats view first');
@@ -1337,18 +1407,140 @@ async function exportToExcel() {
       'Country 10': s.co10||'', 'Listeners 10': num(s.cl10)
     }));
 
-    const wb = XLSX.utils.book_new();
-    const addSheet = (name, data) => XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), name);
-    addSheet('Summary', summary);
-    addSheet('Spotify', spotify);
-    addSheet('TikTok', tiktok);
-    addSheet('YouTube', youtube);
-    addSheet('Facebook-Instagram', fbig);
-    addSheet('Other Platforms', other);
-    addSheet('Geography', geo);
+    const wb = new ExcelJS.Workbook();
+
+    // ── Settings — editable thresholds referenced by the CF rules below ────
+    const wsSettings = wb.addWorksheet('Settings');
+    wsSettings.columns = [
+      { header: 'Label', key: 'label', width: 24 },
+      { header: 'Value', key: 'value', width: 10 },
+      { header: 'Description', key: 'desc', width: 70 }
+    ];
+    wsSettings.getRow(1).font = { name: 'Arial', bold: true };
+    wsSettings.addRow({ label: 'Floor_Threshold', value: FLOOR_THRESHOLD,
+      desc: 'Minimum Spotify streams for Spotify Signal Ranking eligibility. Revisit every 1-2 months.' });
+    const rMin  = wsSettings.addRow({ label: 'Signal_Threshold_Min', value: SIGNAL_THRESHOLD_MIN,
+      desc: 'Minimum signal % for Campaign Shortlist inclusion; yellow color-band cutoff.' });
+    const rMid  = wsSettings.addRow({ label: 'Signal_Threshold_Mid', value: SIGNAL_THRESHOLD_MID,
+      desc: 'Light green + bold color-band cutoff.' });
+    const rHigh = wsSettings.addRow({ label: 'Signal_Threshold_High', value: SIGNAL_THRESHOLD_HIGH,
+      desc: 'Dark green + yellow font + bold color-band cutoff.' });
+    [rMin, rMid, rHigh].forEach(r => { r.getCell('value').numFmt = '0%'; });
+    arialize(wsSettings);
+
+    // ── Existing recurring tabs — unchanged row-shaping, ExcelJS output ─────
+    addFlatSheet(wb, 'Summary', summary);
+    addFlatSheet(wb, 'Spotify', spotify);
+    addFlatSheet(wb, 'TikTok', tiktok);
+    addFlatSheet(wb, 'YouTube', youtube);
+    addFlatSheet(wb, 'Facebook-Instagram', fbig);
+    addFlatSheet(wb, 'Other Platforms', other);
+    addFlatSheet(wb, 'Geography', geo);
+
+    // ── Campaign Priority Export — shared per-song calc (one pass, no cross-
+    //    tab join needed since Tabs 1-3 all derive from the same `rows`) ────
+    const perSong = rows.map(s => {
+      const spotifyStreams = num(s.spotify_streams);
+      const spotifyEngagement = num(s.sp_saves) + num(s.sp_playlist_adds);
+      const spotifySignal = spotifyStreams > 0 ? spotifyEngagement / spotifyStreams : 0;
+      const combinedStreams = spotifyStreams + num(s.tiktok_views) + num(s.facebook_views) +
+        num(s.instagram_views) + num(s.youtube_views) + num(s.youtube_music) +
+        num(s.apple_streams) + num(s.amazon_streams) + num(s.tidal_streams);
+      const nonSpotifyEngagement =
+        (num(s.tt_likes) + num(s.tt_saves) + num(s.tt_shares)) +
+        (num(s.fb_likes) + num(s.fb_saves) + num(s.fb_shares)) +
+        (num(s.in_likes) + num(s.in_saves) + num(s.in_reposts) + num(s.in_shares)) +
+        num(s.yt_likes);
+      const websiteSignal = combinedStreams > 0 ? nonSpotifyEngagement / combinedStreams : 0;
+      return {
+        song: s.name, album: albumName(s.album_id),
+        spotifyStreams, spotifySaves: num(s.sp_saves), spotifyPlaylistAdds: num(s.sp_playlist_adds),
+        spotifyEngagement, spotifySignal, floor: floorStatus(spotifyStreams),
+        combinedStreams, nonSpotifyEngagement, websiteSignal
+      };
+    });
+
+    // ── Tab: Spotify Signal Ranking ──────────────────────────────────────
+    const wsSpotifySignal = wb.addWorksheet('Spotify Signal Ranking');
+    wsSpotifySignal.columns = [
+      { header: 'Song Name', key: 'song', width: 28 },
+      { header: 'Album', key: 'album', width: 20 },
+      { header: 'Spotify Streams', key: 'spotifyStreams', width: 15 },
+      { header: 'Spotify Saves', key: 'spotifySaves', width: 14 },
+      { header: 'Spotify Playlist Adds', key: 'spotifyPlaylistAdds', width: 18 },
+      { header: 'Spotify Engagement', key: 'spotifyEngagement', width: 16 },
+      { header: 'Spotify Signal %', key: 'spotifySignal', width: 15 },
+      { header: 'Floor Status', key: 'floor', width: 13 }
+    ];
+    wsSpotifySignal.getRow(1).font = { name: 'Arial', bold: true };
+    perSong.forEach(p => wsSpotifySignal.addRow(p));
+    const rawFirst1 = 2, rawLast1 = 1 + perSong.length;
+    for (let r = rawFirst1; r <= rawLast1; r++) wsSpotifySignal.getCell(`G${r}`).numFmt = '0.0%';
+    addSignalBands(wsSpotifySignal, 'G', rawFirst1, rawLast1);
+
+    wsSpotifySignal.addRow([]);
+    wsSpotifySignal.addRow(['Ranked Output — Eligible, Strongest Signal First']).font = { name: 'Arial', bold: true };
+    wsSpotifySignal.addRow(['Song Name','Album','Spotify Streams','Spotify Saves','Spotify Playlist Adds','Spotify Engagement','Spotify Signal %','Floor Status']).font = { name: 'Arial', bold: true };
+    const ranked1 = perSong.filter(p => p.floor === 'Eligible').sort((a, b) => b.spotifySignal - a.spotifySignal);
+    const rankStart1 = wsSpotifySignal.rowCount + 1;
+    ranked1.forEach(p => wsSpotifySignal.addRow([p.song, p.album, p.spotifyStreams, p.spotifySaves, p.spotifyPlaylistAdds, p.spotifyEngagement, p.spotifySignal, p.floor]));
+    const rankEnd1 = wsSpotifySignal.rowCount;
+    for (let r = rankStart1; r <= rankEnd1; r++) wsSpotifySignal.getCell(`G${r}`).numFmt = '0.0%';
+    addSignalBands(wsSpotifySignal, 'G', rankStart1, rankEnd1);
+    arialize(wsSpotifySignal);
+
+    // ── Tab: Website Signal Ranking (Non-Spotify) ────────────────────────
+    const wsWebsiteSignal = wb.addWorksheet('Website Signal Ranking');
+    wsWebsiteSignal.columns = [
+      { header: 'Song Name', key: 'song', width: 28 },
+      { header: 'Album', key: 'album', width: 20 },
+      { header: 'Combined Streams (All Platforms)', key: 'combinedStreams', width: 26 },
+      { header: 'Non-Spotify Engagement', key: 'nonSpotifyEngagement', width: 20 },
+      { header: 'Website Signal %', key: 'websiteSignal', width: 15 }
+    ];
+    wsWebsiteSignal.getRow(1).font = { name: 'Arial', bold: true };
+    perSong.forEach(p => wsWebsiteSignal.addRow(p));
+    const rawFirst2 = 2, rawLast2 = 1 + perSong.length;
+    for (let r = rawFirst2; r <= rawLast2; r++) wsWebsiteSignal.getCell(`E${r}`).numFmt = '0.0%';
+    addSignalBands(wsWebsiteSignal, 'E', rawFirst2, rawLast2);
+
+    wsWebsiteSignal.addRow([]);
+    wsWebsiteSignal.addRow(['Ranked Output — Sorted by Website Signal % (Strongest First)']).font = { name: 'Arial', bold: true };
+    wsWebsiteSignal.addRow(['Song Name','Album','Combined Streams (All Platforms)','Non-Spotify Engagement','Website Signal %']).font = { name: 'Arial', bold: true };
+    const ranked2 = [...perSong].sort((a, b) => b.websiteSignal - a.websiteSignal);
+    const rankStart2 = wsWebsiteSignal.rowCount + 1;
+    ranked2.forEach(p => wsWebsiteSignal.addRow([p.song, p.album, p.combinedStreams, p.nonSpotifyEngagement, p.websiteSignal]));
+    const rankEnd2 = wsWebsiteSignal.rowCount;
+    for (let r = rankStart2; r <= rankEnd2; r++) wsWebsiteSignal.getCell(`E${r}`).numFmt = '0.0%';
+    addSignalBands(wsWebsiteSignal, 'E', rankStart2, rankEnd2);
+    arialize(wsWebsiteSignal);
+
+    // ── Tab: Campaign Shortlist ───────────────────────────────────────────
+    const wsShortlist = wb.addWorksheet('Campaign Shortlist');
+    wsShortlist.columns = [
+      { header: 'Song Name', key: 'song', width: 28 },
+      { header: 'Album', key: 'album', width: 20 },
+      { header: 'Floor Status', key: 'floor', width: 13 },
+      { header: 'Spotify Signal %', key: 'spotifySignal', width: 15 },
+      { header: 'Website Signal %', key: 'websiteSignal', width: 15 },
+      { header: 'Combined Streams', key: 'combinedStreams', width: 17 }
+    ];
+    wsShortlist.getRow(1).font = { name: 'Arial', bold: true };
+    const shortlist = perSong
+      .filter(p => p.floor === 'Eligible' && p.spotifySignal >= SIGNAL_THRESHOLD_MIN && p.websiteSignal >= SIGNAL_THRESHOLD_MIN)
+      .sort((a, b) => b.combinedStreams - a.combinedStreams);
+    shortlist.forEach(p => wsShortlist.addRow(p));
+    const slFirst = 2, slLast = 1 + shortlist.length;
+    for (let r = slFirst; r <= slLast; r++) {
+      wsShortlist.getCell(`D${r}`).numFmt = '0.0%';
+      wsShortlist.getCell(`E${r}`).numFmt = '0.0%';
+    }
+    addSignalBands(wsShortlist, 'D', slFirst, slLast);
+    addSignalBands(wsShortlist, 'E', slFirst, slLast);
+    arialize(wsShortlist);
 
     const today = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, `MadeUp_MonkeyShit_Stats_${today}.xlsx`);
+    await downloadWorkbook(wb, `MadeUp_MonkeyShit_Stats_${today}.xlsx`);
     showStatus('Export complete!');
   } catch(e) { showStatus('Export failed: ' + e.message, 'error'); }
 }
