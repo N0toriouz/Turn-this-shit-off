@@ -189,6 +189,7 @@
             <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
             <th style="width:55px;resize:horizontal;overflow:hidden">Cntry</th>
             <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
+            <th style="width:80px;resize:horizontal;overflow:hidden">Signal</th>
             <th style="width:90px;resize:horizontal;overflow:hidden">DistroKid</th>
             <th style="width:90px;resize:horizontal;overflow:hidden">Viral Spread</th>
             <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
@@ -469,6 +470,16 @@
           <div class="computed-item"><label>Shares</label><span id="ss-c-shares">0</span></div>
           <div class="computed-item"><label>Saves</label><span id="ss-c-saves">0</span></div>
           <div class="computed-item"><label>Listeners</label><span id="ss-c-listeners">0</span></div>
+          <div class="computed-item"><label>Signal</label><span id="ss-c-signal">—</span></div>
+        </div>
+        <h4 style="margin-top:10px">Signal Strength (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>TikTok</label><span id="ss-sig-tiktok">—</span></div>
+          <div class="computed-item"><label>Facebook</label><span id="ss-sig-facebook">—</span></div>
+          <div class="computed-item"><label>Instagram</label><span id="ss-sig-instagram">—</span></div>
+          <div class="computed-item"><label>YouTube</label><span id="ss-sig-youtube">—</span></div>
+          <div class="computed-item"><label>YouTube Music</label><span id="ss-sig-youtube-music">—</span></div>
+          <div class="computed-item"><label>Spotify</label><span id="ss-sig-spotify">—</span></div>
         </div>
         <h4 style="margin-top:10px">DistroKid Total (live)</h4>
         <div class="computed-grid">
@@ -550,6 +561,14 @@ function fmt(n) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
   if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
   return n.toString();
+}
+
+function fmtPct(ratio) {
+  return (ratio === null || ratio === undefined || !isFinite(ratio)) ? '—' : (ratio * 100).toFixed(1) + '%';
+}
+
+function signalRatio(engagement, exposure) {
+  return exposure > 0 ? engagement / exposure : null;
 }
 
 function showStatus(msg, type = 'success') {
@@ -916,13 +935,13 @@ async function saveAlbumForm() {
 async function loadSongStatsList() {
   const album_id = document.getElementById('ssFilterAlbum').value;
   const tbody = document.getElementById('ssTableBody');
-  tbody.innerHTML = '<tr><td colspan="10" class="empty-state">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Loading…</td></tr>';
   try {
     let url = '/admin-song-stats-query?action=list';
     if (album_id) url += `&album_id=${album_id}`;
     const data = await apiFetch(url);
     const songs = data.results || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No song stats yet</td></tr>'; return; }
+    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="11" class="empty-state">No song stats yet</td></tr>'; return; }
     tbody.innerHTML = songs.map(s => {
       const streams = computeSongStreams(s);
       const likes = computeSongLikes(s);
@@ -936,6 +955,7 @@ async function loadSongStatsList() {
         <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
         <td>${country}</td>
         <td>${fmt(streams)}</td>
+        <td>${fmtPct(s.signal_strength)}</td>
         <td>${fmt(dk_total)}</td>
         <td>${viral_spread > 0 ? '+' + fmt(viral_spread) : '—'}</td>
         <td>${fmt(likes)}</td>
@@ -946,7 +966,7 @@ async function loadSongStatsList() {
         </td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error: ${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="11" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
 function computeSongStreams(s) {
@@ -1098,6 +1118,25 @@ function updateComputed() {
   document.getElementById('ss-c-shares').textContent = fmt(shares);
   document.getElementById('ss-c-saves').textContent = fmt(saves);
   document.getElementById('ss-c-listeners').textContent = fmt(listeners);
+
+  // Step 1b: Signal Strength (live) — engagement ÷ exposure, per platform
+  const tiktokEng    = v('tt_likes') + v('tt_saves') + v('tt_shares');
+  const facebookEng  = v('fb_likes') + v('fb_saves') + v('fb_shares');
+  const instagramEng = v('in_likes') + v('in_saves') + v('in_reposts') + v('in_shares');
+  const spotifyEng   = v('sp_playlist_adds') + v('sp_saves');
+  const ytLikes      = v('yt_likes');
+
+  document.getElementById('ss-sig-tiktok').textContent        = fmtPct(signalRatio(tiktokEng, v('tiktok_views')));
+  document.getElementById('ss-sig-facebook').textContent      = fmtPct(signalRatio(facebookEng, v('facebook_views')));
+  document.getElementById('ss-sig-instagram').textContent     = fmtPct(signalRatio(instagramEng, v('instagram_views')));
+  document.getElementById('ss-sig-youtube').textContent       = fmtPct(signalRatio(ytLikes, v('youtube_views')));
+  document.getElementById('ss-sig-youtube-music').textContent = fmtPct(signalRatio(ytLikes, v('youtube_music')));
+  document.getElementById('ss-sig-spotify').textContent       = fmtPct(signalRatio(spotifyEng, v('spotify_streams')));
+
+  // Summary Signal Strength — pooled ratio (5 engagement terms / 6 exposure terms; YouTube + YouTube Music share one Likes field)
+  const summaryNumerator   = tiktokEng + instagramEng + facebookEng + ytLikes + spotifyEng;
+  const summaryDenominator = v('tiktok_views') + v('instagram_views') + v('facebook_views') + v('youtube_views') + v('youtube_music') + v('spotify_streams');
+  document.getElementById('ss-c-signal').textContent = fmtPct(signalRatio(summaryNumerator, summaryDenominator));
 
   // Step 2: dk_total
   const dk_tiktok = v('dk_tiktok'), dk_instagram = v('dk_instagram'), dk_facebook = v('dk_facebook');
