@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>These Things Actually Happened — MadeUp MonkeyShit</title>
+<title>Just High Energy — MadeUp MonkeyShit</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -59,8 +59,8 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 
 <div class="page-header">
 <p class="page-eyebrow">Mood</p>
-<h1 class="page-title">These Things Actually Happened</h1>
-<p class="page-subtitle">Song Titles are Based on Real Events</p>
+<h1 class="page-title">Just High Energy</h1>
+<p class="page-subtitle">Much healthier than that energy drink in your hand</p>
 </div>
 
 <div class="songs-section">
@@ -112,7 +112,7 @@ async function loadTrackSocial(container) {
 async function loadSongs() {
   const container = document.getElementById('songTable');
   try {
-    const res = await fetch('/songs?table=mood-4');
+    const res = await fetch('/songs?table=mood-3');
     const data = await res.json();
     if (!data.success || !data.results || data.results.length === 0) {
       container.innerHTML = '<p class="songs-empty">No songs here yet.</p>';
