@@ -520,7 +520,7 @@ nav { padding: 0 1.5rem; }
 <div class="hero-stats" id="heroStats">
 <span class="hero-stat-item">🎵 <span id="hero-stat-streams">—</span></span>
 <span class="hero-stat-item">❤️ <span id="hero-stat-likes">—</span></span>
-<span class="hero-stat-item">🔁 <span id="hero-stat-shares">—</span></span>
+<span class="hero-stat-item">↗ <span id="hero-stat-shares">—</span></span>
 </div>
 </div>
 <div class="hero-photo-wrap">
@@ -824,7 +824,7 @@ async function loadAlbumCardStats() {
       row.innerHTML = `
         <span>🎵 ${fmtStat(a.total_streams)}</span>
         <span>❤️ ${fmtStat(likesSaves)}</span>
-        <span>🔁 ${fmtStat(a.total_shares)}</span>`;
+        <span>↗ ${fmtStat(a.total_shares)}</span>`;
       titleEl.closest('div').appendChild(row);
     });
   } catch (e) {}
