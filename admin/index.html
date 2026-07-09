@@ -656,7 +656,7 @@ async function loadTable() {
     if (!songs.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No songs found</td></tr>'; return; }
     const statsMap = {};
     (statsData.results || []).forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
-    tbody.innerHTML = songs.map(s => {
+    const rows = songs.map(s => {
       const st = statsMap[s.song_name.trim().toLowerCase()] || {};
       const streams = st.name ? computeSongStreams(st) : (s.stream_count || 0);
       const likes   = st.name ? computeSongLikes(st)   : 0;
@@ -664,7 +664,10 @@ async function loadTable() {
       const shares  = st.name ? computeSongShares(st)  : 0;
       const active  = st.active || '—';
       const country = st.co1 ? st.co1.substring(0,6).toUpperCase() : '—';
-      return `<tr>
+      return { s, streams, likes, saves, shares, active, country };
+    });
+    rows.sort((a, b) => b.streams - a.streams);
+    tbody.innerHTML = rows.map(({ s, streams, likes, saves, shares, active, country }) => `<tr>
         <td>${s.song_name || ''}</td>
         <td><span class="badge ${active === 'Yes' ? 'badge-yes' : (active === 'No' ? 'badge-no' : '')}">${active}</span></td>
         <td>${country}</td>
@@ -676,8 +679,7 @@ async function loadTable() {
           <button class="btn btn-secondary btn-sm" onclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">Edit</button>
           <button class="btn btn-danger btn-sm" onclick="confirmRemove('song', ${s.id})">Del</button>
         </td>
-      </tr>`;
-    }).join('');
+      </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Error: ${e.message}</td></tr>`; }
 }
 
