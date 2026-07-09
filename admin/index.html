@@ -217,6 +217,93 @@
           <div class="empty-state">Loading…</div>
         </div>
       </div>
+
+      <div class="computed-section">
+        <h4>Website Totals (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="wt-streams">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="wt-likes">—</span></div>
+          <div class="computed-item"><label>Shares</label><span id="wt-shares">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="wt-saves">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="wt-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>TikTok (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Views</label><span id="pt-tiktok-views">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="pt-tiktok-likes">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="pt-tiktok-saves">—</span></div>
+          <div class="computed-item"><label>Shares</label><span id="pt-tiktok-shares">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="pt-tiktok-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Facebook (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Views</label><span id="pt-facebook-views">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="pt-facebook-likes">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="pt-facebook-saves">—</span></div>
+          <div class="computed-item"><label>Shares</label><span id="pt-facebook-shares">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="pt-facebook-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Instagram (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Views</label><span id="pt-instagram-views">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="pt-instagram-likes">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="pt-instagram-saves">—</span></div>
+          <div class="computed-item"><label>Reposts</label><span id="pt-instagram-reposts">—</span></div>
+          <div class="computed-item"><label>Shares</label><span id="pt-instagram-shares">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="pt-instagram-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>YouTube (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Views</label><span id="pt-youtube-views">—</span></div>
+          <div class="computed-item"><label>Likes</label><span id="pt-youtube-likes">—</span></div>
+          <div class="computed-item"><label>Music Streams</label><span id="pt-youtube-music">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="pt-youtube-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Spotify (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="pt-spotify-streams">—</span></div>
+          <div class="computed-item"><label>Listeners</label><span id="pt-spotify-listeners">—</span></div>
+          <div class="computed-item"><label>Playlist Adds</label><span id="pt-spotify-playlist-adds">—</span></div>
+          <div class="computed-item"><label>Saves</label><span id="pt-spotify-saves">—</span></div>
+          <div class="computed-item"><label>Signal</label><span id="pt-spotify-signal">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Apple Music (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="pt-apple-streams">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Amazon Music (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="pt-amazon-streams">—</span></div>
+        </div>
+      </div>
+
+      <div class="computed-section">
+        <h4>Tidal (live)</h4>
+        <div class="computed-grid">
+          <div class="computed-item"><label>Streams</label><span id="pt-tidal-streams">—</span></div>
+        </div>
+      </div>
     </div>
 
   </div><!-- end #content -->
@@ -1250,7 +1337,57 @@ async function saveSsForm() {
 // STATISTICS SUMMARY SECTION
 // ─────────────────────────────────────────────────────────────────────────────
 async function loadStatsSummary() {
-  await loadCountryLeaderboard();
+  await Promise.all([loadCountryLeaderboard(), loadWebsiteAndPlatformTotals()]);
+}
+
+async function loadWebsiteAndPlatformTotals() {
+  try {
+    const data = await apiFetch('/admin-stats-summary');
+    if (!data.success) throw new Error(data.message || 'Failed to load');
+    const w = data.website;
+    document.getElementById('wt-streams').textContent = fmt(w.total_streams);
+    document.getElementById('wt-likes').textContent = fmt(w.total_likes);
+    document.getElementById('wt-shares').textContent = fmt(w.total_shares);
+    document.getElementById('wt-saves').textContent = fmt(w.total_saves);
+    document.getElementById('wt-signal').textContent = fmtPct(w.signal_strength);
+
+    const p = data.platforms;
+    document.getElementById('pt-tiktok-views').textContent = fmt(p.tiktok.views);
+    document.getElementById('pt-tiktok-likes').textContent = fmt(p.tiktok.likes);
+    document.getElementById('pt-tiktok-saves').textContent = fmt(p.tiktok.saves);
+    document.getElementById('pt-tiktok-shares').textContent = fmt(p.tiktok.shares);
+    document.getElementById('pt-tiktok-signal').textContent = fmtPct(p.tiktok.signal_strength);
+
+    document.getElementById('pt-facebook-views').textContent = fmt(p.facebook.views);
+    document.getElementById('pt-facebook-likes').textContent = fmt(p.facebook.likes);
+    document.getElementById('pt-facebook-saves').textContent = fmt(p.facebook.saves);
+    document.getElementById('pt-facebook-shares').textContent = fmt(p.facebook.shares);
+    document.getElementById('pt-facebook-signal').textContent = fmtPct(p.facebook.signal_strength);
+
+    document.getElementById('pt-instagram-views').textContent = fmt(p.instagram.views);
+    document.getElementById('pt-instagram-likes').textContent = fmt(p.instagram.likes);
+    document.getElementById('pt-instagram-saves').textContent = fmt(p.instagram.saves);
+    document.getElementById('pt-instagram-reposts').textContent = fmt(p.instagram.reposts);
+    document.getElementById('pt-instagram-shares').textContent = fmt(p.instagram.shares);
+    document.getElementById('pt-instagram-signal').textContent = fmtPct(p.instagram.signal_strength);
+
+    document.getElementById('pt-youtube-views').textContent = fmt(p.youtube.views);
+    document.getElementById('pt-youtube-likes').textContent = fmt(p.youtube.likes);
+    document.getElementById('pt-youtube-music').textContent = fmt(p.youtube.music_streams);
+    document.getElementById('pt-youtube-signal').textContent = fmtPct(p.youtube.signal_strength);
+
+    document.getElementById('pt-spotify-streams').textContent = fmt(p.spotify.streams);
+    document.getElementById('pt-spotify-listeners').textContent = fmt(p.spotify.listeners);
+    document.getElementById('pt-spotify-playlist-adds').textContent = fmt(p.spotify.playlist_adds);
+    document.getElementById('pt-spotify-saves').textContent = fmt(p.spotify.saves);
+    document.getElementById('pt-spotify-signal').textContent = fmtPct(p.spotify.signal_strength);
+
+    document.getElementById('pt-apple-streams').textContent = fmt(p.apple.streams);
+    document.getElementById('pt-amazon-streams').textContent = fmt(p.amazon.streams);
+    document.getElementById('pt-tidal-streams').textContent = fmt(p.tidal.streams);
+  } catch (e) {
+    showStatus('Error loading statistics: ' + e.message, 'error');
+  }
 }
 
 async function loadCountryLeaderboard() {
