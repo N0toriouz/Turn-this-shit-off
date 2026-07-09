@@ -110,6 +110,8 @@
   <div class="sidebar-section">Catalog</div>
   <button class="sidebar-btn" id="btn-albums" onclick="selectView('albums')">Albums</button>
   <button class="sidebar-btn" id="btn-song-stats" onclick="selectView('song-stats')">Song Stats</button>
+  <div class="sidebar-section">Insights</div>
+  <button class="sidebar-btn" id="btn-stats" onclick="selectView('stats')">Statistics Summary</button>
 </nav>
 
 <!-- Main -->
@@ -202,6 +204,19 @@
           <tr><td colspan="8" class="empty-state">Loading…</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- ==================== VIEW: STATISTICS SUMMARY ==================== -->
+    <div class="view" id="view-stats">
+      <div class="toolbar">
+        <button class="btn btn-secondary" onclick="loadStatsSummary()">Refresh</button>
+      </div>
+      <div class="computed-section">
+        <h4>Country Leaderboard — Top 20 by Streams</h4>
+        <div id="countryLeaderboard" style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;">
+          <div class="empty-state">Loading…</div>
+        </div>
+      </div>
     </div>
 
   </div><!-- end #content -->
@@ -598,16 +613,17 @@ async function apiFetch(url, opts = {}) {
 }
 
 // ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
-const viewTitles = { tables: 'Song Tables', albums: 'Albums', 'song-stats': 'Song Stats' };
+const viewTitles = { tables: 'Song Tables', albums: 'Albums', 'song-stats': 'Song Stats', stats: 'Statistics Summary' };
 
 function selectView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-' + (view === 'song-stats' ? 'song-stats' : view === 'albums' ? 'albums' : 'tables')).classList.add('active');
-  document.getElementById('btn-' + (view === 'song-stats' ? 'song-stats' : view)).classList.add('active');
+  document.getElementById('view-' + view).classList.add('active');
+  document.getElementById('btn-' + view).classList.add('active');
   document.getElementById('view-title').textContent = viewTitles[view] || view;
   if (view === 'albums') loadAlbums();
   if (view === 'song-stats') { fetchAlbumNames(); loadSongStatsList(); }
+  if (view === 'stats') loadStatsSummary();
 }
 
 // ─── TOKEN PROMPT ─────────────────────────────────────────────────────────────
@@ -1231,6 +1247,32 @@ async function saveSsForm() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// STATISTICS SUMMARY SECTION
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadStatsSummary() {
+  await loadCountryLeaderboard();
+}
+
+async function loadCountryLeaderboard() {
+  const el = document.getElementById('countryLeaderboard');
+  el.innerHTML = '<div class="empty-state">Loading…</div>';
+  try {
+    const data = await apiFetch('/admin-country-totals');
+    const results = data.results || [];
+    if (!results.length) { el.innerHTML = '<div class="empty-state">No country data yet</div>'; return; }
+    const renderCol = (list, offset) => list.map((r, i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid #1e1e1e;font-size:13px;">
+        <span style="color:#666;width:26px;flex-shrink:0;">#${offset + i + 1}</span>
+        <span style="flex:1;color:#e0e0e0;">${r.country.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>
+        <span style="color:#c0b4ff;font-weight:600;">${fmt(r.streams)}</span>
+      </div>`).join('');
+    el.innerHTML = `<div>${renderCol(results.slice(0, 10), 0)}</div><div>${renderCol(results.slice(10, 20), 10)}</div>`;
+  } catch (e) {
+    el.innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SHARED DELETE
 // ─────────────────────────────────────────────────────────────────────────────
 async function confirmRemove(type, id = null) {
@@ -1394,19 +1436,19 @@ async function exportToExcel() {
       'Tidal Streams': num(s.tidal_streams)
     }));
 
-    // Tab 7: Geography (co1-co10 / cl1-cl10)
+    // Tab 7: Geography (co1-co10 / cl1-cl10 — cl# is streams per country, not listeners)
     const geo = rows.map(s => ({
       'Song': s.name, 'Album': albumName(s.album_id),
-      'Country 1': s.co1||'', 'Listeners 1': num(s.cl1),
-      'Country 2': s.co2||'', 'Listeners 2': num(s.cl2),
-      'Country 3': s.co3||'', 'Listeners 3': num(s.cl3),
-      'Country 4': s.co4||'', 'Listeners 4': num(s.cl4),
-      'Country 5': s.co5||'', 'Listeners 5': num(s.cl5),
-      'Country 6': s.co6||'', 'Listeners 6': num(s.cl6),
-      'Country 7': s.co7||'', 'Listeners 7': num(s.cl7),
-      'Country 8': s.co8||'', 'Listeners 8': num(s.cl8),
-      'Country 9': s.co9||'', 'Listeners 9': num(s.cl9),
-      'Country 10': s.co10||'', 'Listeners 10': num(s.cl10)
+      'Country 1': s.co1||'', 'Streams 1': num(s.cl1),
+      'Country 2': s.co2||'', 'Streams 2': num(s.cl2),
+      'Country 3': s.co3||'', 'Streams 3': num(s.cl3),
+      'Country 4': s.co4||'', 'Streams 4': num(s.cl4),
+      'Country 5': s.co5||'', 'Streams 5': num(s.cl5),
+      'Country 6': s.co6||'', 'Streams 6': num(s.cl6),
+      'Country 7': s.co7||'', 'Streams 7': num(s.cl7),
+      'Country 8': s.co8||'', 'Streams 8': num(s.cl8),
+      'Country 9': s.co9||'', 'Streams 9': num(s.cl9),
+      'Country 10': s.co10||'', 'Streams 10': num(s.cl10)
     }));
 
     const wb = new ExcelJS.Workbook();
