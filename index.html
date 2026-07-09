@@ -128,6 +128,16 @@ max-width: 420px;
 margin-bottom: 2.5rem;
 text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
 }
+.hero-stats {
+display: flex;
+gap: 1.5rem;
+font-size: 0.72rem;
+color: var(--silver-dim);
+letter-spacing: 0.03em;
+font-variant-numeric: tabular-nums;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-stat-item { display: inline-flex; align-items: center; gap: 0.35rem; }
 .btn-primary {
 display: inline-flex;
 align-items: center;
@@ -310,6 +320,16 @@ font-style: italic;
 font-size: 0.75rem;
 color: var(--silver-dim);
 letter-spacing: 0.05em;
+}
+.album-card-stats {
+display: flex;
+justify-content: space-between;
+align-items: center;
+font-size: 0.68rem;
+color: var(--silver-dim);
+letter-spacing: 0.03em;
+font-variant-numeric: tabular-nums;
+margin-top: 0.15rem;
 }
 
 #subscribe {
@@ -497,6 +517,11 @@ nav { padding: 0 1.5rem; }
 <h1 class="hero-name">Real moments.<br>Random thoughts.<br>Lot of songs.</h1>
 <p class="hero-bio">"Proud to make just awful music."</p>
 <p class="hero-tagline">Rap. Rock. R&amp;B. Caribbean. Classical. Whatever. All in the same album.</p>
+<div class="hero-stats" id="heroStats">
+<span class="hero-stat-item">🎵 <span id="hero-stat-streams">—</span></span>
+<span class="hero-stat-item">❤️ <span id="hero-stat-likes">—</span></span>
+<span class="hero-stat-item">🔁 <span id="hero-stat-shares">—</span></span>
+</div>
 </div>
 <div class="hero-photo-wrap">
 <div class="hero-photo-frame">
@@ -714,8 +739,20 @@ async function fetchFeatured() {
       container.innerHTML = '<p class="featured-empty">No featured tracks yet.</p>';
       return;
     }
+    const statsMap = {};
+    await Promise.all(data.results.map(song =>
+      fetch('/track-stats?name=' + encodeURIComponent(song.song_name))
+        .then(r => r.ok ? r.json() : null).catch(() => null)
+        .then(d => { if (d?.success && d.result) statsMap[song.song_name] = d.result; })
+    ));
+    data.results.sort((a, b) => {
+      const sa = statsMap[a.song_name] ? (parseInt(statsMap[a.song_name].total_streams) || 0) : (parseInt(a.stream_count) || 0);
+      const sb = statsMap[b.song_name] ? (parseInt(statsMap[b.song_name].total_streams) || 0) : (parseInt(b.stream_count) || 0);
+      return sb - sa;
+    });
     container.innerHTML = '';
     data.results.forEach(song => {
+      const s = statsMap[song.song_name];
       const row = document.createElement('div');
       row.className = 'featured-row';
       row.dataset.songName = song.song_name;
@@ -725,13 +762,12 @@ async function fetchFeatured() {
         <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         <div class="stats-bar">
-          <span>🎵 ${fmtStat(song.stream_count)}</span>
-          <span></span>
-          <span class="country"></span>
+          <span>🎵 ${fmtStat(s ? s.total_streams : song.stream_count)}</span>
+          <span>${s?.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span>
+          <span class="country">${s?.top_country ? countryAbbr(s.top_country) : ''}</span>
         </div>`;
       container.appendChild(row);
     });
-    hydrateFeaturedStats(container);
   } catch (err) {
     container.innerHTML = '<p class="featured-empty">Could not load tracks.</p>';
   }
@@ -759,7 +795,44 @@ async function hydrateFeaturedStats(container) {
   } catch(e) {}
 }
 
+async function loadHeroStats() {
+  try {
+    const res = await fetch('/site-totals');
+    const data = await res.json();
+    if (!data.success) return;
+    document.getElementById('hero-stat-streams').textContent = fmtStat(data.total_streams);
+    document.getElementById('hero-stat-likes').textContent = fmtStat((data.total_likes || 0) + (data.total_saves || 0));
+    document.getElementById('hero-stat-shares').textContent = fmtStat(data.total_shares);
+  } catch (e) {}
+}
+
+async function loadAlbumCardStats() {
+  try {
+    const res = await fetch('/album-stats?all=1');
+    const data = await res.json();
+    if (!data.success || !data.results) return;
+    const byName = {};
+    data.results.forEach(a => { byName[(a.name || '').trim().toLowerCase()] = a; });
+    document.querySelectorAll('.album-card').forEach(card => {
+      const titleEl = card.querySelector('.album-title');
+      if (!titleEl) return;
+      const a = byName[titleEl.textContent.trim().toLowerCase()];
+      if (!a) return;
+      const likesSaves = (a.total_likes || 0) + (a.total_saves || 0);
+      const row = document.createElement('div');
+      row.className = 'album-card-stats';
+      row.innerHTML = `
+        <span>🎵 ${fmtStat(a.total_streams)}</span>
+        <span>❤️ ${fmtStat(likesSaves)}</span>
+        <span>🔁 ${fmtStat(a.total_shares)}</span>`;
+      titleEl.closest('div').appendChild(row);
+    });
+  } catch (e) {}
+}
+
 document.addEventListener('DOMContentLoaded', fetchFeatured);
+document.addEventListener('DOMContentLoaded', loadHeroStats);
+document.addEventListener('DOMContentLoaded', loadAlbumCardStats);
 </script>
 </body>
 </html>
