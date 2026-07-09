@@ -138,6 +138,7 @@ font-variant-numeric: tabular-nums;
 text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
 }
 .hero-stat-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.stat-arrow { display: inline-block; font-size: 1.6em; font-weight: 700; line-height: 1; transform: translateY(0.05em); }
 .btn-primary {
 display: inline-flex;
 align-items: center;
@@ -520,7 +521,7 @@ nav { padding: 0 1.5rem; }
 <div class="hero-stats" id="heroStats">
 <span class="hero-stat-item">🎵 <span id="hero-stat-streams">—</span></span>
 <span class="hero-stat-item">❤️ <span id="hero-stat-likes">—</span></span>
-<span class="hero-stat-item">↗ <span id="hero-stat-shares">—</span></span>
+<span class="hero-stat-item"><span class="stat-arrow">↗</span> <span id="hero-stat-shares">—</span></span>
 </div>
 </div>
 <div class="hero-photo-wrap">
@@ -824,7 +825,7 @@ async function loadAlbumCardStats() {
       row.innerHTML = `
         <span>🎵 ${fmtStat(a.total_streams)}</span>
         <span>❤️ ${fmtStat(likesSaves)}</span>
-        <span>↗ ${fmtStat(a.total_shares)}</span>`;
+        <span><span class="stat-arrow">↗</span> ${fmtStat(a.total_shares)}</span>`;
       titleEl.closest('div').appendChild(row);
     });
   } catch (e) {}
