@@ -125,8 +125,20 @@ async function loadSongs() {
       container.innerHTML = '<p class="songs-empty">No songs here yet.</p>';
       return;
     }
+    const statsMap = {};
+    await Promise.all(data.results.map(song =>
+      fetch('/track-stats?name=' + encodeURIComponent(song.song_name))
+        .then(r => r.ok ? r.json() : null).catch(() => null)
+        .then(d => { if (d?.success && d.result) statsMap[song.song_name] = d.result; })
+    ));
+    data.results.sort((a, b) => {
+      const sa = statsMap[a.song_name] ? (parseInt(statsMap[a.song_name].total_streams) || 0) : (parseInt(a.stream_count) || 0);
+      const sb = statsMap[b.song_name] ? (parseInt(statsMap[b.song_name].total_streams) || 0) : (parseInt(b.stream_count) || 0);
+      return sb - sa;
+    });
     container.innerHTML = '';
     data.results.forEach(song => {
+      const s = statsMap[song.song_name];
       const row = document.createElement('div');
       row.className = 'song-row';
       row.dataset.songName = song.song_name;
@@ -134,7 +146,7 @@ async function loadSongs() {
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<div class="stats-bar"><span>🎵 ${fmtStat(song.stream_count)}</span><span></span><span class="country"></span></div>
+<div class="stats-bar"><span>🎵 ${fmtStat(s ? s.total_streams : song.stream_count)}</span><span>${s?.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s?.top_country ? countryAbbr(s.top_country) : ''}</span></div>
 `;
       container.appendChild(row);
     });
@@ -143,7 +155,6 @@ async function loadSongs() {
       document.getElementById('page-backdrop').style.backgroundImage =
         `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('${artUrl}')`;
     }
-    loadTrackSocial(container);
   } catch (err) {
     container.innerHTML = '<p class="songs-empty">Could not load songs.</p>';
   }
