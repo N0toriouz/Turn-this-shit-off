@@ -52,7 +52,7 @@ export async function onRequestGet(context) {
         sp_listeners,
         co1, cl1, co2, cl2, co3, cl3, co4, cl4, co5, cl5,
         co6, cl6, co7, cl7, co8, cl8, co9, cl9, co10, cl10
-      FROM song_stats WHERE name=? LIMIT 1
+      FROM song_stats WHERE TRIM(LOWER(name))=TRIM(LOWER(?)) LIMIT 1
     `).bind(name).first();
     if (row) {
       row.top_country = topCountry(row);
