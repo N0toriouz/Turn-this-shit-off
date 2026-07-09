@@ -103,6 +103,7 @@ async function loadTrackSocial(container) {
       const bar = row.querySelector('.stats-bar');
       if (!bar) return;
       const spans = bar.querySelectorAll('span');
+      if (spans[0]) spans[0].textContent = '🎵 ' + fmtStat(s.total_streams);
       if (spans[1] && s.total_likes) spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
       if (spans[2] && s.top_country) spans[2].textContent = countryAbbr(s.top_country);
     });
