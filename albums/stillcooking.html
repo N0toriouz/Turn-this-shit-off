@@ -177,8 +177,8 @@ async function loadHighlights() {
         .then(d => { if (d?.success && d.result) statsMap[song.song_name] = d.result; })
     ));
     data.results.sort((a, b) => {
-      const sa = parseInt(statsMap[a.song_name]?.total_streams) || parseInt(a.stream_count) || 0;
-      const sb = parseInt(statsMap[b.song_name]?.total_streams) || parseInt(b.stream_count) || 0;
+      const sa = statsMap[a.song_name] ? (parseInt(statsMap[a.song_name].total_streams) || 0) : (parseInt(a.stream_count) || 0);
+      const sb = statsMap[b.song_name] ? (parseInt(statsMap[b.song_name].total_streams) || 0) : (parseInt(b.stream_count) || 0);
       return sb - sa;
     });
     grid.innerHTML = '';
@@ -191,7 +191,7 @@ async function loadHighlights() {
 <div class="song-title">${song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>
 <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-<div class="stats-bar"><span>🎵 ${fmtStat(s?.total_streams || song.stream_count)}</span><span>${s?.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s?.top_country ? countryAbbr(s.top_country) : ''}</span></div>
+<div class="stats-bar"><span>🎵 ${fmtStat(s ? s.total_streams : song.stream_count)}</span><span>${s?.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span><span class="country">${s?.top_country ? countryAbbr(s.top_country) : ''}</span></div>
 `;
       grid.appendChild(row);
     });
