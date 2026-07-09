@@ -1,1551 +1,777 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0d0d0d; color: #e0e0e0; display: flex; height: 100vh; overflow: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MadeUp MonkeyShit</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+--black: #0A0A0A;
+--near-black: #111111;
+--card-bg: #161616;
+--border: #2A2A2A;
+--silver: #C8C8C8;
+--silver-dim: #888888;
+--gold: #D4AF37;
+--gold-dim: #9A7D1A;
+--white: #F2F2F2;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--black);
+color: var(--silver);
+font-family: 'Inter', sans-serif;
+font-size: 16px;
+line-height: 1.7;
+overflow-x: hidden;
+}
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+background: rgba(10,10,10,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 0 2rem;
+height: 60px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+.nav-logo {
+font-family: 'DM Serif Display', serif;
+font-size: 1.1rem;
+color: var(--gold);
+letter-spacing: 0.02em;
+text-decoration: none;
+}
+.nav-links {
+display: flex;
+align-items: center;
+gap: 2rem;
+list-style: none;
+}
+.nav-links a {
+color: var(--silver-dim);
+text-decoration: none;
+font-size: 0.8rem;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
 
-    /* Sidebar */
-    #sidebar { width: 220px; background: #141414; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; }
-    #sidebar h1 { font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #888; padding: 0 20px 20px; border-bottom: 1px solid #222; }
-    .sidebar-section { padding: 16px 20px 8px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #555; }
-    .sidebar-btn { display: block; width: 100%; text-align: left; background: none; border: none; color: #aaa; padding: 9px 20px; font-size: 13px; cursor: pointer; transition: background 0.15s, color 0.15s; }
-    .sidebar-btn:hover { background: #1e1e1e; color: #fff; }
-    .sidebar-btn.active { background: #1e1e1e; color: #fff; border-left: 3px solid #7b61ff; padding-left: 17px; }
+.hero {
+min-height: 100vh;
+display: grid;
+grid-template-columns: 1fr 1fr;
+align-items: center;
+padding: 80px 4rem 4rem;
+gap: 4rem;
+position: relative;
+overflow: hidden;
+isolation: isolate;
+}
+.hero::before {
+content: '';
+position: absolute;
+top: 0; left: 0; right: 0; bottom: 0;
+background: radial-gradient(ellipse at 60% 40%, rgba(212,175,55,0.06) 0%, transparent 60%);
+pointer-events: none;
+}
+.hero::after {
+content: '';
+position: absolute;
+inset: 0;
+z-index: -1;
+background-image:
+  linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%),
+  url('profile_photo.jpg');
+background-size: cover;
+background-position: center 65%;
+filter: blur(12px) saturate(0.6) brightness(0.9);
+transform: scale(1.15);
+}
+.hero-text { position: relative; z-index: 2; }
+.hero-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 1.5rem;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-name {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(2.8rem, 5vw, 4.5rem);
+line-height: 1.05;
+color: var(--white);
+margin-bottom: 1.5rem;
+letter-spacing: -0.01em;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-bio {
+font-size: 1rem;
+color: var(--silver-dim);
+max-width: 420px;
+margin-bottom: 0.75rem;
+font-style: italic;
+font-family: 'DM Serif Display', serif;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.hero-tagline {
+font-size: 0.85rem;
+color: var(--silver-dim);
+max-width: 420px;
+margin-bottom: 2.5rem;
+text-shadow: 0 2px 24px rgba(10,10,10,0.9), 0 1px 4px rgba(10,10,10,0.95);
+}
+.btn-primary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+background: var(--gold);
+color: var(--black);
+padding: 0.75rem 1.75rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.8rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: background 0.2s, transform 0.1s;
+}
+.btn-primary:hover {
+background: #E8C547;
+transform: translateY(-1px);
+}
+.btn-secondary {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+border: 1px solid var(--border);
+color: var(--silver);
+padding: 0.75rem 1.75rem;
+border-radius: 2px;
+text-decoration: none;
+font-size: 0.8rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover {
+border-color: var(--gold);
+color: var(--gold);
+}
+.hero-photo-wrap {
+position: relative;
+z-index: 2;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.hero-photo-frame {
+position: relative;
+width: 420px;
+max-width: 100%;
+}
+.hero-photo-frame::before {
+content: '';
+position: absolute;
+top: -12px; left: -12px;
+right: 12px; bottom: 12px;
+border: 1px solid var(--gold-dim);
+border-radius: 2px;
+z-index: 0;
+}
+.hero-photo-frame img {
+width: 100%;
+border-radius: 2px;
+display: block;
+position: relative;
+z-index: 1;
+filter: contrast(1.05) saturate(0.9);
+}
 
-    /* Main content */
-    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    #topbar { background: #141414; border-bottom: 1px solid #222; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; }
-    #topbar h2 { font-size: 16px; font-weight: 600; }
-    #content { flex: 1; overflow-y: auto; padding: 24px; }
+.marquee-section {
+border-top: 1px solid var(--border);
+border-bottom: 1px solid var(--border);
+padding: 0.5rem 0 1.2rem;
+overflow: hidden;
+background: var(--near-black);
+}
+.marquee-label {
+text-align: center;
+font-size: 0.65rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--silver-dim);
+opacity: 0.6;
+padding: 0.35rem 0 0.5rem;
+}
+.marquee-track {
+display: flex;
+gap: 0;
+animation: marquee 30s linear infinite;
+white-space: nowrap;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee {
+0% { transform: translateX(0); }
+100% { transform: translateX(-50%); }
+}
+.marquee-item {
+display: inline-flex;
+align-items: center;
+gap: 1.5rem;
+padding: 0 2rem;
+font-family: 'DM Serif Display', serif;
+font-size: 0.95rem;
+color: var(--silver-dim);
+font-style: italic;
+text-decoration: none;
+cursor: pointer;
+transition: color 0.2s;
+}
+.marquee-item:hover { color: var(--gold); }
+.marquee-dot {
+width: 4px;
+height: 4px;
+border-radius: 50%;
+background: var(--gold);
+flex-shrink: 0;
+}
 
-    /* View containers */
-    .view { display: none; }
-    .view.active { display: block; }
+section {
+padding: 5rem 4rem;
+max-width: 1200px;
+margin: 0 auto;
+}
+.section-eyebrow {
+font-size: 0.72rem;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--gold);
+margin-bottom: 0.75rem;
+}
+.section-title {
+font-family: 'DM Serif Display', serif;
+font-size: clamp(1.8rem, 3vw, 2.5rem);
+color: var(--white);
+margin-bottom: 1rem;
+line-height: 1.2;
+}
+.section-subtitle {
+color: var(--silver-dim);
+font-size: 0.95rem;
+max-width: 560px;
+margin-bottom: 3rem;
+}
 
-    /* Table toolbar */
-    .toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
-    .toolbar select, .toolbar input { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; padding: 7px 12px; border-radius: 6px; font-size: 13px; }
-    .btn { padding: 7px 16px; border-radius: 6px; border: none; font-size: 13px; cursor: pointer; transition: opacity 0.15s; }
-    .btn:hover { opacity: 0.85; }
-    .btn-primary { background: #7b61ff; color: #fff; }
-    .btn-danger { background: #c0392b; color: #fff; }
-    .btn-secondary { background: #2a2a2a; color: #ccc; border: 1px solid #333; }
-    .btn-sm { padding: 4px 10px; font-size: 12px; }
+.albums-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+gap: 1.5rem;
+}
+.album-card {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+text-decoration: none;
+transition: transform 0.2s;
+}
+.album-card:hover { transform: translateY(-3px); }
+.album-cover {
+aspect-ratio: 1;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+overflow: hidden;
+}
+.album-cover-accent {
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 3px;
+background: var(--gold);
+}
+.album-title {
+font-family: 'DM Serif Display', serif;
+font-size: 0.95rem;
+color: var(--white);
+font-style: italic;
+}
+.album-meta {
+font-size: 0.75rem;
+color: var(--silver-dim);
+letter-spacing: 0.05em;
+}
 
-    /* Tables */
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: #1a1a1a; color: #888; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; padding: 10px 12px; text-align: left; border-bottom: 1px solid #222; }
-    td { padding: 10px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
-    tr:hover td { background: #161616; }
-    .mono { font-family: monospace; font-size: 12px; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-    .badge-yes { background: #1a3d2b; color: #4caf82; }
-    .badge-no { background: #3d1a1a; color: #e57373; }
+#subscribe {
+position: relative;
+isolation: isolate;
+}
+#subscribe::after {
+content: '';
+position: absolute;
+inset: 0;
+z-index: -1;
+background-image:
+  linear-gradient(180deg, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.5) 40%, rgba(10,10,10,0.75) 100%),
+  url('Half Way There.jpg');
+background-size: cover;
+background-position: center 0%;
+filter: blur(12px) saturate(0.65);
+transform: scale(1.2);
+}
+.subscribe-wrap {
+background: rgba(17,17,17,0.15);
+border: 1px solid var(--border);
+border-radius: 2px;
+padding: 3rem;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 3rem;
+align-items: center;
+backdrop-filter: blur(2px);
+}
+.subscribe-title {
+font-family: 'DM Serif Display', serif;
+font-size: 1.8rem;
+color: var(--white);
+margin-bottom: 0.75rem;
+line-height: 1.2;
+text-shadow: 0 2px 20px rgba(10,10,10,0.85);
+}
+.subscribe-sub {
+font-size: 0.85rem;
+color: var(--silver-dim);
+text-shadow: 0 2px 20px rgba(10,10,10,0.85);
+}
+.subscribe-form {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+.subscribe-input {
+background: var(--black);
+border: 1px solid var(--border);
+border-radius: 2px;
+padding: 0.75rem 1rem;
+color: var(--silver);
+font-size: 0.9rem;
+font-family: 'Inter', sans-serif;
+outline: none;
+transition: border-color 0.2s;
+width: 100%;
+}
+.subscribe-input:focus { border-color: var(--gold); }
+.subscribe-input::placeholder { color: var(--silver-dim); opacity: 0.5; }
+.subscribe-note {
+font-size: 0.72rem;
+color: var(--silver-dim);
+opacity: 0.6;
+}
 
-    /* Modals */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: #161616; border: 1px solid #2a2a2a; border-radius: 10px; padding: 28px; width: 520px; max-height: 90vh; overflow-y: auto; }
-    .modal.modal-wide { width: 680px; }
-    .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-group { display: flex; flex-direction: column; gap: 5px; }
-    .form-group label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-    .form-group input, .form-group select, .form-group textarea { background: #1e1e1e; border: 1px solid #333; color: #e0e0e0; padding: 8px 12px; border-radius: 6px; font-size: 13px; width: 100%; }
-    .form-group textarea { resize: vertical; min-height: 60px; }
-    .req { color: #e57373; }
-    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+footer {
+border-top: 1px solid var(--border);
+padding: 2rem 4rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 1rem;
+background: var(--near-black);
+}
+.footer-name {
+font-family: 'DM Serif Display', serif;
+font-size: 1rem;
+color: var(--gold);
+font-style: italic;
+}
+.footer-note {
+font-size: 0.75rem;
+color: var(--silver-dim);
+opacity: 0.5;
+}
 
-    /* Platform groups in SS modal */
-    .platform-group { margin-bottom: 14px; }
-    .platform-group-title { font-size: 11px; color: #7b61ff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #252525; }
-    .platform-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.gold-divider {
+width: 40px;
+height: 1px;
+background: var(--gold);
+margin: 2rem 0;
+}
 
-    /* Computed totals */
-    .computed-section { background: #1a1a2e; border: 1px solid #2a2a4a; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-    .computed-section h4 { font-size: 11px; color: #7b61ff; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
-    .computed-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .computed-item { display: flex; flex-direction: column; gap: 3px; }
-    .computed-item label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
-    .computed-item span { font-size: 15px; font-weight: 600; color: #c0b4ff; }
+/* ── Mood cards ── */
+.mood-cards {
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+margin-bottom: 2rem;
+}
+.mood-card {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 1.25rem 1.5rem;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--silver);
+text-decoration: none;
+font-size: 0.95rem;
+letter-spacing: 0.02em;
+transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.mood-card:hover {
+border-color: var(--gold);
+color: var(--white);
+background: #1A1A1A;
+}
+.mood-card-label { font-family: 'DM Serif Display', serif; font-style: italic; }
+.mood-card-arrow {
+color: var(--gold);
+font-size: 0.85rem;
+transition: transform 0.2s;
+flex-shrink: 0;
+}
+.mood-card:hover .mood-card-arrow { transform: translateX(4px); }
 
-    /* Country sub-table */
-    .country-section { margin-bottom: 14px; }
-    .country-section h4 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-    .country-row { display: grid; grid-template-columns: 1fr 100px 32px; gap: 8px; align-items: center; margin-bottom: 6px; }
-    .country-row input { background: #1e1e1e; border: 1px solid #333; color: #e0e0e0; padding: 6px 10px; border-radius: 5px; font-size: 12px; width: 100%; }
-    .country-remove { background: #3d1a1a; border: none; color: #e57373; border-radius: 5px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
-    #countryRows { max-height: 200px; overflow-y: auto; }
+/* ── Featured dynamic table ── */
+.featured-table {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1rem;
+}
+.featured-row { border: 1px solid var(--border); border-radius: 2px; overflow: hidden; background: var(--card-bg); }
+.featured-title { padding: 0.6rem 0.85rem; font-family: 'DM Serif Display', serif; font-size: 0.78rem; color: var(--silver); font-style: italic; border-bottom: 1px solid var(--border); }
+.featured-row iframe { display: block; width: 100%; }
+.featured-row .stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0.85rem; font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.04em; border-top: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+.featured-row .stats-bar .country { font-variant: small-caps; letter-spacing: 0.1em; }
+.featured-loading, .featured-empty {
+color: var(--silver-dim);
+font-size: 0.85rem;
+font-style: italic;
+padding: 1.5rem 0;
+}
 
-    /* Type toggle */
-    .type-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
-    .type-toggle button { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #333; background: #1e1e1e; color: #888; cursor: pointer; font-size: 13px; transition: all 0.15s; }
-    .type-toggle button.active { background: #7b61ff; border-color: #7b61ff; color: #fff; }
-
-    /* Albums table stats */
-    .stat-pill { display: inline-block; background: #1a1a2e; color: #c0b4ff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin: 1px; }
-
-    /* Empty state */
-    .empty-state { text-align: center; padding: 48px; color: #555; font-size: 14px; }
-
-    /* Status message */
-    #status-msg { position: fixed; bottom: 20px; right: 20px; background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 10px 18px; font-size: 13px; display: none; z-index: 2000; }
-    #status-msg.success { border-color: #4caf82; color: #4caf82; }
-    #status-msg.error { border-color: #e57373; color: #e57373; }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+@media (max-width: 768px) {
+.hero {
+grid-template-columns: 1fr;
+padding: 80px 1.5rem 3rem;
+text-align: center;
+}
+.hero-photo-wrap { order: -1; }
+.hero-photo-frame { width: 280px; }
+.hero-tagline { margin: 0 auto 2.5rem; }
+section { padding: 3rem 1.5rem; }
+.subscribe-wrap {
+grid-template-columns: 1fr;
+padding: 2rem 1.5rem;
+gap: 2rem;
+}
+footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+nav { padding: 0 1.5rem; }
+.nav-links { display: none; }
+}
+</style>
 </head>
 <body>
-
-<!-- Sidebar -->
-<nav id="sidebar">
-  <h1>Admin</h1>
-  <div class="sidebar-section">Content</div>
-  <button class="sidebar-btn active" id="btn-tables" onclick="selectView('tables')">Song Tables</button>
-  <div class="sidebar-section">Catalog</div>
-  <button class="sidebar-btn" id="btn-albums" onclick="selectView('albums')">Albums</button>
-  <button class="sidebar-btn" id="btn-song-stats" onclick="selectView('song-stats')">Song Stats</button>
+<nav>
+<a href="#" class="nav-logo">MadeUp MonkeyShit</a>
+<ul class="nav-links">
+<li><a href="#catalog">Moods</a></li>
+<li><a href="#albums">Albums</a></li>
+<li><a href="#subscribe">First to Know</a></li>
+</ul>
 </nav>
 
-<!-- Main -->
-<div id="main">
-  <div id="topbar">
-    <h2 id="view-title">Song Tables</h2>
-  </div>
-  <div id="content">
-
-    <!-- ==================== VIEW: TABLES (existing) ==================== -->
-    <div class="view active" id="view-tables">
-      <div class="toolbar">
-        <select id="tableSelect" onchange="loadTable()">
-          <option value="">— Select table —</option>
-        </select>
-        <button class="btn btn-primary" onclick="openModal('add')">+ Add Song</button>
-      </div>
-      <table id="songTable" style="table-layout:fixed;width:100%">
-        <thead>
-          <tr>
-            <th style="width:200px;resize:horizontal;overflow:hidden">Song</th>
-            <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
-            <th style="width:55px;resize:horizontal;overflow:hidden">Cntry</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
-            <th style="width:120px">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="songTableBody">
-          <tr><td colspan="8" class="empty-state">Select a table above</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ==================== VIEW: ALBUMS ==================== -->
-    <div class="view" id="view-albums">
-      <div class="toolbar">
-        <button class="btn btn-primary" onclick="openAlbumModal('create')">+ Add Album</button>
-      </div>
-      <table id="albumTable" style="table-layout:fixed;width:100%">
-        <thead>
-          <tr>
-            <th style="width:160px;resize:horizontal;overflow:hidden">Name</th>
-            <th style="width:55px;resize:horizontal;overflow:hidden">Art #</th>
-            <th style="width:110px;resize:horizontal;overflow:hidden">Release Date</th>
-            <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">DistroKid</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
-            <th style="width:65px;resize:horizontal;overflow:hidden">Tracks</th>
-            <th style="width:80px">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="albumTableBody">
-          <tr><td colspan="11" class="empty-state">Loading…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- ==================== VIEW: SONG STATS ==================== -->
-    <div class="view" id="view-song-stats">
-      <div class="toolbar">
-        <select id="ssFilterAlbum" onchange="loadSongStatsList()">
-          <option value="">— All Albums —</option>
-        </select>
-        <button class="btn btn-primary" onclick="openSongStatsModal('create')">+ Add Song Stats</button>
-        <button class="btn" onclick="exportToExcel()" style="background:#1a472a;color:#4caf82;border-color:#2d6a40;margin-left:auto">&#8595; Export Excel</button>
-      </div>
-      <table id="ssTable" style="table-layout:fixed;width:100%">
-        <thead>
-          <tr>
-            <th style="width:200px;resize:horizontal;overflow:hidden">Song</th>
-            <th style="width:60px;resize:horizontal;overflow:hidden">Active</th>
-            <th style="width:55px;resize:horizontal;overflow:hidden">Cntry</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">Streams</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Signal</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">DistroKid</th>
-            <th style="width:90px;resize:horizontal;overflow:hidden">Viral Spread</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Likes</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Saves</th>
-            <th style="width:80px;resize:horizontal;overflow:hidden">Shares</th>
-            <th style="width:80px">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="ssTableBody">
-          <tr><td colspan="8" class="empty-state">Loading…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </div><!-- end #content -->
-</div><!-- end #main -->
-
-<!-- ==================== MODAL: SONG (existing) ==================== -->
-<div class="modal-overlay" id="modal-song">
-  <div class="modal">
-    <h3 id="modal-title">Add Song</h3>
-    <input type="hidden" id="edit-id" />
-    <input type="hidden" id="form-name" />
-    <input type="hidden" id="form-art" />
-    <input type="hidden" id="form-date" />
-    <input type="hidden" id="form-spotify-url" />
-    <input type="hidden" id="form-embed-url" />
-    <div class="form-row">
-      <div class="form-group">
-        <label>Table</label>
-        <input type="text" id="form-table" readonly style="opacity:0.6;cursor:default;" />
-      </div>
-      <div class="form-group" id="form-album-wrap">
-        <label>Album <span class="req">*</span></label>
-        <select id="form-album-select" onchange="onFormAlbumChange()">
-          <option value="">— Select Album —</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row single" id="form-name-add-row">
-      <div class="form-group">
-        <label>Song Name <span class="req">*</span></label>
-        <select id="form-song-select" onchange="onFormSongChange()">
-          <option value="">— Select Song —</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row single" id="form-name-edit-row" style="display:none">
-      <div class="form-group">
-        <label>Song Name</label>
-        <input type="text" id="form-name-display" readonly style="opacity:0.6;cursor:default;" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Streams</label>
-        <input type="number" id="form-streams" readonly style="opacity:0.6;cursor:default;" value="0" />
-      </div>
-      <div class="form-group">
-        <label>Likes</label>
-        <input type="number" id="form-likes" readonly style="opacity:0.6;cursor:default;" value="0" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Shares</label>
-        <input type="number" id="form-shares" readonly style="opacity:0.6;cursor:default;" value="0" />
-      </div>
-      <div class="form-group">
-        <label>Saves</label>
-        <input type="number" id="form-saves" readonly style="opacity:0.6;cursor:default;" value="0" />
-      </div>
-      <div class="form-group">
-        <label>Country</label>
-        <input type="text" id="form-country" readonly style="opacity:0.6;cursor:default;" />
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveForm()">Save</button>
-    </div>
-  </div>
+<div class="hero">
+<div class="hero-text">
+<p class="hero-eyebrow">Music by MadeUp MonkeyShit</p>
+<h1 class="hero-name">Real moments.<br>Random thoughts.<br>Lot of songs.</h1>
+<p class="hero-bio">"Proud to make just awful music."</p>
+<p class="hero-tagline">Rap. Rock. R&amp;B. Caribbean. Classical. Whatever. All in the same album.</p>
+</div>
+<div class="hero-photo-wrap">
+<div class="hero-photo-frame">
+<p style="position:absolute; top:-2rem; left:0; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); z-index:2;">New Release</p>
+<img src="Melted Ice Cream.jpg" alt="Melted Ice Cream - newest album" onerror="this.style.display='none'">
+<p style="position:absolute; bottom:-1.75rem; left:0; font-family:'DM Serif Display',serif; font-style:italic; font-size:1rem; color:var(--white); z-index:2;">Melted Ice Cream</p>
+</div>
+</div>
 </div>
 
-<!-- ==================== MODAL: ALBUMS ==================== -->
-<div class="modal-overlay" id="modal-album">
-  <div class="modal">
-    <h3 id="album-modal-title">Album</h3>
-    <div class="type-toggle">
-      <button id="atype-create" class="active" onclick="onAlbumTypeChange('create')">Create</button>
-      <button id="atype-edit" onclick="onAlbumTypeChange('edit')">Edit</button>
-    </div>
-    <!-- Edit: album selector -->
-    <div id="album-select-row" class="form-row single" style="display:none">
-      <div class="form-group">
-        <label>Select Album</label>
-        <select id="aEditSelect" onchange="onAlbumSelectChange()">
-          <option value="">— Select —</option>
-        </select>
-      </div>
-    </div>
-    <!-- Fields -->
-    <div id="album-fields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Name <span class="req">*</span></label>
-          <input type="text" id="aName" />
-        </div>
-        <div class="form-group">
-          <label>Art (filename / number)</label>
-          <input type="text" id="aArt" />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Release Date</label>
-          <input type="date" id="aDate" />
-        </div>
-        <div class="form-group">
-          <label>Active</label>
-          <select id="aActive">
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
-      </div>
-      <!-- Computed totals (edit only) -->
-      <div class="computed-section" id="album-computed" style="display:none">
-        <h4>Computed Totals</h4>
-        <div class="computed-grid">
-          <div class="computed-item"><label>Streams</label><span id="ac-streams">—</span></div>
-          <div class="computed-item"><label>Likes</label><span id="ac-likes">—</span></div>
-          <div class="computed-item"><label>Shares</label><span id="ac-shares">—</span></div>
-          <div class="computed-item"><label>Saves</label><span id="ac-saves">—</span></div>
-          <div class="computed-item"><label>Listeners</label><span id="ac-listeners">—</span></div>
-          <div class="computed-item"><label>Songs</label><span id="ac-songs">—</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeAlbumModal()">Cancel</button>
-      <button class="btn btn-danger btn-sm" id="album-delete-btn" style="display:none;margin-right:auto" onclick="confirmRemove('album')">Delete</button>
-      <button class="btn btn-primary" onclick="saveAlbumForm()">Save</button>
-    </div>
-  </div>
+<div class="marquee-section" aria-label="Social platforms">
+<p class="marquee-label">Find us on</p>
+<div class="marquee-track" id="marquee"></div>
 </div>
 
-<!-- ==================== MODAL: SONG STATS ==================== -->
-<div class="modal-overlay" id="modal-ss">
-  <div class="modal modal-wide">
-    <h3 id="ss-modal-title">Song Stats</h3>
-    <div class="type-toggle">
-      <button id="sstype-create" class="active" onclick="onSsTypeChange('create')">Create</button>
-      <button id="sstype-edit" onclick="onSsTypeChange('edit')">Edit</button>
-    </div>
-    <!-- Edit: song selector -->
-    <div class="form-row">
-      <div class="form-group">
-        <label>Album <span class="req">*</span></label>
-        <select id="ssAlbum" onchange="onSsAlbumChange()">
-          <option value="">— Select Album —</option>
-        </select>
-      </div>
-      <div class="form-group" id="ss-song-select-group" style="display:none">
-        <label>Song (Edit)</label>
-        <select id="ssSongSelect" onchange="onSsSongSelectChange()">
-          <option value="">— Select Song —</option>
-        </select>
-      </div>
-    </div>
-    <!-- Fields -->
-    <div id="ss-fields">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Song Name <span class="req">*</span></label>
-          <input type="text" id="ssName" />
-        </div>
-        <div class="form-group">
-          <label>Art Number</label>
-          <input type="number" id="ssArt" />
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Release Date</label>
-          <input type="date" id="ssDate" />
-        </div>
-        <div class="form-group">
-          <label>Active</label>
-          <select id="ssActive">
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- TikTok -->
-      <div class="platform-group">
-        <div class="platform-group-title">TikTok</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Views</label><input type="number" id="ss-tiktok_views" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Likes</label><input type="number" id="ss-tt_likes" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Saves</label><input type="number" id="ss-tt_saves" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Shares</label><input type="number" id="ss-tt_shares" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid TikTok</label><input type="number" id="ss-dk_tiktok" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- Facebook -->
-      <div class="platform-group">
-        <div class="platform-group-title">Facebook</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Views</label><input type="number" id="ss-facebook_views" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Likes</label><input type="number" id="ss-fb_likes" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Saves</label><input type="number" id="ss-fb_saves" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Shares</label><input type="number" id="ss-fb_shares" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Facebook</label><input type="number" id="ss-dk_facebook" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- Instagram -->
-      <div class="platform-group">
-        <div class="platform-group-title">Instagram</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Views</label><input type="number" id="ss-instagram_views" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Likes</label><input type="number" id="ss-in_likes" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Saves</label><input type="number" id="ss-in_saves" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Reposts</label><input type="number" id="ss-in_reposts" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Shares</label><input type="number" id="ss-in_shares" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Instagram</label><input type="number" id="ss-dk_instagram" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- YouTube -->
-      <div class="platform-group">
-        <div class="platform-group-title">YouTube</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Views</label><input type="number" id="ss-youtube_views" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid YouTube Views</label><input type="number" id="ss-dk_youtube_views" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Likes</label><input type="number" id="ss-yt_likes" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Music Streams</label><input type="number" id="ss-youtube_music" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid YouTube Music</label><input type="number" id="ss-dk_youtube_music" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- Spotify -->
-      <div class="platform-group">
-        <div class="platform-group-title">Spotify</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Streams</label><input type="number" id="ss-spotify_streams" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Spotify</label><input type="number" id="ss-dk_spotify" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Listeners</label><input type="number" id="ss-sp_listeners" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Playlist Adds</label><input type="number" id="ss-sp_playlist_adds" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Saves</label><input type="number" id="ss-sp_saves" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- Other Streaming -->
-      <div class="platform-group">
-        <div class="platform-group-title">Other Streaming</div>
-        <div class="platform-fields">
-          <div class="form-group"><label>Apple Streams</label><input type="number" id="ss-apple_streams" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Apple</label><input type="number" id="ss-dk_apple" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Amazon Streams</label><input type="number" id="ss-amazon_streams" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Amazon</label><input type="number" id="ss-dk_amazon" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>Tidal Streams</label><input type="number" id="ss-tidal_streams" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Tidal</label><input type="number" id="ss-dk_tidal" value="0" oninput="updateComputed()" /></div>
-          <div class="form-group"><label>DistroKid Other Stores (Pandora, Snapchat, Audiomack, etc.)</label><input type="number" id="ss-dk_other" value="0" oninput="updateComputed()" /></div>
-        </div>
-      </div>
-
-      <!-- Live computed totals -->
-      <div class="computed-section">
-        <h4>Computed Totals (live)</h4>
-        <div class="computed-grid">
-          <div class="computed-item"><label>Streams</label><span id="ss-c-streams">0</span></div>
-          <div class="computed-item"><label>Likes</label><span id="ss-c-likes">0</span></div>
-          <div class="computed-item"><label>Shares</label><span id="ss-c-shares">0</span></div>
-          <div class="computed-item"><label>Saves</label><span id="ss-c-saves">0</span></div>
-          <div class="computed-item"><label>Listeners</label><span id="ss-c-listeners">0</span></div>
-          <div class="computed-item"><label>Signal</label><span id="ss-c-signal">—</span></div>
-        </div>
-        <h4 style="margin-top:10px">Signal Strength (live)</h4>
-        <div class="computed-grid">
-          <div class="computed-item"><label>TikTok</label><span id="ss-sig-tiktok">—</span></div>
-          <div class="computed-item"><label>Facebook</label><span id="ss-sig-facebook">—</span></div>
-          <div class="computed-item"><label>Instagram</label><span id="ss-sig-instagram">—</span></div>
-          <div class="computed-item"><label>YouTube</label><span id="ss-sig-youtube">—</span></div>
-          <div class="computed-item"><label>YouTube Music</label><span id="ss-sig-youtube-music">—</span></div>
-          <div class="computed-item"><label>Spotify</label><span id="ss-sig-spotify">—</span></div>
-        </div>
-        <h4 style="margin-top:10px">DistroKid Total (live)</h4>
-        <div class="computed-grid">
-          <div class="computed-item"><label>Total DistroKid</label><span id="ss-c-dk-total">0</span></div>
-        </div>
-        <h4 style="margin-top:10px">Viral Spread (live — display only, never stored)</h4>
-        <div class="computed-grid">
-          <div class="computed-item"><label>TikTok</label><span id="ss-c-vs-tiktok">+0</span></div>
-          <div class="computed-item"><label>Instagram</label><span id="ss-c-vs-instagram">+0</span></div>
-          <div class="computed-item"><label>Facebook</label><span id="ss-c-vs-facebook">+0</span></div>
-          <div class="computed-item"><label>Spotify</label><span id="ss-c-vs-spotify">+0</span></div>
-          <div class="computed-item"><label>Apple</label><span id="ss-c-vs-apple">+0</span></div>
-          <div class="computed-item"><label>Amazon</label><span id="ss-c-vs-amazon">+0</span></div>
-          <div class="computed-item"><label>Tidal</label><span id="ss-c-vs-tidal">+0</span></div>
-          <div class="computed-item"><label>YT Views</label><span id="ss-c-vs-yt-views">+0</span></div>
-          <div class="computed-item"><label>YT Music</label><span id="ss-c-vs-yt-music">+0</span></div>
-          <div class="computed-item"><label>Other Stores</label><span id="ss-c-vs-other">+0</span></div>
-          <div class="computed-item"><label>Total Viral Spread</label><span id="ss-c-vs-total">+0</span></div>
-        </div>
-      </div>
-
-      <!-- Country sub-table -->
-      <div class="country-section">
-        <h4>Top Countries <span style="color:#555;font-weight:400">(max 10 — lowest count dropped on overflow)</span></h4>
-        <div id="countryRows"></div>
-        <button class="btn btn-secondary btn-sm" onclick="addCountryRow('',0)" style="margin-top:6px">+ Add Country</button>
-      </div>
-
-      <!-- Spotify Links -->
-      <div class="platform-group">
-        <div class="platform-group-title">Spotify Links</div>
-        <div class="platform-fields">
-          <div class="form-group">
-            <label>Spotify URL</label>
-            <input type="text" id="ss-spotify-url" oninput="onSpotifyUrlInput()" placeholder="https://open.spotify.com/track/..." />
-          </div>
-          <div class="form-group">
-            <label>Embed URL <span style="color:var(--silver-dim);font-size:0.75em">(auto-filled)</span></label>
-            <input type="text" id="ss-spotify-embed-url" readonly style="opacity:0.6;cursor:default;" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="closeSsModal()">Cancel</button>
-      <button class="btn btn-danger btn-sm" id="ss-delete-btn" style="display:none;margin-right:auto" onclick="confirmRemove('song-stat')">Delete</button>
-      <button class="btn btn-primary" onclick="saveSsForm()">Save</button>
-    </div>
-  </div>
+<section id="listen" style="max-width:1200px; margin:0 auto; padding: 5rem 4rem;">
+<p class="section-eyebrow">Featured</p>
+<h2 class="section-title">Start Here</h2>
+<p class="section-subtitle">People like these songs the most.</p>
+<div id="featuredTable" class="featured-table">
+  <p class="featured-loading">Loading...</p>
 </div>
+</section>
 
-<!-- Status message -->
-<div id="status-msg"></div>
+<section id="catalog" style="max-width:1200px; margin:0 auto; padding: 0 4rem 5rem; border-top: 1px solid #1A1A1A;">
+<p class="section-eyebrow" style="padding-top:5rem;">Pick a list.</p>
+<h2 class="section-title">Everyday Songs.</h2>
+<p class="section-subtitle">Different day. Different mood.</p>
+<div class="gold-divider"></div>
+<div class="mood-cards">
+  <a href="/mood-1/" class="mood-card">
+    <span class="mood-card-label">Morning Commute</span>
+    <span class="mood-card-arrow">→</span>
+  </a>
+  <a href="/mood-2/" class="mood-card">
+    <span class="mood-card-label">Does Your Boss Talk Too Much?</span>
+    <span class="mood-card-arrow">→</span>
+  </a>
+  <a href="/mood-3/" class="mood-card">
+    <span class="mood-card-label">Just High Energy</span>
+    <span class="mood-card-arrow">→</span>
+  </a>
+  <a href="/mood-4/" class="mood-card">
+    <span class="mood-card-label">These Things Actually Happened</span>
+    <span class="mood-card-arrow">→</span>
+  </a>
+  <a href="/mood-5/" class="mood-card">
+    <span class="mood-card-label">Sleep or Chill</span>
+    <span class="mood-card-arrow">→</span>
+  </a>
+</div>
+</section>
+
+<section id="albums" style="max-width:1200px; margin:0 auto; padding: 5rem 4rem; background: var(--near-black); border-top: 1px solid #1A1A1A; max-width:100%;">
+<div style="max-width:1200px; margin: 0 auto;">
+<p class="section-eyebrow">Discography</p>
+<h2 class="section-title">All Live Albums</h2>
+<p class="section-subtitle" style="margin-bottom:2.5rem;">Every album available now on all major platforms. Tap any cover.</p>
+<div class="albums-grid">
+<a href="/albums/meltedicecream" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Melted Ice Cream.jpg" alt="Melted Ice Cream cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Melted Ice Cream</p><p class="album-meta">JUN 2026 · 15 tracks</p></div>
+</a>
+<a href="/albums/stillcooking" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Still Cooking.jpg" alt="Still Cooking cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Still Cooking</p><p class="album-meta">MAY 2026 · 11 tracks</p></div>
+</a>
+<a href="/albums/pickastruggle" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Pick a Struggle.jpg" alt="Pick a Struggle cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Pick a Struggle</p><p class="album-meta">APR 2026 · 15 tracks</p></div>
+</a>
+<a href="/albums/halfwaythere" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Half Way There.jpg" alt="Half Way There cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Half Way There</p><p class="album-meta">MAR 2026 · 17 tracks</p></div>
+</a>
+<a href="/albums/week6" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="Week 6.jpg" alt="Week 6 cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">Week 6</p><p class="album-meta">MAR 2026 · 15 tracks</p></div>
+</a>
+<a href="/albums/ait" class="album-card">
+<div class="album-cover" style="padding:0; overflow:hidden;"><img src="AIT.jpg" alt="AIT cover art" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:2px;"><div class="album-cover-accent"></div></div>
+<div><p class="album-title">AIT</p><p class="album-meta">FEB 2026 · 14 tracks</p></div>
+</a>
+</div>
+</div>
+</section>
+
+<section id="subscribe" style="max-width:1200px; margin:0 auto; padding: 0 4rem 5rem;">
+<div class="subscribe-wrap">
+<div>
+<p class="section-eyebrow">First to Know</p>
+<h2 class="subscribe-title">New Music.<br>Early Releases.</h2>
+<p class="subscribe-sub">No newsletters. No weekly emails. Just a message when something new comes out. That's it.</p>
+</div>
+<div class="subscribe-form">
+<input type="email" id="subscribeEmail" class="subscribe-input" placeholder="your@email.com">
+<label style="display:flex; align-items:flex-start; gap:0.6rem; font-size:0.78rem; color:var(--silver-dim); cursor:pointer; line-height:1.5;">
+<input type="checkbox" id="subscribeConsent" style="margin-top:2px; flex-shrink:0; cursor:pointer;" onchange="toggleSubscribeButton()">
+I agree to receive email updates about new releases. By subscribing, you also agree to our <a href="/privacy.html" target="_blank" style="color:var(--gold); text-decoration:underline; white-space:nowrap;">Privacy Policy.</a>
+</label>
+<button id="subscribeBtn" class="btn-primary" style="align-self:flex-start; cursor:not-allowed; border:none; opacity:0.4;" disabled onclick="handleSubscribe()">
+Notify Me
+</button>
+<p id="subscribeNote" class="subscribe-note">No spam. Unsubscribe anytime. Emails only.</p>
+</div>
+</div>
+</section>
+
+<footer>
+<span class="footer-name">MadeUp MonkeyShit</span>
+<span class="footer-note">Proud to make just awful music.</span>
+</footer>
 
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────────────────────
-const TABLES = ['featured','mood-1','mood-2','mood-3','mood-4','mood-5','mood-6','mood-7'];
-const HIGHLIGHT_TABLES = [
-  { value: 'album-pick-a-struggle',    label: 'Pick a Struggle' },
-  { value: 'album-still-cooking',      label: 'Still Cooking' },
-  { value: 'album-melted-ice-cream',   label: 'Melted Ice Cream' },
-  { value: 'album-ait',                label: 'AIT' },
-  { value: 'album-half-way-there',     label: 'Half Way There' },
-  { value: 'album-week-6',             label: 'Week 6' }
+const platforms = [
+  { name: 'Spotify',       url: 'https://open.spotify.com/artist/65VCtBwSACcN98YvM0Z1E3' },
+  { name: 'TikTok',        url: 'https://www.tiktok.com/@madeup_monkeyshit' },
+  { name: 'YouTube Music', url: 'https://music.youtube.com/@madeupmonkeyshit' },
+  { name: 'Instagram',     url: 'https://www.instagram.com/madeup_monkeyshit/' },
+  { name: 'Apple Music',   url: 'https://music.apple.com/us/artist/madeup-monkeyshit/1879732369' },
+  { name: 'Amazon Music',  url: 'https://music.amazon.ca/artists/B0GPXLPNXT/madeup-monkeyshit' },
+  { name: 'Tidal',         url: 'https://tidal.com/artist/74945303' },
+  { name: 'YouTube',       url: 'https://www.youtube.com/@madeupmonkeyshit' },
+  { name: 'Facebook',      url: 'https://www.facebook.com/madeupm0nkeyshit' },
 ];
+const track = document.getElementById('marquee');
+[...platforms, ...platforms].forEach(p => {
+  const item = document.createElement('a');
+  item.className = 'marquee-item';
+  item.href = p.url;
+  item.target = '_blank';
+  item.rel = 'noopener noreferrer';
+  item.innerHTML = `<span class="marquee-dot"></span>${p.name} \u2192`;
+  track.appendChild(item);
+});
 
-// Campaign Priority Export thresholds — edit these to adjust eligibility
-// cutoffs and conditional-formatting bands. Also mirrored into the exported
-// workbook's "Settings" tab for reference and to drive the live
-// conditional-formatting rules there.
-const FLOOR_THRESHOLD = 400;         // min Spotify streams for Spotify Signal Ranking eligibility
-const SIGNAL_THRESHOLD_MIN = 0.04;   // yellow band / Campaign Shortlist gate
-const SIGNAL_THRESHOLD_MID = 0.07;   // light green band
-const SIGNAL_THRESHOLD_HIGH = 0.10;  // dark green band
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function getToken() {
-  return sessionStorage.getItem('admin_token') || '';
+function toggleSubscribeButton() {
+const consent = document.getElementById('subscribeConsent');
+const btn = document.getElementById('subscribeBtn');
+if (consent.checked) {
+btn.disabled = false;
+btn.style.opacity = '1';
+btn.style.cursor = 'pointer';
+} else {
+btn.disabled = true;
+btn.style.opacity = '0.4';
+btn.style.cursor = 'not-allowed';
+}
 }
 
-function authHeaders() {
-  return { 'Content-Type': 'application/json', 'X-Admin-Token': getToken() };
+async function handleSubscribe() {
+const emailInput = document.getElementById('subscribeEmail');
+const consentInput = document.getElementById('subscribeConsent');
+const btn = document.getElementById('subscribeBtn');
+const note = document.getElementById('subscribeNote');
+const email = emailInput.value.trim();
+if (!email || !email.includes('@')) {
+emailInput.style.borderColor = '#8B2020';
+emailInput.focus();
+setTimeout(() => { emailInput.style.borderColor = ''; }, 2000);
+return;
+}
+btn.disabled = true;
+btn.textContent = 'Sending...';
+btn.style.cursor = 'wait';
+try {
+const response = await fetch('/subscribe', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ email: email, consentGiven: consentInput.checked })
+});
+const result = await response.json();
+if (result.success) {
+btn.textContent = 'You\'re on the list.';
+btn.style.background = '#2A6A3A';
+btn.style.color = '#A0E0B0';
+btn.style.cursor = 'default';
+emailInput.disabled = true;
+consentInput.disabled = true;
+note.textContent = 'Thanks — keep an eye on your inbox.';
+} else {
+btn.disabled = false;
+btn.textContent = 'Notify Me';
+btn.style.cursor = consentInput.checked ? 'pointer' : 'not-allowed';
+note.textContent = result.message || 'Something went wrong. Please try again.';
+note.style.color = '#D08080';
+}
+} catch (err) {
+btn.disabled = false;
+btn.textContent = 'Notify Me';
+btn.style.cursor = consentInput.checked ? 'pointer' : 'not-allowed';
+note.textContent = 'Network error. Your request was not saved. Please try again.';
+note.style.color = '#D08080';
+}
 }
 
-function fmt(n) {
+function fmtStat(n) {
   n = parseInt(n) || 0;
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
   return n.toString();
 }
-
-function fmtPct(ratio) {
-  return (ratio === null || ratio === undefined || !isFinite(ratio)) ? '—' : (ratio * 100).toFixed(1) + '%';
+function countryAbbr(name) {
+  if (!name) return '';
+  const m = {'united states':'USA','us':'USA','usa':'USA','united kingdom':'GBR','uk':'GBR','canada':'CAN','australia':'AUS','germany':'DEU','france':'FRA','brazil':'BRA','mexico':'MEX','japan':'JPN','south korea':'KOR','india':'IND','nigeria':'NGA','spain':'ESP','italy':'ITA','netherlands':'NLD','sweden':'SWE','norway':'NOR','philippines':'PHL','ghana':'GHA','south africa':'ZAF','new zealand':'NZL','ireland':'IRL','portugal':'PRT','colombia':'COL','argentina':'ARG','chile':'CHL','turkey':'TUR','russia':'RUS','poland':'POL','singapore':'SGP','malaysia':'MYS','thailand':'THA','indonesia':'IDN','kenya':'KEN'};
+  return m[name.trim().toLowerCase()] || name.trim().slice(0, 6).toUpperCase();
 }
 
-function signalRatio(engagement, exposure) {
-  return exposure > 0 ? engagement / exposure : null;
-}
-
-function showStatus(msg, type = 'success') {
-  const el = document.getElementById('status-msg');
-  el.textContent = msg;
-  el.className = type;
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 3500);
-}
-
-async function apiFetch(url, opts = {}) {
-  const res = await fetch(url, { ...opts, headers: { ...authHeaders(), ...(opts.headers || {}) } });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err || res.statusText);
-  }
-  return res.json();
-}
-
-// ─── VIEW SWITCHING ───────────────────────────────────────────────────────────
-const viewTitles = { tables: 'Song Tables', albums: 'Albums', 'song-stats': 'Song Stats' };
-
-function selectView(view) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-' + (view === 'song-stats' ? 'song-stats' : view === 'albums' ? 'albums' : 'tables')).classList.add('active');
-  document.getElementById('btn-' + (view === 'song-stats' ? 'song-stats' : view)).classList.add('active');
-  document.getElementById('view-title').textContent = viewTitles[view] || view;
-  if (view === 'albums') loadAlbums();
-  if (view === 'song-stats') { fetchAlbumNames(); loadSongStatsList(); }
-}
-
-// ─── TOKEN PROMPT ─────────────────────────────────────────────────────────────
-(function initToken() {
-  if (!sessionStorage.getItem('admin_token')) {
-    const t = prompt('Admin token:');
-    if (t) sessionStorage.setItem('admin_token', t);
-  }
-})();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EXISTING SONG TABLE SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-(function populateTableSelect() {
-  const sel = document.getElementById('tableSelect');
-  const gMain = document.createElement('optgroup');
-  gMain.label = 'Featured & Moods';
-  TABLES.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t; o.textContent = t;
-    gMain.appendChild(o);
-  });
-  sel.appendChild(gMain);
-
-  const gHighlights = document.createElement('optgroup');
-  gHighlights.label = 'Streaming Highlights';
-  HIGHLIGHT_TABLES.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t.value; o.textContent = t.label;
-    gHighlights.appendChild(o);
-  });
-  sel.appendChild(gHighlights);
-})();
-
-async function loadTable() {
-  const table = document.getElementById('tableSelect').value;
-  const tbody = document.getElementById('songTableBody');
-  if (!table) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Select a table above</td></tr>'; return; }
-  tbody.innerHTML = '<tr><td colspan="8" class="empty-state">Loading…</td></tr>';
+async function fetchFeatured() {
+  const container = document.getElementById('featuredTable');
   try {
-    const [tableData, statsData] = await Promise.all([
-      apiFetch(`/songs?table=${encodeURIComponent(table)}`),
-      apiFetch('/admin-song-stats-query?action=list').catch(() => ({ results: [] }))
-    ]);
-    const songs = tableData.results || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No songs found</td></tr>'; return; }
+    const res = await fetch('/songs?table=featured');
+    const data = await res.json();
+    if (!data.success || !data.results || data.results.length === 0) {
+      container.innerHTML = '<p class="featured-empty">No featured tracks yet.</p>';
+      return;
+    }
     const statsMap = {};
-    (statsData.results || []).forEach(s => { statsMap[s.name.trim().toLowerCase()] = s; });
-    const rows = songs.map(s => {
-      const st = statsMap[s.song_name.trim().toLowerCase()] || {};
-      const streams = st.name ? computeSongStreams(st) : (s.stream_count || 0);
-      const likes   = st.name ? computeSongLikes(st)   : 0;
-      const saves   = st.name ? computeSongSaves(st)   : 0;
-      const shares  = st.name ? computeSongShares(st)  : 0;
-      const active  = st.active || '—';
-      const country = st.co1 ? st.co1.substring(0,6).toUpperCase() : '—';
-      return { s, streams, likes, saves, shares, active, country };
+    await Promise.all(data.results.map(song =>
+      fetch('/track-stats?name=' + encodeURIComponent(song.song_name))
+        .then(r => r.ok ? r.json() : null).catch(() => null)
+        .then(d => { if (d?.success && d.result) statsMap[song.song_name] = d.result; })
+    ));
+    data.results.sort((a, b) => {
+      const sa = statsMap[a.song_name] ? (parseInt(statsMap[a.song_name].total_streams) || 0) : (parseInt(a.stream_count) || 0);
+      const sb = statsMap[b.song_name] ? (parseInt(statsMap[b.song_name].total_streams) || 0) : (parseInt(b.stream_count) || 0);
+      return sb - sa;
     });
-    rows.sort((a, b) => b.streams - a.streams);
-    tbody.innerHTML = rows.map(({ s, streams, likes, saves, shares, active, country }) => `<tr>
-        <td>${s.song_name || ''}</td>
-        <td><span class="badge ${active === 'Yes' ? 'badge-yes' : (active === 'No' ? 'badge-no' : '')}">${active}</span></td>
-        <td>${country}</td>
-        <td>${fmt(streams)}</td>
-        <td>${fmt(likes)}</td>
-        <td>${fmt(saves)}</td>
-        <td>${fmt(shares)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick="openModal('edit', ${JSON.stringify(s).replace(/"/g,'&quot;')})">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="confirmRemove('song', ${s.id})">Del</button>
-        </td>
-      </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Error: ${e.message}</td></tr>`; }
-}
-
-function openModal(type, song = null) {
-  document.getElementById('modal-song').classList.add('open');
-  document.getElementById('modal-title').textContent = type === 'add' ? 'Add Song' : 'Edit Song';
-  if (type === 'edit' && song) {
-    document.getElementById('edit-id').value = song.id;
-    document.getElementById('form-name').value = song.song_name || '';
-    document.getElementById('form-art').value = song.art_number || '';
-    document.getElementById('form-date').value = song.release_date || '';
-    document.getElementById('form-spotify-url').value = song.spotify_url || '';
-    document.getElementById('form-embed-url').value = song.spotify_embed_url || '';
-    document.getElementById('form-table').value = song.table_name || '';
-    document.getElementById('form-name-display').value = song.song_name || '';
-    document.getElementById('form-streams').value = song.stream_count || 0;
-    ['form-likes','form-shares','form-saves'].forEach(id => document.getElementById(id).value = 0);
-    document.getElementById('form-country').value = '';
-    document.getElementById('form-name-add-row').style.display = 'none';
-    document.getElementById('form-name-edit-row').style.display = '';
-    document.getElementById('form-album-wrap').style.display = 'none';
-  } else {
-    document.getElementById('edit-id').value = '';
-    document.getElementById('form-name').value = '';
-    document.getElementById('form-art').value = '';
-    document.getElementById('form-date').value = '';
-    document.getElementById('form-spotify-url').value = '';
-    document.getElementById('form-embed-url').value = '';
-    document.getElementById('form-table').value = document.getElementById('tableSelect').value || '';
-    document.getElementById('form-song-select').innerHTML = '<option value="">— Select Song —</option>';
-    ['form-streams','form-likes','form-shares','form-saves'].forEach(id => document.getElementById(id).value = 0);
-    document.getElementById('form-country').value = '';
-    document.getElementById('form-name-add-row').style.display = '';
-    document.getElementById('form-name-edit-row').style.display = 'none';
-    document.getElementById('form-album-wrap').style.display = '';
-    const albumSel = document.getElementById('form-album-select');
-    albumSel.value = '';
-    while (albumSel.options.length > 1) albumSel.remove(1);
-    const fillAlbums = () => {
-      while (albumSel.options.length > 1) albumSel.remove(1);
-      _albumNames.filter(a => a.active === 'Yes').forEach(a => {
-        const o = document.createElement('option');
-        o.value = a.id; o.textContent = a.name;
-        albumSel.appendChild(o);
-      });
-    };
-    _albumNames.length ? fillAlbums() : fetchAlbumNames().then(fillAlbums);
-  }
-}
-
-async function onFormAlbumChange() {
-  const album_id = document.getElementById('form-album-select').value;
-  const songSel = document.getElementById('form-song-select');
-  songSel.innerHTML = '<option value="">— Select Song —</option>';
-  document.getElementById('form-name').value = '';
-  ['form-streams','form-likes','form-shares','form-saves'].forEach(id => document.getElementById(id).value = 0);
-  document.getElementById('form-country').value = '';
-  document.getElementById('form-date').value = '';
-  document.getElementById('form-spotify-url').value = '';
-  document.getElementById('form-embed-url').value = '';
-  if (!album_id) return;
-  try {
-    const data = await apiFetch('/admin-song-stats-query?action=list&album_id=' + album_id);
-    (data.results || []).forEach(s => {
-      const o = document.createElement('option');
-      o.value = s.name;
-      o.dataset.streams = computeSongStreams(s) || 0;
-      o.dataset.likes = computeSongLikes(s) || 0;
-      o.dataset.shares = computeSongShares(s) || 0;
-      o.dataset.saves = computeSongSaves(s) || 0;
-      o.dataset.country = s.co1 || '';
-      o.dataset.releaseDate = s.release_date || '';
-      o.dataset.spotifyUrl = s.spotify_url || '';
-      o.dataset.spotifyEmbedUrl = s.spotify_embed_url || '';
-      o.textContent = s.name;
-      songSel.appendChild(o);
+    container.innerHTML = '';
+    data.results.forEach(song => {
+      const s = statsMap[song.song_name];
+      const row = document.createElement('div');
+      row.className = 'featured-row';
+      row.dataset.songName = song.song_name;
+      const safeName = song.song_name.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      row.innerHTML = `
+        <div class="featured-title">${safeName}</div>
+        <iframe src="${song.spotify_embed_url}" height="80" frameborder="0" allowtransparency="true"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <div class="stats-bar">
+          <span>🎵 ${fmtStat(s ? s.total_streams : song.stream_count)}</span>
+          <span>${s?.total_likes ? '❤️ ' + fmtStat(s.total_likes) : ''}</span>
+          <span class="country">${s?.top_country ? countryAbbr(s.top_country) : ''}</span>
+        </div>`;
+      container.appendChild(row);
     });
-  } catch(e) { console.error('onFormAlbumChange', e); }
-}
-
-function onFormSongChange() {
-  const sel = document.getElementById('form-song-select');
-  const opt = sel.options[sel.selectedIndex];
-  if (!sel.value || !opt) {
-    document.getElementById('form-name').value = '';
-    ['form-streams','form-likes','form-shares','form-saves'].forEach(id => document.getElementById(id).value = 0);
-    document.getElementById('form-country').value = '';
-    return;
-  }
-  document.getElementById('form-name').value = sel.value;
-  document.getElementById('form-streams').value = opt.dataset.streams || 0;
-  document.getElementById('form-likes').value = opt.dataset.likes || 0;
-  document.getElementById('form-shares').value = opt.dataset.shares || 0;
-  document.getElementById('form-saves').value = opt.dataset.saves || 0;
-  document.getElementById('form-country').value = opt.dataset.country || '';
-  document.getElementById('form-date').value = opt.dataset.releaseDate || '';
-  document.getElementById('form-spotify-url').value = opt.dataset.spotifyUrl || '';
-  document.getElementById('form-embed-url').value = opt.dataset.spotifyEmbedUrl || '';
-}
-
-function closeModal() { document.getElementById('modal-song').classList.remove('open'); }
-
-async function saveForm() {
-  const id = document.getElementById('edit-id').value;
-  const body = {
-    action: id ? 'edit' : 'add',
-    id: id || undefined,
-    table_name: document.getElementById('form-table').value,
-    song_name: document.getElementById('form-name').value,
-    stream_count: parseInt(document.getElementById('form-streams').value) || 0,
-    art_number: document.getElementById('form-art').value || null,
-    release_date: document.getElementById('form-date').value || '',
-    spotify_url: document.getElementById('form-spotify-url').value || '',
-    spotify_embed_url: document.getElementById('form-embed-url').value || ''
-  };
-  if (!body.table_name || !body.song_name) { alert('Table and song name are required.'); return; }
-  try {
-    await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify(body) });
-    closeModal();
-    showStatus(id ? 'Song updated.' : 'Song added.');
-    loadTable();
-  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ALBUMS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-let _albumNames = []; // {id, name}
-
-async function fetchAlbumNames() {
-  try {
-    const data = await apiFetch('/admin-albums-query?action=list');
-    _albumNames = data.results || [];
-    populateAlbumDropdowns();
-  } catch(e) { console.error('fetchAlbumNames', e); }
-}
-
-function populateAlbumDropdowns() {
-  ['aEditSelect', 'ssAlbum', 'ssFilterAlbum'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    const val = sel.value;
-    while (sel.options.length > 1) sel.remove(1);
-    _albumNames.forEach(a => {
-      const o = document.createElement('option');
-      o.value = a.id; o.textContent = a.name;
-      sel.appendChild(o);
-    });
-    if (val) sel.value = val;
-  });
-}
-
-async function loadAlbums() {
-  const tbody = document.getElementById('albumTableBody');
-  tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Loading…</td></tr>';
-  try {
-    const data = await apiFetch('/admin-albums-query?action=list');
-    const albums = data.results || [];
-    if (!albums.length) { tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No albums yet</td></tr>'; return; }
-    tbody.innerHTML = albums.map(a => `
-      <tr>
-        <td>${a.name}</td>
-        <td>${a.art || '—'}</td>
-        <td>${a.release_date || '—'}</td>
-        <td><span class="badge ${a.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${a.active}</span></td>
-        <td>${fmt(a.total_streams || 0)}</td>
-        <td>${fmt(a.dk_total_streams || 0)}</td>
-        <td>${fmt(a.total_likes || 0)}</td>
-        <td>${fmt(a.total_shares || 0)}</td>
-        <td>${fmt(a.total_saves || 0)}</td>
-        <td>${fmt(a.song_count || 0)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick='openAlbumModal("edit", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>Edit</button>
-        </td>
-      </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="11" class="empty-state">Error: ${e.message}</td></tr>`; }
-}
-
-let _currentAlbum = null;
-
-function openAlbumModal(type, album = null) {
-  _currentAlbum = album;
-  document.getElementById('modal-album').classList.add('open');
-  onAlbumTypeChange(type);
-  if (type === 'edit' && album) {
-    document.getElementById('aEditSelect').value = album.id;
-    populateAlbumEdit(album);
-  } else {
-    clearAlbumForm();
+  } catch (err) {
+    container.innerHTML = '<p class="featured-empty">Could not load tracks.</p>';
   }
 }
 
-function closeAlbumModal() {
-  document.getElementById('modal-album').classList.remove('open');
-  _currentAlbum = null;
-}
-
-function onAlbumTypeChange(type) {
-  document.getElementById('atype-create').classList.toggle('active', type === 'create');
-  document.getElementById('atype-edit').classList.toggle('active', type === 'edit');
-  document.getElementById('album-select-row').style.display = type === 'edit' ? '' : 'none';
-  document.getElementById('album-computed').style.display = type === 'edit' ? '' : 'none';
-  document.getElementById('album-delete-btn').style.display = type === 'edit' ? '' : 'none';
-  document.getElementById('album-modal-title').textContent = type === 'edit' ? 'Edit Album' : 'Create Album';
-  if (type === 'create') clearAlbumForm();
-}
-
-async function onAlbumSelectChange() {
-  const id = document.getElementById('aEditSelect').value;
-  if (!id) return;
+async function hydrateFeaturedStats(container) {
+  const rows = Array.from(container.querySelectorAll('.featured-row[data-song-name]'));
+  if (!rows.length) return;
   try {
-    const data = await apiFetch(`/admin-albums-query?action=get&id=${id}`);
-    _currentAlbum = data.album;
-    populateAlbumEdit(data.album);
-  } catch(e) { showStatus('Error loading album: ' + e.message, 'error'); }
-}
-
-function populateAlbumEdit(album) {
-  document.getElementById('aName').value = album.name || '';
-  document.getElementById('aArt').value = album.art || '';
-  document.getElementById('aDate').value = album.release_date || '';
-  document.getElementById('aActive').value = album.active || 'Yes';
-  const t = album.totals || {};
-  document.getElementById('ac-streams').textContent = fmt(t.streams || 0);
-  document.getElementById('ac-likes').textContent = fmt(t.likes || 0);
-  document.getElementById('ac-shares').textContent = fmt(t.shares || 0);
-  document.getElementById('ac-saves').textContent = fmt(t.saves || 0);
-  document.getElementById('ac-listeners').textContent = fmt(t.listeners || 0);
-  document.getElementById('ac-songs').textContent = (t.song_count || 0).toString();
-}
-
-function clearAlbumForm() {
-  ['aName','aArt','aDate'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('aActive').value = 'Yes';
-  document.getElementById('aEditSelect').value = '';
-}
-
-async function saveAlbumForm() {
-  const isEdit = document.getElementById('atype-edit').classList.contains('active');
-  const body = {
-    action: isEdit ? 'edit' : 'add',
-    name: document.getElementById('aName').value.trim(),
-    art: document.getElementById('aArt').value.trim(),
-    release_date: document.getElementById('aDate').value,
-    active: document.getElementById('aActive').value
-  };
-  if (isEdit) {
-    body.id = _currentAlbum?.id || document.getElementById('aEditSelect').value;
-    if (!body.id) { alert('No album selected.'); return; }
-  }
-  if (!body.name) { alert('Name is required.'); return; }
-  try {
-    await apiFetch('/admin-albums', { method: 'POST', body: JSON.stringify(body) });
-    closeAlbumModal();
-    showStatus(isEdit ? 'Album updated.' : 'Album created.');
-    fetchAlbumNames();
-    loadAlbums();
-  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SONG STATS SECTION
-// ─────────────────────────────────────────────────────────────────────────────
-async function loadSongStatsList() {
-  const album_id = document.getElementById('ssFilterAlbum').value;
-  const tbody = document.getElementById('ssTableBody');
-  tbody.innerHTML = '<tr><td colspan="11" class="empty-state">Loading…</td></tr>';
-  try {
-    let url = '/admin-song-stats-query?action=list';
-    if (album_id) url += `&album_id=${album_id}`;
-    const data = await apiFetch(url);
-    const songs = data.results || [];
-    if (!songs.length) { tbody.innerHTML = '<tr><td colspan="11" class="empty-state">No song stats yet</td></tr>'; return; }
-    tbody.innerHTML = songs.map(s => {
-      const streams = computeSongStreams(s);
-      const likes = computeSongLikes(s);
-      const saves = computeSongSaves(s);
-      const shares = computeSongShares(s);
-      const country = s.co1 ? s.co1.substring(0,6).toUpperCase() : '—';
-      const dk_total = s.dk_total || 0;
-      const viral_spread = Math.max(0, dk_total - streams);
-      return `<tr>
-        <td>${s.name}</td>
-        <td><span class="badge ${s.active === 'Yes' ? 'badge-yes' : 'badge-no'}">${s.active}</span></td>
-        <td>${country}</td>
-        <td>${fmt(streams)}</td>
-        <td>${fmtPct(s.signal_strength)}</td>
-        <td>${fmt(dk_total)}</td>
-        <td>${viral_spread > 0 ? '+' + fmt(viral_spread) : '—'}</td>
-        <td>${fmt(likes)}</td>
-        <td>${fmt(saves)}</td>
-        <td>${fmt(shares)}</td>
-        <td>
-          <button class="btn btn-secondary btn-sm" onclick='openSongStatsModal("edit", ${JSON.stringify(s).replace(/'/g,"&#39;")})'>Edit</button>
-        </td>
-      </tr>`;
-    }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="11" class="empty-state">Error: ${e.message}</td></tr>`; }
-}
-
-function computeSongStreams(s) {
-  return (s.spotify_streams||0)+(s.apple_streams||0)+(s.amazon_streams||0)+(s.tidal_streams||0)+(s.youtube_music||0)+(s.youtube_views||0)+(s.tiktok_views||0)+(s.facebook_views||0)+(s.instagram_views||0);
-}
-function computeSongLikes(s) {
-  return (s.tt_likes||0)+(s.fb_likes||0)+(s.in_likes||0)+(s.yt_likes||0);
-}
-function computeSongSaves(s) {
-  return (s.tt_saves||0)+(s.fb_saves||0)+(s.in_saves||0)+(s.sp_saves||0)+(s.sp_playlist_adds||0);
-}
-function computeSongShares(s) {
-  return (s.tt_shares||0)+(s.fb_shares||0)+(s.in_shares||0)+(s.in_reposts||0);
-}
-
-let _currentSs = null;
-
-function openSongStatsModal(type, song = null) {
-  _currentSs = song;
-  document.getElementById('modal-ss').classList.add('open');
-  if (_albumNames.length === 0) fetchAlbumNames().then(() => populateAlbumDropdowns());
-  onSsTypeChange(type);
-  if (type === 'edit' && song) {
-    document.getElementById('ssAlbum').value = song.album_id || '';
-    onSsAlbumChange().then(() => {
-      document.getElementById('ssSongSelect').value = song.id;
-      populateSsFields(song);
-    });
-  } else {
-    clearSsForm();
-  }
-}
-
-function closeSsModal() {
-  document.getElementById('modal-ss').classList.remove('open');
-  _currentSs = null;
-}
-
-function onSsTypeChange(type) {
-  document.getElementById('sstype-create').classList.toggle('active', type === 'create');
-  document.getElementById('sstype-edit').classList.toggle('active', type === 'edit');
-  document.getElementById('ss-song-select-group').style.display = type === 'edit' ? '' : 'none';
-  document.getElementById('ss-delete-btn').style.display = type === 'edit' ? '' : 'none';
-  document.getElementById('ss-modal-title').textContent = type === 'edit' ? 'Edit Song Stats' : 'Create Song Stats';
-  if (type === 'create') clearSsForm();
-}
-
-async function onSsAlbumChange() {
-  const album_id = document.getElementById('ssAlbum').value;
-  const isEdit = document.getElementById('sstype-edit').classList.contains('active');
-  if (isEdit && album_id) {
-    await loadSsSongDropdown(album_id);
-  }
-  if (album_id) {
-    try {
-      const data = await apiFetch('/admin-albums-query?action=get&id=' + album_id);
-      if (data.result?.release_date) {
-        document.getElementById('ssDate').value = data.result.release_date;
-      }
-    } catch(e) {}
-  }
-}
-
-async function loadSsSongDropdown(album_id, selectedId = null) {
-  const sel = document.getElementById('ssSongSelect');
-  sel.innerHTML = '<option value="">— Select Song —</option>';
-  if (!album_id) return;
-  try {
-    const data = await apiFetch(`/admin-song-stats-query?action=list&album_id=${album_id}`);
-    (data.results || []).forEach(s => {
-      const o = document.createElement('option');
-      o.value = s.id; o.textContent = s.name;
-      sel.appendChild(o);
-    });
-    if (selectedId) sel.value = selectedId;
-  } catch(e) { console.error('loadSsSongDropdown', e); }
-}
-
-async function onSsSongSelectChange() {
-  const id = document.getElementById('ssSongSelect').value;
-  if (!id) return;
-  try {
-    const data = await apiFetch(`/admin-song-stats-query?action=get&id=${id}`);
-    _currentSs = data.result;
-    populateSsFields(data.result);
-  } catch(e) { showStatus('Error loading song stat: ' + e.message, 'error'); }
-}
-
-const SS_FIELDS = ['tiktok_views','tt_likes','tt_saves','tt_shares',
-  'facebook_views','fb_likes','fb_saves','fb_shares',
-  'instagram_views','in_likes','in_saves','in_reposts','in_shares',
-  'youtube_views','yt_likes','youtube_music',
-  'spotify_streams','sp_listeners','sp_playlist_adds','sp_saves',
-  'apple_streams','amazon_streams','tidal_streams',
-  'dk_tiktok','dk_instagram','dk_facebook','dk_spotify',
-  'dk_apple','dk_amazon','dk_tidal',
-  'dk_youtube_views','dk_youtube_music','dk_other'];
-
-function populateSsFields(song) {
-  document.getElementById('ssName').value = song.name || '';
-  document.getElementById('ssArt').value = song.art || '';
-  document.getElementById('ssDate').value = song.release_date || '';
-  document.getElementById('ssActive').value = song.active || 'Yes';
-  document.getElementById('ss-spotify-url').value = song.spotify_url || '';
-  document.getElementById('ss-spotify-embed-url').value = song.spotify_embed_url || '';
-  SS_FIELDS.forEach(f => {
-    const el = document.getElementById('ss-' + f);
-    if (el) el.value = song[f] || 0;
-  });
-  // countries
-  document.getElementById('countryRows').innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    if (song['co' + i]) addCountryRow(song['co' + i], song['cl' + i] || 0);
-  }
-  updateComputed();
-}
-
-function clearSsForm() {
-  document.getElementById('ssName').value = '';
-  document.getElementById('ssArt').value = '';
-  document.getElementById('ssDate').value = '';
-  document.getElementById('ssActive').value = 'Yes';
-  document.getElementById('ss-spotify-url').value = '';
-  document.getElementById('ss-spotify-embed-url').value = '';
-  SS_FIELDS.forEach(f => { const el = document.getElementById('ss-' + f); if (el) el.value = 0; });
-  document.getElementById('countryRows').innerHTML = '';
-  updateComputed();
-}
-
-function onSpotifyUrlInput() {
-  const raw = document.getElementById('ss-spotify-url').value.trim();
-  const match = raw.match(/open\.spotify\.com\/(track\/[A-Za-z0-9]+)/);
-  document.getElementById('ss-spotify-embed-url').value = match
-    ? 'https://open.spotify.com/embed/' + match[1]
-    : '';
-}
-
-function updateComputed() {
-  const v = f => parseInt(document.getElementById('ss-' + f)?.value) || 0;
-
-  // Step 1: compiled platform totals (unchanged)
-  const streams = v('spotify_streams')+v('apple_streams')+v('amazon_streams')+v('tidal_streams')+v('youtube_music')+v('youtube_views')+v('tiktok_views')+v('facebook_views')+v('instagram_views');
-  const likes = v('tt_likes')+v('fb_likes')+v('in_likes')+v('yt_likes');
-  const shares = v('tt_shares')+v('fb_shares')+v('in_shares')+v('in_reposts');
-  const saves = v('tt_saves')+v('fb_saves')+v('in_saves')+v('sp_saves')+v('sp_playlist_adds');
-  const listeners = v('sp_listeners');
-  document.getElementById('ss-c-streams').textContent = fmt(streams);
-  document.getElementById('ss-c-likes').textContent = fmt(likes);
-  document.getElementById('ss-c-shares').textContent = fmt(shares);
-  document.getElementById('ss-c-saves').textContent = fmt(saves);
-  document.getElementById('ss-c-listeners').textContent = fmt(listeners);
-
-  // Step 1b: Signal Strength (live) — engagement ÷ exposure, per platform
-  const tiktokEng    = v('tt_likes') + v('tt_saves') + v('tt_shares');
-  const facebookEng  = v('fb_likes') + v('fb_saves') + v('fb_shares');
-  const instagramEng = v('in_likes') + v('in_saves') + v('in_reposts') + v('in_shares');
-  const spotifyEng   = v('sp_playlist_adds') + v('sp_saves');
-  const ytLikes      = v('yt_likes');
-
-  document.getElementById('ss-sig-tiktok').textContent        = fmtPct(signalRatio(tiktokEng, v('tiktok_views')));
-  document.getElementById('ss-sig-facebook').textContent      = fmtPct(signalRatio(facebookEng, v('facebook_views')));
-  document.getElementById('ss-sig-instagram').textContent     = fmtPct(signalRatio(instagramEng, v('instagram_views')));
-  document.getElementById('ss-sig-youtube').textContent       = fmtPct(signalRatio(ytLikes, v('youtube_views')));
-  document.getElementById('ss-sig-youtube-music').textContent = fmtPct(signalRatio(ytLikes, v('youtube_music')));
-  document.getElementById('ss-sig-spotify').textContent       = fmtPct(signalRatio(spotifyEng, v('spotify_streams')));
-
-  // Summary Signal Strength — pooled ratio (5 engagement terms / 6 exposure terms; YouTube + YouTube Music share one Likes field)
-  const summaryNumerator   = tiktokEng + instagramEng + facebookEng + ytLikes + spotifyEng;
-  const summaryDenominator = v('tiktok_views') + v('instagram_views') + v('facebook_views') + v('youtube_views') + v('youtube_music') + v('spotify_streams');
-  document.getElementById('ss-c-signal').textContent = fmtPct(signalRatio(summaryNumerator, summaryDenominator));
-
-  // Step 2: dk_total
-  const dk_tiktok = v('dk_tiktok'), dk_instagram = v('dk_instagram'), dk_facebook = v('dk_facebook');
-  const dk_spotify = v('dk_spotify'), dk_apple = v('dk_apple'), dk_amazon = v('dk_amazon');
-  const dk_tidal = v('dk_tidal'), dk_youtube_views = v('dk_youtube_views');
-  const dk_youtube_music = v('dk_youtube_music'), dk_other = v('dk_other');
-  const dk_total = dk_tiktok+dk_instagram+dk_facebook+dk_spotify+dk_apple+dk_amazon+dk_tidal+dk_youtube_views+dk_youtube_music+dk_other;
-  document.getElementById('ss-c-dk-total').textContent = fmt(dk_total);
-
-  // Step 3: Viral Spread (computed last, display only)
-  const vs = (dk, compiled) => '+' + fmt(Math.max(0, dk - compiled));
-  document.getElementById('ss-c-vs-tiktok').textContent   = vs(dk_tiktok,        v('tiktok_views'));
-  document.getElementById('ss-c-vs-instagram').textContent = vs(dk_instagram,     v('instagram_views'));
-  document.getElementById('ss-c-vs-facebook').textContent  = vs(dk_facebook,      v('facebook_views'));
-  document.getElementById('ss-c-vs-spotify').textContent   = vs(dk_spotify,       v('spotify_streams'));
-  document.getElementById('ss-c-vs-apple').textContent     = vs(dk_apple,         v('apple_streams'));
-  document.getElementById('ss-c-vs-amazon').textContent    = vs(dk_amazon,        v('amazon_streams'));
-  document.getElementById('ss-c-vs-tidal').textContent     = vs(dk_tidal,         v('tidal_streams'));
-  document.getElementById('ss-c-vs-yt-views').textContent  = vs(dk_youtube_views, v('youtube_views'));
-  document.getElementById('ss-c-vs-yt-music').textContent  = vs(dk_youtube_music, v('youtube_music'));
-  document.getElementById('ss-c-vs-other').textContent     = '+' + fmt(dk_other);
-  document.getElementById('ss-c-vs-total').textContent     = '+' + fmt(Math.max(0, dk_total - streams));
-}
-
-function addCountryRow(name = '', count = 0) {
-  const container = document.getElementById('countryRows');
-  if (container.children.length >= 10) {
-    // drop lowest
-    let minVal = Infinity, minEl = null;
-    Array.from(container.children).forEach(row => {
-      const c = parseInt(row.querySelector('.country-count').value) || 0;
-      if (c < minVal) { minVal = c; minEl = row; }
-    });
-    if (minEl) minEl.remove();
-  }
-  const row = document.createElement('div');
-  row.className = 'country-row';
-  row.innerHTML = `
-    <input type="text" class="country-name" placeholder="Country" value="${name}" />
-    <input type="number" class="country-count" placeholder="Count" value="${count}" min="0" />
-    <button class="country-remove" onclick="this.closest('.country-row').remove()">×</button>`;
-  container.appendChild(row);
-}
-
-function collectCountries() {
-  const rows = document.querySelectorAll('#countryRows .country-row');
-  return Array.from(rows)
-    .map(r => ({ name: r.querySelector('.country-name').value.trim(), count: parseInt(r.querySelector('.country-count').value) || 0 }))
-    .filter(c => c.name);
-}
-
-async function saveSsForm() {
-  const isEdit = document.getElementById('sstype-edit').classList.contains('active');
-  const album_id = document.getElementById('ssAlbum').value;
-  if (!album_id) { alert('Album is required.'); return; }
-  const name = document.getElementById('ssName').value.trim();
-  if (!name) { alert('Song name is required.'); return; }
-
-  const body = {
-    action: isEdit ? 'edit' : 'add',
-    album_id,
-    name,
-    art: document.getElementById('ssArt').value || null,
-    release_date: document.getElementById('ssDate').value || '',
-    active: document.getElementById('ssActive').value,
-    spotify_url: (document.getElementById('ss-spotify-url').value || '').trim(),
-    spotify_embed_url: (document.getElementById('ss-spotify-embed-url').value || '').trim(),
-    countries: collectCountries()
-  };
-  SS_FIELDS.forEach(f => { body[f] = parseInt(document.getElementById('ss-' + f)?.value) || 0; });
-  if (isEdit) {
-    body.id = _currentSs?.id || document.getElementById('ssSongSelect').value;
-    if (!body.id) { alert('No song selected.'); return; }
-  }
-  try {
-    await apiFetch('/admin-song-stats', { method: 'POST', body: JSON.stringify(body) });
-    closeSsModal();
-    showStatus(isEdit ? 'Song stats updated.' : 'Song stats created.');
-    loadSongStatsList();
-  } catch(e) { showStatus('Error: ' + e.message, 'error'); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SHARED DELETE
-// ─────────────────────────────────────────────────────────────────────────────
-async function confirmRemove(type, id = null) {
-  const labels = { song: 'song', album: 'album', 'song-stat': 'song stat entry' };
-  if (!confirm(`Delete this ${labels[type] || type}? This cannot be undone.`)) return;
-
-  try {
-    if (type === 'song') {
-      await apiFetch('/admin-songs', { method: 'POST', body: JSON.stringify({ action: 'delete', id }) });
-      showStatus('Song deleted.');
-      loadTable();
-    } else if (type === 'album') {
-      const albumId = _currentAlbum?.id || document.getElementById('aEditSelect').value;
-      await apiFetch('/admin-albums', { method: 'POST', body: JSON.stringify({ action: 'delete', id: albumId }) });
-      closeAlbumModal();
-      showStatus('Album deleted.');
-      fetchAlbumNames();
-      loadAlbums();
-    } else if (type === 'song-stat') {
-      const ssId = _currentSs?.id || document.getElementById('ssSongSelect').value;
-      await apiFetch('/admin-song-stats', { method: 'POST', body: JSON.stringify({ action: 'delete', id: ssId }) });
-      closeSsModal();
-      showStatus('Song stat deleted.');
-      loadSongStatsList();
-    }
-  } catch(e) { showStatus('Delete failed: ' + e.message, 'error'); }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EXCEL EXPORT — HELPERS (ExcelJS)
-// ─────────────────────────────────────────────────────────────────────────────
-function floorStatus(spotifyStreams) {
-  return spotifyStreams >= FLOOR_THRESHOLD ? 'Eligible' : 'Below Floor';
-}
-
-// Live, threshold-cell-driven conditional formatting (stop-if-true, high-to-low).
-// References the Settings tab by cell address rather than hardcoding the cutoffs,
-// so editing those cells in the exported file still recolors bands correctly —
-// it just won't change which rows are included/sorted (that requires re-export).
-function addSignalBands(ws, col, firstRow, lastRow) {
-  if (lastRow < firstRow) return;
-  const anchor = `${col}${firstRow}`;
-  ws.addConditionalFormatting({
-    ref: `${col}${firstRow}:${col}${lastRow}`,
-    rules: [
-      { type: 'expression', formulae: [`${anchor}>=Settings!$B$5`], priority: 1, stopIfTrue: true,
-        style: { font: { name: 'Arial', bold: true, color: { argb: 'FFFFFF00' } },
-                 fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E7942' } } } },
-      { type: 'expression', formulae: [`${anchor}>=Settings!$B$4`], priority: 2, stopIfTrue: true,
-        style: { font: { name: 'Arial', bold: true },
-                 fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC6EFCE' } } } },
-      { type: 'expression', formulae: [`${anchor}>=Settings!$B$3`], priority: 3, stopIfTrue: true,
-        style: { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFEB9C' } } } }
-    ]
-  });
-}
-
-// Final pass — forces Arial across every cell in the sheet without disturbing
-// bold/fill/color already set (merges rather than replaces).
-function arialize(ws) {
-  ws.eachRow({ includeEmpty: true }, row => {
-    row.eachCell({ includeEmpty: true }, cell => { cell.font = { ...cell.font, name: 'Arial' }; });
-  });
-}
-
-// Builds a plain data tab, auto-deriving columns from the first row's keys —
-// used for the 7 existing recurring-export tabs (their row-shaping logic is
-// unchanged from before).
-function addFlatSheet(wb, name, data) {
-  const ws = wb.addWorksheet(name);
-  if (!data.length) { ws.addRow(['No data']); arialize(ws); return ws; }
-  const keys = Object.keys(data[0]);
-  ws.columns = keys.map(k => ({ header: k, key: k, width: Math.max(12, k.length + 2) }));
-  ws.getRow(1).font = { name: 'Arial', bold: true };
-  data.forEach(d => ws.addRow(d));
-  arialize(ws);
-  return ws;
-}
-
-async function downloadWorkbook(wb, filename) {
-  const buffer = await wb.xlsx.writeBuffer();
-  const blob = new Blob([buffer], { type: 'application/octet-stream' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-async function exportToExcel() {
-  if (typeof ExcelJS === 'undefined') { showStatus('ExcelJS not loaded yet, try again in a moment.', 'error'); return; }
-  showStatus('Fetching data for export...');
-  try {
-    if (!_albumNames.length) throw new Error('Album list not loaded — open Song Stats view first');
-    const perAlbum = await Promise.all(
-      _albumNames.map(a => apiFetch('/admin-song-stats-query?action=list&album_id=' + a.id).catch(() => ({ results: [] })))
+    const results = await Promise.all(
+      rows.map(row =>
+        fetch('/track-stats?name=' + encodeURIComponent(row.dataset.songName))
+          .then(r => r.ok ? r.json() : null).catch(() => null)
+      )
     );
-    const rows = perAlbum.flatMap(r => r.results || []);
-    const albumName = id => (_albumNames.find(a => String(a.id) === String(id))?.name) || '';
-    const num = v => parseInt(v) || 0;
-
-    // Tab 1: Summary
-    const summary = rows.map(s => ({
-      'Song': s.name,
-      'Album': albumName(s.album_id),
-      'Release Date': s.release_date || '',
-      'Art #': s.art || '',
-      'Active': s.active || '',
-      'Total Streams': num(s.spotify_streams)+num(s.apple_streams)+num(s.amazon_streams)+num(s.tidal_streams)+num(s.youtube_music)+num(s.youtube_views)+num(s.tiktok_views)+num(s.facebook_views)+num(s.instagram_views),
-      'Total Likes': num(s.tt_likes)+num(s.fb_likes)+num(s.in_likes)+num(s.yt_likes),
-      'Total Saves': num(s.tt_saves)+num(s.fb_saves)+num(s.in_saves)+num(s.sp_saves)+num(s.sp_playlist_adds),
-      'Total Shares': num(s.tt_shares)+num(s.fb_shares)+num(s.in_shares)+num(s.in_reposts),
-      'Top Country': s.co1 || ''
-    }));
-
-    // Tab 2: Spotify
-    const spotify = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'Streams': num(s.spotify_streams),
-      'Monthly Listeners': num(s.sp_listeners),
-      'Saves': num(s.sp_saves),
-      'Playlist Adds': num(s.sp_playlist_adds)
-    }));
-
-    // Tab 3: TikTok
-    const tiktok = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'Views': num(s.tiktok_views),
-      'Likes': num(s.tt_likes),
-      'Saves': num(s.tt_saves),
-      'Shares': num(s.tt_shares)
-    }));
-
-    // Tab 4: YouTube
-    const youtube = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'YouTube Views': num(s.youtube_views),
-      'YouTube Music Streams': num(s.youtube_music),
-      'Likes': num(s.yt_likes)
-    }));
-
-    // Tab 5: Facebook/Instagram
-    const fbig = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'Facebook Views': num(s.facebook_views),
-      'Facebook Likes': num(s.fb_likes),
-      'Facebook Saves': num(s.fb_saves),
-      'Facebook Shares': num(s.fb_shares),
-      'Instagram Views': num(s.instagram_views),
-      'Instagram Likes': num(s.in_likes),
-      'Instagram Saves': num(s.in_saves),
-      'Instagram Shares': num(s.in_shares),
-      'Instagram Reposts': num(s.in_reposts)
-    }));
-
-    // Tab 6: Other Platforms
-    const other = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'Apple Music Streams': num(s.apple_streams),
-      'Amazon Music Streams': num(s.amazon_streams),
-      'Tidal Streams': num(s.tidal_streams)
-    }));
-
-    // Tab 7: Geography (co1-co10 / cl1-cl10)
-    const geo = rows.map(s => ({
-      'Song': s.name, 'Album': albumName(s.album_id),
-      'Country 1': s.co1||'', 'Listeners 1': num(s.cl1),
-      'Country 2': s.co2||'', 'Listeners 2': num(s.cl2),
-      'Country 3': s.co3||'', 'Listeners 3': num(s.cl3),
-      'Country 4': s.co4||'', 'Listeners 4': num(s.cl4),
-      'Country 5': s.co5||'', 'Listeners 5': num(s.cl5),
-      'Country 6': s.co6||'', 'Listeners 6': num(s.cl6),
-      'Country 7': s.co7||'', 'Listeners 7': num(s.cl7),
-      'Country 8': s.co8||'', 'Listeners 8': num(s.cl8),
-      'Country 9': s.co9||'', 'Listeners 9': num(s.cl9),
-      'Country 10': s.co10||'', 'Listeners 10': num(s.cl10)
-    }));
-
-    const wb = new ExcelJS.Workbook();
-
-    // ── Settings — editable thresholds referenced by the CF rules below ────
-    const wsSettings = wb.addWorksheet('Settings');
-    wsSettings.columns = [
-      { header: 'Label', key: 'label', width: 24 },
-      { header: 'Value', key: 'value', width: 10 },
-      { header: 'Description', key: 'desc', width: 70 }
-    ];
-    wsSettings.getRow(1).font = { name: 'Arial', bold: true };
-    wsSettings.addRow({ label: 'Floor_Threshold', value: FLOOR_THRESHOLD,
-      desc: 'Minimum Spotify streams for Spotify Signal Ranking eligibility. Revisit every 1-2 months.' });
-    const rMin  = wsSettings.addRow({ label: 'Signal_Threshold_Min', value: SIGNAL_THRESHOLD_MIN,
-      desc: 'Minimum signal % for Campaign Shortlist inclusion; yellow color-band cutoff.' });
-    const rMid  = wsSettings.addRow({ label: 'Signal_Threshold_Mid', value: SIGNAL_THRESHOLD_MID,
-      desc: 'Light green + bold color-band cutoff.' });
-    const rHigh = wsSettings.addRow({ label: 'Signal_Threshold_High', value: SIGNAL_THRESHOLD_HIGH,
-      desc: 'Dark green + yellow font + bold color-band cutoff.' });
-    [rMin, rMid, rHigh].forEach(r => { r.getCell('value').numFmt = '0%'; });
-    arialize(wsSettings);
-
-    // ── Existing recurring tabs — unchanged row-shaping, ExcelJS output ─────
-    addFlatSheet(wb, 'Summary', summary);
-    addFlatSheet(wb, 'Spotify', spotify);
-    addFlatSheet(wb, 'TikTok', tiktok);
-    addFlatSheet(wb, 'YouTube', youtube);
-    addFlatSheet(wb, 'Facebook-Instagram', fbig);
-    addFlatSheet(wb, 'Other Platforms', other);
-    addFlatSheet(wb, 'Geography', geo);
-
-    // ── Campaign Priority Export — shared per-song calc (one pass, no cross-
-    //    tab join needed since Tabs 1-3 all derive from the same `rows`) ────
-    const perSong = rows.map(s => {
-      const spotifyStreams = num(s.spotify_streams);
-      const spotifyEngagement = num(s.sp_saves) + num(s.sp_playlist_adds);
-      const spotifySignal = spotifyStreams > 0 ? spotifyEngagement / spotifyStreams : 0;
-      const combinedStreams = spotifyStreams + num(s.tiktok_views) + num(s.facebook_views) +
-        num(s.instagram_views) + num(s.youtube_views) + num(s.youtube_music) +
-        num(s.apple_streams) + num(s.amazon_streams) + num(s.tidal_streams);
-      const nonSpotifyEngagement =
-        (num(s.tt_likes) + num(s.tt_saves) + num(s.tt_shares)) +
-        (num(s.fb_likes) + num(s.fb_saves) + num(s.fb_shares)) +
-        (num(s.in_likes) + num(s.in_saves) + num(s.in_reposts) + num(s.in_shares)) +
-        num(s.yt_likes);
-      const websiteSignal = combinedStreams > 0 ? nonSpotifyEngagement / combinedStreams : 0;
-      return {
-        song: s.name, album: albumName(s.album_id),
-        spotifyStreams, spotifySaves: num(s.sp_saves), spotifyPlaylistAdds: num(s.sp_playlist_adds),
-        spotifyEngagement, spotifySignal, floor: floorStatus(spotifyStreams),
-        combinedStreams, nonSpotifyEngagement, websiteSignal
-      };
+    rows.forEach((row, i) => {
+      const data = results[i];
+      if (!data?.success || !data.result) return;
+      const s = data.result;
+      const spans = row.querySelectorAll('.stats-bar span');
+      if (spans[0]) spans[0].textContent = '🎵 ' + fmtStat(s.total_streams);
+      if (spans[1] && s.total_likes)   spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
+      if (spans[2] && s.top_country)   spans[2].textContent = countryAbbr(s.top_country);
     });
-
-    // ── Tab: Spotify Signal Ranking ──────────────────────────────────────
-    const wsSpotifySignal = wb.addWorksheet('Spotify Signal Ranking');
-    wsSpotifySignal.columns = [
-      { header: 'Song Name', key: 'song', width: 28 },
-      { header: 'Album', key: 'album', width: 20 },
-      { header: 'Spotify Streams', key: 'spotifyStreams', width: 15 },
-      { header: 'Spotify Saves', key: 'spotifySaves', width: 14 },
-      { header: 'Spotify Playlist Adds', key: 'spotifyPlaylistAdds', width: 18 },
-      { header: 'Spotify Engagement', key: 'spotifyEngagement', width: 16 },
-      { header: 'Spotify Signal %', key: 'spotifySignal', width: 15 },
-      { header: 'Floor Status', key: 'floor', width: 13 }
-    ];
-    wsSpotifySignal.getRow(1).font = { name: 'Arial', bold: true };
-    perSong.forEach(p => wsSpotifySignal.addRow(p));
-    const rawFirst1 = 2, rawLast1 = 1 + perSong.length;
-    for (let r = rawFirst1; r <= rawLast1; r++) wsSpotifySignal.getCell(`G${r}`).numFmt = '0.0%';
-    addSignalBands(wsSpotifySignal, 'G', rawFirst1, rawLast1);
-
-    wsSpotifySignal.addRow([]);
-    wsSpotifySignal.addRow(['Ranked Output — Eligible, Strongest Signal First']).font = { name: 'Arial', bold: true };
-    wsSpotifySignal.addRow(['Song Name','Album','Spotify Streams','Spotify Saves','Spotify Playlist Adds','Spotify Engagement','Spotify Signal %','Floor Status']).font = { name: 'Arial', bold: true };
-    const ranked1 = perSong.filter(p => p.floor === 'Eligible').sort((a, b) => b.spotifySignal - a.spotifySignal);
-    const rankStart1 = wsSpotifySignal.rowCount + 1;
-    ranked1.forEach(p => wsSpotifySignal.addRow([p.song, p.album, p.spotifyStreams, p.spotifySaves, p.spotifyPlaylistAdds, p.spotifyEngagement, p.spotifySignal, p.floor]));
-    const rankEnd1 = wsSpotifySignal.rowCount;
-    for (let r = rankStart1; r <= rankEnd1; r++) wsSpotifySignal.getCell(`G${r}`).numFmt = '0.0%';
-    addSignalBands(wsSpotifySignal, 'G', rankStart1, rankEnd1);
-    arialize(wsSpotifySignal);
-
-    // ── Tab: Website Signal Ranking (Non-Spotify) ────────────────────────
-    const wsWebsiteSignal = wb.addWorksheet('Website Signal Ranking');
-    wsWebsiteSignal.columns = [
-      { header: 'Song Name', key: 'song', width: 28 },
-      { header: 'Album', key: 'album', width: 20 },
-      { header: 'Combined Streams (All Platforms)', key: 'combinedStreams', width: 26 },
-      { header: 'Non-Spotify Engagement', key: 'nonSpotifyEngagement', width: 20 },
-      { header: 'Website Signal %', key: 'websiteSignal', width: 15 }
-    ];
-    wsWebsiteSignal.getRow(1).font = { name: 'Arial', bold: true };
-    perSong.forEach(p => wsWebsiteSignal.addRow(p));
-    const rawFirst2 = 2, rawLast2 = 1 + perSong.length;
-    for (let r = rawFirst2; r <= rawLast2; r++) wsWebsiteSignal.getCell(`E${r}`).numFmt = '0.0%';
-    addSignalBands(wsWebsiteSignal, 'E', rawFirst2, rawLast2);
-
-    wsWebsiteSignal.addRow([]);
-    wsWebsiteSignal.addRow(['Ranked Output — Sorted by Website Signal % (Strongest First)']).font = { name: 'Arial', bold: true };
-    wsWebsiteSignal.addRow(['Song Name','Album','Combined Streams (All Platforms)','Non-Spotify Engagement','Website Signal %']).font = { name: 'Arial', bold: true };
-    const ranked2 = [...perSong].sort((a, b) => b.websiteSignal - a.websiteSignal);
-    const rankStart2 = wsWebsiteSignal.rowCount + 1;
-    ranked2.forEach(p => wsWebsiteSignal.addRow([p.song, p.album, p.combinedStreams, p.nonSpotifyEngagement, p.websiteSignal]));
-    const rankEnd2 = wsWebsiteSignal.rowCount;
-    for (let r = rankStart2; r <= rankEnd2; r++) wsWebsiteSignal.getCell(`E${r}`).numFmt = '0.0%';
-    addSignalBands(wsWebsiteSignal, 'E', rankStart2, rankEnd2);
-    arialize(wsWebsiteSignal);
-
-    // ── Tab: Campaign Shortlist ───────────────────────────────────────────
-    const wsShortlist = wb.addWorksheet('Campaign Shortlist');
-    wsShortlist.columns = [
-      { header: 'Song Name', key: 'song', width: 28 },
-      { header: 'Album', key: 'album', width: 20 },
-      { header: 'Floor Status', key: 'floor', width: 13 },
-      { header: 'Spotify Signal %', key: 'spotifySignal', width: 15 },
-      { header: 'Website Signal %', key: 'websiteSignal', width: 15 },
-      { header: 'Combined Streams', key: 'combinedStreams', width: 17 }
-    ];
-    wsShortlist.getRow(1).font = { name: 'Arial', bold: true };
-    const shortlist = perSong
-      .filter(p => p.floor === 'Eligible' && p.spotifySignal >= SIGNAL_THRESHOLD_MIN && p.websiteSignal >= SIGNAL_THRESHOLD_MIN)
-      .sort((a, b) => b.combinedStreams - a.combinedStreams);
-    shortlist.forEach(p => wsShortlist.addRow(p));
-    const slFirst = 2, slLast = 1 + shortlist.length;
-    for (let r = slFirst; r <= slLast; r++) {
-      wsShortlist.getCell(`D${r}`).numFmt = '0.0%';
-      wsShortlist.getCell(`E${r}`).numFmt = '0.0%';
-    }
-    addSignalBands(wsShortlist, 'D', slFirst, slLast);
-    addSignalBands(wsShortlist, 'E', slFirst, slLast);
-    arialize(wsShortlist);
-
-    const today = new Date().toISOString().slice(0,10);
-    await downloadWorkbook(wb, `MadeUp_MonkeyShit_Stats_${today}.xlsx`);
-    showStatus('Export complete!');
-  } catch(e) { showStatus('Export failed: ' + e.message, 'error'); }
+  } catch(e) {}
 }
+
+document.addEventListener('DOMContentLoaded', fetchFeatured);
 </script>
 </body>
 </html>
+
