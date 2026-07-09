@@ -10,7 +10,7 @@ export async function onRequestGet(context) {
     const { results } = await env.SONGS_DB.prepare(`
       SELECT tiktok_views, tt_likes, tt_saves, tt_shares,
              facebook_views, fb_likes, fb_saves, fb_shares,
-             instagram_views, in_likes, in_saves, in_reposts,
+             instagram_views, in_likes, in_saves, in_reposts, in_shares,
              youtube_views, yt_likes, youtube_music,
              spotify_streams, sp_saves,
              apple_streams, amazon_streams, tidal_streams
@@ -37,7 +37,7 @@ function zeroes() {
   return {
     tiktok_views:0, tt_likes:0, tt_saves:0, tt_shares:0,
     facebook_views:0, fb_likes:0, fb_saves:0, fb_shares:0,
-    instagram_views:0, in_likes:0, in_saves:0, in_reposts:0,
+    instagram_views:0, in_likes:0, in_saves:0, in_reposts:0, in_shares:0,
     youtube_views:0, yt_likes:0, youtube_music:0,
     spotify_streams:0, sp_saves:0,
     apple_streams:0, amazon_streams:0, tidal_streams:0
