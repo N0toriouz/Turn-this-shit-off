@@ -752,7 +752,7 @@ async function hydrateFeaturedStats(container) {
       if (!data?.success || !data.result) return;
       const s = data.result;
       const spans = row.querySelectorAll('.stats-bar span');
-      if (spans[0] && s.total_streams) spans[0].textContent = '🎵 ' + fmtStat(s.total_streams);
+      if (spans[0]) spans[0].textContent = '🎵 ' + fmtStat(s.total_streams);
       if (spans[1] && s.total_likes)   spans[1].textContent = '❤️ ' + fmtStat(s.total_likes);
       if (spans[2] && s.top_country)   spans[2].textContent = countryAbbr(s.top_country);
     });
