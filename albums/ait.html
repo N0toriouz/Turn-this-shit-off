@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIT — MadeUp MonkeyShit</title>
+<title>Half Way There — MadeUp MonkeyShit</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -74,16 +74,15 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 </nav>
 
 <div class="album-header">
-<div class="album-art-frame"><img src="../AIT.jpg" alt="AIT album art" onerror="this.parentElement.style.display='none'"></div>
+<div class="album-art-frame"><img src="../Half Way There.jpg" alt="Half Way There album art" onerror="this.parentElement.style.display='none'"></div>
 <div class="album-meta">
-<p class="album-eyebrow">February 2026</p>
-<h1 class="album-title">AIT</h1>
-<p class="album-track-count">14 tracks</p>
+<p class="album-eyebrow">March 2026</p>
+<h1 class="album-title">Half Way There</h1>
+<p class="album-track-count">17 tracks</p>
 <div class="stream-links">
-<a href="https://music.apple.com/us/album/ait/1880326519" class="stream-btn" target="_blank" rel="noopener">Apple Music</a>
-<a href="https://music.youtube.com/playlist?list=OLAK5uy_nqtOc0yMWNM9hr6IE_OSZaAXc5voEDaHE" class="stream-btn" target="_blank" rel="noopener">YouTube Music</a>
-<a href="https://music.amazon.ca/albums/B0GPX69116" class="stream-btn" target="_blank" rel="noopener">Amazon Music</a>
-<a href="https://tidal.com/album/501856742" class="stream-btn" target="_blank" rel="noopener">Tidal</a>
+<a href="https://music.apple.com/us/album/half-way-there/1884249939" class="stream-btn" target="_blank" rel="noopener">Apple Music</a>
+<a href="https://music.amazon.ca/albums/B0GS4TJQQ4" class="stream-btn" target="_blank" rel="noopener">Amazon Music</a>
+<a href="https://tidal.com/album/506074841" class="stream-btn" target="_blank" rel="noopener">Tidal</a>
 </div>
 </div>
 </div>
@@ -94,7 +93,7 @@ footer { padding: 2rem 1.5rem; flex-direction: column; }
 </div>
 
 <div class="section">
-<p class="section-label">All 14 Tracks</p>
+<p class="section-label">All 17 Tracks</p>
 <div class="track-list" id="trackList"><p style="color:var(--silver-dim);font-style:italic;font-size:.85rem">Loading...</p></div>
 </div>
 
@@ -141,7 +140,7 @@ async function loadTrackSocial(container) {
 async function loadStats() {
   const trackList = document.getElementById('trackList');
   try {
-    const res = await fetch('/track-stats?album_name=AIT');
+    const res = await fetch('/track-stats?album_name=Half%20Way%20There');
     const data = await res.json();
     if (!data.success || !data.results) return;
     data.results.sort((a, b) => (parseInt(a.art) || 0) - (parseInt(b.art) || 0));
@@ -164,7 +163,7 @@ async function loadStats() {
 async function loadHighlights() {
   const grid = document.getElementById('songGrid');
   try {
-    const res = await fetch('/songs?table=album-ait');
+    const res = await fetch('/songs?table=album-half-way-there');
     const data = await res.json();
     if (!data.success || !data.results || !data.results.length) {
       document.getElementById('highlightsSection').style.display = 'none';
@@ -196,7 +195,7 @@ async function loadHighlights() {
       grid.appendChild(row);
     });
     document.getElementById('page-backdrop').style.backgroundImage =
-      `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('../AIT.jpg')`;
+      `linear-gradient(180deg, rgba(40,40,40,0.5) 0%, rgba(30,30,30,0.65) 55%, rgba(10,10,10,0.85) 100%), url('../Half Way There.jpg')`;
   } catch(e) {
     document.getElementById('highlightsSection').style.display = 'none';
   }
