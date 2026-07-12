@@ -845,6 +845,24 @@ async function loadAlbumCardStats() {
 document.addEventListener('DOMContentLoaded', fetchFeatured);
 document.addEventListener('DOMContentLoaded', loadHeroStats);
 document.addEventListener('DOMContentLoaded', loadAlbumCardStats);
+
+// GTM conversion signal — fires once per page load when a visitor engages
+// with any Spotify embed. Cross-origin iframes hide their internal button
+// clicks from the parent page; focus moving into the iframe (detected via
+// window blur) is the only interaction-level signal available, and can't
+// distinguish which control inside the player was used.
+(function () {
+  var fired = false;
+  window.addEventListener('blur', function () {
+    if (fired) return;
+    var active = document.activeElement;
+    if (active && active.tagName === 'IFRAME' && /open\.spotify\.com/.test(active.src || '')) {
+      fired = true;
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({'event': 'song_saved'});
+    }
+  });
+})();
 </script>
 </body>
 </html>
